@@ -32,6 +32,7 @@ namespace DrPet.Web
                 cfg.UseSqlServer(this.Configuration.GetConnectionString("DefaultConnection"));
             });
 
+            services.AddTransient<SeedDB>();
 
             services.Configure<CookiePolicyOptions>(options =>
             {
