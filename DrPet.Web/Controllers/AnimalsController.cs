@@ -12,17 +12,17 @@ namespace DrPet.Web.Controllers
 {
     public class AnimalsController : Controller
     {
-        private readonly DataContext _context;
+        private readonly IAnimalRepository _animalRepository;
 
-        public AnimalsController(DataContext context)
+        public AnimalsController(IAnimalRepository animalRepository)
         {
-            _context = context;
+            _animalRepository = animalRepository;
         }
 
         // GET: Animals
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return View(await _context.Animals.ToListAsync());
+            return View(_animalRepository.GetAll());
         }
 
         // GET: Animals/Details/5
@@ -33,8 +33,7 @@ namespace DrPet.Web.Controllers
                 return NotFound();
             }
 
-            var animal = await _context.Animals
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var animal = await _animalRepository.GetByIdAsync(id.Value);
             if (animal == null)
             {
                 return NotFound();
@@ -54,12 +53,11 @@ namespace DrPet.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Sex,Species,Breed,Color,DateOfBirth")] Animal animal)
+        public async Task<IActionResult> Create(Animal animal)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(animal);
-                await _context.SaveChangesAsync();
+                await _animalRepository.CreateAsync(animal);
                 return RedirectToAction(nameof(Index));
             }
             return View(animal);
@@ -73,7 +71,7 @@ namespace DrPet.Web.Controllers
                 return NotFound();
             }
 
-            var animal = await _context.Animals.FindAsync(id);
+            var animal = await _animalRepository.GetByIdAsync(id.Value);
             if (animal == null)
             {
                 return NotFound();
@@ -86,23 +84,17 @@ namespace DrPet.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Sex,Species,Breed,Color,DateOfBirth")] Animal animal)
+        public async Task<IActionResult> Edit(Animal animal)
         {
-            if (id != animal.Id)
-            {
-                return NotFound();
-            }
-
             if (ModelState.IsValid)
             {
                 try
                 {
-                    _context.Update(animal);
-                    await _context.SaveChangesAsync();
+                    await _animalRepository.UpdateAsync(animal);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!AnimalExists(animal.Id))
+                    if (! await _animalRepository.ExistsAsync(animal.Id))
                     {
                         return NotFound();
                     }
@@ -124,8 +116,7 @@ namespace DrPet.Web.Controllers
                 return NotFound();
             }
 
-            var animal = await _context.Animals
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var animal = await _animalRepository.GetByIdAsync(id.Value);
             if (animal == null)
             {
                 return NotFound();
@@ -139,15 +130,9 @@ namespace DrPet.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var animal = await _context.Animals.FindAsync(id);
-            _context.Animals.Remove(animal);
-            await _context.SaveChangesAsync();
+            var animal = await _animalRepository.GetByIdAsync(id);
+            await _animalRepository.DeleteAsync(animal);
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool AnimalExists(int id)
-        {
-            return _context.Animals.Any(e => e.Id == id);
         }
     }
 }

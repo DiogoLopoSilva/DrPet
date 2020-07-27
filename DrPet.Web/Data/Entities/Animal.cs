@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DrPet.Web.Data.Entities
 {
-    public class Animal
+    public class Animal :IEntity
     {
         public int Id { get; set; }
         
