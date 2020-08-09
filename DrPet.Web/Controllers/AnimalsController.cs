@@ -7,16 +7,19 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DrPet.Web.Data;
 using DrPet.Web.Data.Entities;
+using DrPet.Web.Helpers;
 
 namespace DrPet.Web.Controllers
 {
     public class AnimalsController : Controller
     {
         private readonly IAnimalRepository _animalRepository;
+        private readonly IUserHelper _userHelper;
 
-        public AnimalsController(IAnimalRepository animalRepository)
+        public AnimalsController(IAnimalRepository animalRepository, IUserHelper userHelper)
         {
             _animalRepository = animalRepository;
+            _userHelper = userHelper;
         }
 
         // GET: Animals
@@ -57,6 +60,7 @@ namespace DrPet.Web.Controllers
         {
             if (ModelState.IsValid)
             {
+                animal.User = await _userHelper.GetUserByEmailAsync("diogo.lopo.silva@formandos.cinel.pt");
                 await _animalRepository.CreateAsync(animal);
                 return RedirectToAction(nameof(Index));
             }
@@ -90,6 +94,7 @@ namespace DrPet.Web.Controllers
             {
                 try
                 {
+                    animal.User = await _userHelper.GetUserByEmailAsync("diogo.lopo.silva@formandos.cinel.pt");
                     await _animalRepository.UpdateAsync(animal);
                 }
                 catch (DbUpdateConcurrencyException)

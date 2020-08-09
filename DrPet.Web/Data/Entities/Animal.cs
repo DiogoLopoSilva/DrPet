@@ -28,5 +28,7 @@ namespace DrPet.Web.Data.Entities
 
         [Display(Name = "Date of Birth")]
         public DateTime? DateOfBirth { get; set; }
+
+        public User User { get; set; }
     }
 }
