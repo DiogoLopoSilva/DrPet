@@ -23,11 +23,11 @@ namespace DrPet.Web.Data
         {
             await _context.Database.EnsureCreatedAsync();
 
-            var user = await _userHelper.GetUserByEmailAsync("diogo.lopo.silva@formandos.cinel.pt");
+            var user1 = await _userHelper.GetUserByEmailAsync("diogo.lopo.silva@formandos.cinel.pt");
 
-            if (user == null)
+            if (user1 == null)
             {
-                user = new User
+                user1 = new User
                 {
                     FirstName="Diogo",
                     LastName="Silva",
@@ -36,8 +36,28 @@ namespace DrPet.Web.Data
                     PhoneNumber="911859473"
                 };
 
-                var result = await _userHelper.AddUserAsync(user, "123456");
+                var result = await _userHelper.AddUserAsync(user1, "123456");
                 if (result!=IdentityResult.Success)
+                {
+                    throw new InvalidOperationException("Could not create the user in seeder");
+                }
+            }
+
+            var user2 = await _userHelper.GetUserByEmailAsync("diogo.silva_92@hotmail.com");
+
+            if (user2 == null)
+            {
+                user2 = new User
+                {
+                    FirstName = "Diogo",
+                    LastName = "Silva",
+                    Email = "diogo.silva_92@hotmail.com",
+                    UserName = "diogo.silva_92@hotmail.com",
+                    PhoneNumber = "911859473"
+                };
+
+                var result = await _userHelper.AddUserAsync(user2, "654321");
+                if (result != IdentityResult.Success)
                 {
                     throw new InvalidOperationException("Could not create the user in seeder");
                 }
@@ -45,9 +65,9 @@ namespace DrPet.Web.Data
 
             if (!_context.Animals.Any())
             {
-                this.AddProduct("Pipas", "Male", "Bird", "Black", user);
-                this.AddProduct("Whity","Male", "Dog", "Black", user);
-                this.AddProduct("Xaninha","Female", "Cat", "Black", user);
+                this.AddProduct("Pipas", "Male", "Bird", "Black", user1);
+                this.AddProduct("Whity","Male", "Dog", "Black", user2);
+                this.AddProduct("Xaninha","Female", "Cat", "Black", user1);
                 await _context.SaveChangesAsync();
             }
         }

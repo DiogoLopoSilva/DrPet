@@ -8,6 +8,6 @@ namespace DrPet.Web.Data
 {
     public interface IAnimalRepository :  IGenericRepository<Animal>
     {
-
+        Task<IQueryable<Animal>> GetAnimalsAsync(string userName);
     }
 }

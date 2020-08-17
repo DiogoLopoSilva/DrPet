@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using DrPet.Web.Data;
 using DrPet.Web.Data.Entities;
 using DrPet.Web.Helpers;
+using DrPet.Web.Models;
+using System.IO;
 
 namespace DrPet.Web.Controllers
 {
@@ -56,15 +58,37 @@ namespace DrPet.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Animal animal)
+        public async Task<IActionResult> Create(AnimalViewModel model)
         {
             if (ModelState.IsValid)
             {
+                var path = string.Empty;
+
+                if (model.ImageFile != null && model.ImageFile.Length > 0)
+                {
+                    var guid = Guid.NewGuid().ToString();
+                    var file = $"{guid}.jpg";
+
+                    path = Path.Combine(
+                        Directory.GetCurrentDirectory(),
+                        "wwwroot\\images\\Animals",
+                        file);
+
+                    using (var stream = new FileStream(path, FileMode.Create))
+                    {
+                        await model.ImageFile.CopyToAsync(stream);
+                    }
+
+                    path = $"~/images/Animals/{file}";
+                }
+
+                var animal = this.ToAnimal(model, path);
+
                 animal.User = await _userHelper.GetUserByEmailAsync("diogo.lopo.silva@formandos.cinel.pt");
                 await _animalRepository.CreateAsync(animal);
                 return RedirectToAction(nameof(Index));
             }
-            return View(animal);
+            return View(model);
         }
 
         // GET: Animals/Edit/5
@@ -80,7 +104,9 @@ namespace DrPet.Web.Controllers
             {
                 return NotFound();
             }
-            return View(animal);
+            var model = this.ToAnimalViewModel(animal);
+
+            return View(model);
         }
 
         // POST: Animals/Edit/5
@@ -88,18 +114,40 @@ namespace DrPet.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Animal animal)
+        public async Task<IActionResult> Edit(AnimalViewModel model)
         {
             if (ModelState.IsValid)
             {
                 try
                 {
+                    var path = model.ImageUrl;
+
+                    if (model.ImageFile != null && model.ImageFile.Length > 0)
+                    {
+                        var guid = Guid.NewGuid().ToString();
+                        var file = $"{guid}.jpg";
+
+                        path = Path.Combine(
+                            Directory.GetCurrentDirectory(),
+                            "wwwroot\\images\\Animals",
+                            file);
+
+                        using (var stream = new FileStream(path, FileMode.Create))
+                        {
+                            await model.ImageFile.CopyToAsync(stream);
+                        }
+
+                        path = $"~/images/Animals/{file}";
+                    }
+
+                    var animal = this.ToAnimal(model, path);
+
                     animal.User = await _userHelper.GetUserByEmailAsync("diogo.lopo.silva@formandos.cinel.pt");
                     await _animalRepository.UpdateAsync(animal);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (! await _animalRepository.ExistsAsync(animal.Id))
+                    if (!await _animalRepository.ExistsAsync(model.Id))
                     {
                         return NotFound();
                     }
@@ -110,7 +158,7 @@ namespace DrPet.Web.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(animal);
+            return View(model);
         }
 
         // GET: Animals/Delete/5
@@ -138,6 +186,37 @@ namespace DrPet.Web.Controllers
             var animal = await _animalRepository.GetByIdAsync(id);
             await _animalRepository.DeleteAsync(animal);
             return RedirectToAction(nameof(Index));
+        }
+
+        private Animal ToAnimal(AnimalViewModel model, string path)
+        {
+            return new Animal
+            {
+                Id = model.Id,
+                ImageUrl = path,
+                Name = model.Name,
+                Sex=model.Sex,
+                Species=model.Species,
+                Breed=model.Breed,
+                Color=model.Color,
+                DateOfBirth = model.DateOfBirth,
+                User = model.User
+            };
+        }
+        private AnimalViewModel ToAnimalViewModel(Animal animal)
+        {
+            return new AnimalViewModel
+            {
+                Id = animal.Id,
+                ImageUrl = animal.ImageUrl,
+                Name = animal.Name,
+                Sex = animal.Sex,
+                Species = animal.Species,
+                Breed = animal.Breed,
+                Color = animal.Color,
+                DateOfBirth = animal.DateOfBirth,
+                User = animal.User
+            };
         }
     }
 }
