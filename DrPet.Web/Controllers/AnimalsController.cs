@@ -17,11 +17,18 @@ namespace DrPet.Web.Controllers
     {
         private readonly IAnimalRepository _animalRepository;
         private readonly IUserHelper _userHelper;
+        private readonly IConverterHelper _converterHelper;
+        private readonly IImageHelper _imageHelper;
 
-        public AnimalsController(IAnimalRepository animalRepository, IUserHelper userHelper)
+        public AnimalsController(IAnimalRepository animalRepository,
+            IUserHelper userHelper,
+            IConverterHelper converterHelper,
+            IImageHelper imageHelper)
         {
             _animalRepository = animalRepository;
             _userHelper = userHelper;
+            _converterHelper = converterHelper;
+            _imageHelper = imageHelper;
         }
 
         // GET: Animals
@@ -64,25 +71,12 @@ namespace DrPet.Web.Controllers
             {
                 var path = string.Empty;
 
-                if (model.ImageFile != null && model.ImageFile.Length > 0)
+                if (model.ImageFile != null) //Verificar se preciso de ver se a Length é maior que 0
                 {
-                    var guid = Guid.NewGuid().ToString();
-                    var file = $"{guid}.jpg";
-
-                    path = Path.Combine(
-                        Directory.GetCurrentDirectory(),
-                        "wwwroot\\images\\Animals",
-                        file);
-
-                    using (var stream = new FileStream(path, FileMode.Create))
-                    {
-                        await model.ImageFile.CopyToAsync(stream);
-                    }
-
-                    path = $"~/images/Animals/{file}";
+                    path = await _imageHelper.UploadImageAsync(model.ImageFile,"Animals");
                 }
 
-                var animal = this.ToAnimal(model, path);
+                var animal = _converterHelper.ToAnimal(model, path, true);
 
                 animal.User = await _userHelper.GetUserByEmailAsync("diogo.lopo.silva@formandos.cinel.pt");
                 await _animalRepository.CreateAsync(animal);
@@ -104,7 +98,7 @@ namespace DrPet.Web.Controllers
             {
                 return NotFound();
             }
-            var model = this.ToAnimalViewModel(animal);
+            var model = _converterHelper.ToAnimalViewModel(animal);
 
             return View(model);
         }
@@ -124,23 +118,10 @@ namespace DrPet.Web.Controllers
 
                     if (model.ImageFile != null && model.ImageFile.Length > 0)
                     {
-                        var guid = Guid.NewGuid().ToString();
-                        var file = $"{guid}.jpg";
-
-                        path = Path.Combine(
-                            Directory.GetCurrentDirectory(),
-                            "wwwroot\\images\\Animals",
-                            file);
-
-                        using (var stream = new FileStream(path, FileMode.Create))
-                        {
-                            await model.ImageFile.CopyToAsync(stream);
-                        }
-
-                        path = $"~/images/Animals/{file}";
+                        path = await _imageHelper.UploadImageAsync(model.ImageFile,"Animals");
                     }
 
-                    var animal = this.ToAnimal(model, path);
+                    var animal = _converterHelper.ToAnimal(model, path, false);
 
                     animal.User = await _userHelper.GetUserByEmailAsync("diogo.lopo.silva@formandos.cinel.pt");
                     await _animalRepository.UpdateAsync(animal);
@@ -186,37 +167,6 @@ namespace DrPet.Web.Controllers
             var animal = await _animalRepository.GetByIdAsync(id);
             await _animalRepository.DeleteAsync(animal);
             return RedirectToAction(nameof(Index));
-        }
-
-        private Animal ToAnimal(AnimalViewModel model, string path)
-        {
-            return new Animal
-            {
-                Id = model.Id,
-                ImageUrl = path,
-                Name = model.Name,
-                Sex=model.Sex,
-                Species=model.Species,
-                Breed=model.Breed,
-                Color=model.Color,
-                DateOfBirth = model.DateOfBirth,
-                User = model.User
-            };
-        }
-        private AnimalViewModel ToAnimalViewModel(Animal animal)
-        {
-            return new AnimalViewModel
-            {
-                Id = animal.Id,
-                ImageUrl = animal.ImageUrl,
-                Name = animal.Name,
-                Sex = animal.Sex,
-                Species = animal.Species,
-                Breed = animal.Breed,
-                Color = animal.Color,
-                DateOfBirth = animal.DateOfBirth,
-                User = animal.User
-            };
         }
     }
 }

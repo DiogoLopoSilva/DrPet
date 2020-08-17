@@ -51,6 +51,8 @@ namespace DrPet.Web
 
             services.AddScoped<IAnimalRepository, AnimalRepository>();
             services.AddScoped<IUserHelper, UserHelper>();
+            services.AddScoped<IConverterHelper, ConverterHelper>();
+            services.AddScoped<IImageHelper, ImageHelper>();
 
 
             services.Configure<CookiePolicyOptions>(options =>
