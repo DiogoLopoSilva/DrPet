@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DrPet.Web.Models
 {
-    public class AnimalViewModel : Animal
+    public class AnimalViewModel : Animal //TODO: ERGUNTAR O PORQUE DO IMAGEFILE NAO ESTAR DENTRO DO ANIMAL
     {
         [Display(Name = "Image")]
         public IFormFile ImageFile { get; set; }
