@@ -1,4 +1,5 @@
 ﻿using DrPet.Web.Data.Entities;
+using DrPet.Web.Models;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
@@ -12,5 +13,9 @@ namespace DrPet.Web.Helpers
         Task<IdentityResult> AddUserAsync(User user, string password);
 
         Task<User> GetUserByEmailAsync(string email);
+
+        Task<SignInResult> LoginAsync(LoginViewModel model);
+
+        Task LogOutAsync();
     }
 }

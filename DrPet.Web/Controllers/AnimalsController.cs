@@ -10,9 +10,11 @@ using DrPet.Web.Data.Entities;
 using DrPet.Web.Helpers;
 using DrPet.Web.Models;
 using System.IO;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DrPet.Web.Controllers
 {
+    [Authorize]
     public class AnimalsController : Controller
     {
         private readonly IAnimalRepository _animalRepository;
@@ -31,10 +33,16 @@ namespace DrPet.Web.Controllers
             _imageHelper = imageHelper;
         }
 
+        //// GET: Animals
+        //public IActionResult Index()
+        //{
+        //    return View(_animalRepository.GetAll());
+        //}
+
         // GET: Animals
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View(_animalRepository.GetAll());
+            return View(await _animalRepository.GetAnimalsAsync(this.User.Identity.Name));
         }
 
         // GET: Animals/Details/5
@@ -78,7 +86,7 @@ namespace DrPet.Web.Controllers
 
                 var animal = _converterHelper.ToAnimal(model, path, true);
 
-                animal.User = await _userHelper.GetUserByEmailAsync("diogo.lopo.silva@formandos.cinel.pt");
+                animal.User = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
                 await _animalRepository.CreateAsync(animal);
                 return RedirectToAction(nameof(Index));
             }
@@ -123,7 +131,7 @@ namespace DrPet.Web.Controllers
 
                     var animal = _converterHelper.ToAnimal(model, path, false);
 
-                    animal.User = await _userHelper.GetUserByEmailAsync("diogo.lopo.silva@formandos.cinel.pt");
+                    animal.User = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
                     await _animalRepository.UpdateAsync(animal);
                 }
                 catch (DbUpdateConcurrencyException)

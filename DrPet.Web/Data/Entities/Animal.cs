@@ -27,7 +27,7 @@ namespace DrPet.Web.Data.Entities
         public string Color { get; set; }
 
         [Display(Name = "Date of Birth")]
-        [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy}")]
+        [DataType(DataType.Date)]
         public DateTime? DateOfBirth { get; set; }
 
         [Display(Name="Image")]
