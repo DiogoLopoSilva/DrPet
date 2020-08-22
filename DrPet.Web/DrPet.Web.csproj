@@ -5,6 +5,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Migrations\20200818212043_AddedRoles.cs" />
+    <Compile Remove="Migrations\20200818212043_AddedRoles.Designer.cs" />
+    <Compile Remove="Migrations\20200818215339_AddedAdminsAndClients.cs" />
+    <Compile Remove="Migrations\20200818215339_AddedAdminsAndClients.Designer.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="2.1.14">
@@ -16,6 +23,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\images\Animals\" />
+    <Folder Include="wwwroot\Theme\" />
   </ItemGroup>
 
 </Project>

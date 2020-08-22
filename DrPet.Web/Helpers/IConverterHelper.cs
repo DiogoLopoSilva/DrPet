@@ -12,5 +12,9 @@ namespace DrPet.Web.Helpers
         Animal ToAnimal(AnimalViewModel model, string path,bool isNew);
 
         AnimalViewModel ToAnimalViewModel(Animal animal);
+
+        ChangeUserViewModel UserToChangeUserViewModel(User user);
+
+        User ChangerUserViewModelToUser(ChangeUserViewModel model, User user);        
     }
 }

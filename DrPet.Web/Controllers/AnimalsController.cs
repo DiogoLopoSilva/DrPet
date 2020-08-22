@@ -11,6 +11,7 @@ using DrPet.Web.Helpers;
 using DrPet.Web.Models;
 using System.IO;
 using Microsoft.AspNetCore.Authorization;
+using DrPet.Web.Data.Repositories;
 
 namespace DrPet.Web.Controllers
 {
@@ -33,17 +34,17 @@ namespace DrPet.Web.Controllers
             _imageHelper = imageHelper;
         }
 
-        //// GET: Animals
-        //public IActionResult Index()
-        //{
-        //    return View(_animalRepository.GetAll());
-        //}
-
-        // GET: Animals
+        //GET: Animals
         public async Task<IActionResult> Index()
         {
             return View(await _animalRepository.GetAnimalsAsync(this.User.Identity.Name));
         }
+
+        //// GET: Animals
+        //public async Task<IActionResult> Index()
+        //{
+        //    return View(await _animalRepository.GetAnimalsAsync(this.User.Identity.Name));
+        //}
 
         // GET: Animals/Details/5
         public async Task<IActionResult> Details(int? id)

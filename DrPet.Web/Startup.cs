@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using DrPet.Web.Data.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace DrPet.Web
@@ -53,6 +54,9 @@ namespace DrPet.Web
             services.AddScoped<IUserHelper, UserHelper>();
             services.AddScoped<IConverterHelper, ConverterHelper>();
             services.AddScoped<IImageHelper, ImageHelper>();
+            services.AddScoped<IAdminRepository, AdminRepository>();
+            services.AddScoped<IClientRepository, ClientRepository>();
+            services.AddScoped<IDoctorRepository, DoctorRepository>();
 
 
             services.Configure<CookiePolicyOptions>(options =>

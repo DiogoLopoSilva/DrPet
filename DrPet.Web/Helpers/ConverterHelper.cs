@@ -13,7 +13,7 @@ namespace DrPet.Web.Helpers
         {
             return new Animal
             {
-                Id = isNew? 0 : model.Id,
+                Id = isNew ? 0 : model.Id,
                 ImageUrl = path,
                 Name = model.Name,
                 Sex = model.Sex,
@@ -40,5 +40,76 @@ namespace DrPet.Web.Helpers
                 User = animal.User
             };
         }
+
+        public ChangeUserViewModel UserToChangeUserViewModel(User user)
+        {
+            return new ChangeUserViewModel
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                DateOfBirth = user.DateOfBirth,
+                StreeName = user.StreeName,
+                PostalCode = user.PostalCode,
+                Location = user.Location,
+                DocumentNumber = user.DocumentNumber,
+                Phone = user.Phone
+            };
+        }
+
+        public User ChangerUserViewModelToUser(ChangeUserViewModel model, User user)
+        {
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
+            user.DateOfBirth = model.DateOfBirth;
+            user.StreeName = model.StreeName;
+            user.PostalCode = model.PostalCode;
+            user.Location = model.Location;
+            user.DocumentNumber = model.DocumentNumber;
+            user.Phone = model.Phone;
+
+            return user;
+        }
+
+        //public async Task<ChangeUserViewModel> UserToChangeUserViewModel(User user)
+        //{
+        //    IList<string> list = await _userManager.GetRolesAsync(user);
+
+        //    if (!list.Any())
+        //    {
+        //        return null;
+        //    }
+
+        //    Human human = null;
+
+        //    switch (list[0])
+        //    {
+        //        case "Administrator":
+        //            human = _adminRepository.GetAdminByUser(user);
+        //            break;
+        //        case "Client":
+        //            human = _clientRepository.GetClientByUser(user);
+        //            break;
+        //        case "Doctor":
+        //            break;
+        //        default:
+        //            break;
+        //    }
+
+        //    if (human == null)
+        //    {
+        //        return null;
+        //    }
+
+        //    return new ChangeUserViewModel { 
+        //        FirstName = human.FirstName,
+        //        LastName=human.LastName,
+        //        DateOfBirth=human.DateOfBirth,
+        //        StreeName=human.StreeName,
+        //        PostalCode=human.PostalCode,
+        //        Location=human.Location,
+        //        DocumentNumber=human.DocumentNumber,
+        //        Phone=human.Phone                
+        //    };
+        //}
     }
 }

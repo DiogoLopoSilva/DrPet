@@ -33,6 +33,7 @@ namespace DrPet.Web.Data.Entities
         [Display(Name="Image")]
         public string ImageUrl { get; set; }
 
+        [Display(Name="Owner")]
         public User User { get; set; }
     }
 }

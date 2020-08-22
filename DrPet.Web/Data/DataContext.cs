@@ -9,6 +9,13 @@ namespace DrPet.Web.Data
     {
         public DbSet<Animal> Animals { get; set; }
 
+        public DbSet<Admin> Admins { get; set; }
+
+        public DbSet<Client> Clients { get; set; }
+
+        public DbSet<Doctor> Doctors { get; set; }
+
+
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
 
@@ -19,6 +26,10 @@ namespace DrPet.Web.Data
             modelBuilder.Entity<Animal>()
                 .Property(a => a.DateOfBirth)
                 .HasColumnType("date");
+
+            modelBuilder.Entity<User>()
+              .Property(a => a.DateOfBirth)
+              .HasColumnType("date");
 
             //Cascading Delete Rule
             var cascadesFKs = modelBuilder.Model
@@ -33,5 +44,7 @@ namespace DrPet.Web.Data
 
             base.OnModelCreating(modelBuilder);
         }
+
+        public DbSet<DrPet.Web.Data.Entities.Doctor> Doctor { get; set; }
     }
 }

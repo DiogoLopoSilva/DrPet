@@ -1,0 +1,66 @@
+﻿@model DrPet.Web.Data.Entities.Client
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Client</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.User.FullName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.User.FullName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.User.UserName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.User.UserName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.User.DateOfBirth)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.User.DateOfBirth)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.User.DocumentNumber)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.User.DocumentNumber)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.User.StreeName)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.User.StreeName)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.User.Location)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.User.Location)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.User.PostalCode)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.User.PostalCode)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.User.Phone)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.User.Phone)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-controller="Account" asp-action="ChangeUser" asp-route-email="@Model.User.UserName">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

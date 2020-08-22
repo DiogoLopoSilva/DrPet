@@ -21,5 +21,11 @@ namespace DrPet.Web.Helpers
         Task<IdentityResult> UpdateUserAsync(User user);
 
         Task<IdentityResult> ChangePasswordAsync(User user, string oldPassword, string newPassword);
+
+        Task CheckRoleAsync(string roleName);
+
+        Task<bool> IsUserInRoleAsync(User user, string roleName);
+
+        Task AddUserToRoleAsync(User user, string roleName);        
     }
 }
