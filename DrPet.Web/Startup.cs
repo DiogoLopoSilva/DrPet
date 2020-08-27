@@ -58,7 +58,6 @@ namespace DrPet.Web
             services.AddScoped<IClientRepository, ClientRepository>();
             services.AddScoped<IDoctorRepository, DoctorRepository>();
 
-
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -66,6 +65,11 @@ namespace DrPet.Web
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            services.ConfigureApplicationCookie(options => 
+            {
+                options.LoginPath = "/Account/NotAuthorized"; //MANDA PARA ESTE CAMINHO EM VEZ DE LOGIN SE NAO ESTIVER LOGADO E FOR NECESSARIO AUTENTICAÇAO
+                options.AccessDeniedPath = "/Account/NotAuthorized";
+            });
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
@@ -82,6 +86,8 @@ namespace DrPet.Web
                 app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
+
+            app.UseStatusCodePagesWithReExecute("/error/{0}");
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();

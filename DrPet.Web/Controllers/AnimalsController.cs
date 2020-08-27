@@ -51,13 +51,13 @@ namespace DrPet.Web.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return new NotFoundViewResult("AnimalNotFound");
             }
 
             var animal = await _animalRepository.GetByIdAsync(id.Value);
             if (animal == null)
             {
-                return NotFound();
+                return new NotFoundViewResult("AnimalNotFound");
             }
 
             return View(animal);
@@ -95,17 +95,17 @@ namespace DrPet.Web.Controllers
         }
 
         // GET: Animals/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(int? id) //TODO MUDAR PARA O CLIENTE SO CONSEGUIR ALTERAR ANIMAIS QUE SAO SEUS
         {
             if (id == null)
             {
-                return NotFound();
+                return new NotFoundViewResult("AnimalNotFound");
             }
 
             var animal = await _animalRepository.GetByIdAsync(id.Value);
             if (animal == null)
             {
-                return NotFound();
+                return new NotFoundViewResult("AnimalNotFound");
             }
             var model = _converterHelper.ToAnimalViewModel(animal);
 
@@ -139,7 +139,7 @@ namespace DrPet.Web.Controllers
                 {
                     if (!await _animalRepository.ExistsAsync(model.Id))
                     {
-                        return NotFound();
+                        return new NotFoundViewResult("AnimalNotFound");
                     }
                     else
                     {
@@ -156,13 +156,13 @@ namespace DrPet.Web.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return new NotFoundViewResult("AnimalNotFound");
             }
 
             var animal = await _animalRepository.GetByIdAsync(id.Value);
             if (animal == null)
             {
-                return NotFound();
+                return new NotFoundViewResult("AnimalNotFound");
             }
 
             return View(animal);
@@ -176,6 +176,11 @@ namespace DrPet.Web.Controllers
             var animal = await _animalRepository.GetByIdAsync(id);
             await _animalRepository.DeleteAsync(animal);
             return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult AnimalNotFound()
+        {
+            return View();
         }
     }
 }
