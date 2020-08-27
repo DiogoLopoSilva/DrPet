@@ -9,5 +9,6 @@ namespace DrPet.Web.Data.Repositories
     public interface IAdminRepository : IGenericRepository<Admin>
     {
         Admin GetAdminByUser(User user);
+        IQueryable<Admin> GetAdmins();
     }
 }

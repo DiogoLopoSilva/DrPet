@@ -1,4 +1,4 @@
-﻿@model IEnumerable<DrPet.Web.Data.Entities.Doctor>
+﻿@model IEnumerable<DrPet.Web.Data.Entities.Admin>
 
 @{
     ViewData["Title"] = "Index";
@@ -14,9 +14,6 @@
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.User.FullName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Specialization)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.User.UserName)
@@ -48,9 +45,6 @@
                 @Html.DisplayFor(modelItem => item.User.FullName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Specialization)
-            </td>
-            <td>
                 @Html.DisplayFor(modelItem => item.User.UserName)
             </td>
             <td>
@@ -76,6 +70,7 @@
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
             </td>
-        </tr>}
+        </tr>
+}
     </tbody>
 </table>

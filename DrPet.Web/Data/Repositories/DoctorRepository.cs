@@ -25,7 +25,7 @@ namespace DrPet.Web.Data.Repositories
             return _context.Doctors.FirstOrDefault(c => c.User == user);
         }
 
-        public async Task<IQueryable<Doctor>> GetClientsAsync(string userName)
+        public async Task<IQueryable<Doctor>> GetDoctorsAsync(string userName)
         {
             var user = await _userHelper.GetUserByEmailAsync(userName);
             if (user == null)

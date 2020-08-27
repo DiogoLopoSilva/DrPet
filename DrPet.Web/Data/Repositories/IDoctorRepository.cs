@@ -10,6 +10,6 @@ namespace DrPet.Web.Data.Repositories
     {
         Doctor GetDoctorByUser(User user);
 
-        Task<IQueryable<Doctor>> GetClientsAsync(string userName);
+        Task<IQueryable<Doctor>> GetDoctorsAsync(string userName);
     }
 }

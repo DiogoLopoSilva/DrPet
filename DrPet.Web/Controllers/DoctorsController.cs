@@ -18,7 +18,9 @@ namespace DrPet.Web.Controllers
         private readonly IUserHelper _userHelper;
         private readonly IDoctorRepository _doctorRepository;
 
-        public DoctorsController(DataContext context, IUserHelper userHelper, IDoctorRepository doctorRepository)
+        public DoctorsController(DataContext context,
+            IUserHelper userHelper,
+            IDoctorRepository doctorRepository)
         {
             _context = context;
             _userHelper = userHelper;
@@ -28,7 +30,7 @@ namespace DrPet.Web.Controllers
         // GET: Doctors
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Doctor.ToListAsync());
+            return View(await _doctorRepository.GetDoctorsAsync(this.User.Identity.Name));
         }
 
         // GET: Doctors/Details/5

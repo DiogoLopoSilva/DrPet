@@ -3,50 +3,65 @@
     ViewData["Title"] = "Register";
 }
 
-<h2>Register New User</h2>
-<h1>ESTA É A VIEW DO REGISTER</h1>
-
-<div class="row">
-    <div class="col-md-4 offset-md-4">
-        <form method="post">
-            <div asp-validation-summary="ModelOnly"></div>
-
-            <div class="form-group">
-                <label asp-for="FirstName">First Name</label>
-                <input asp-for="FirstName" class="form-control" />
-                <span asp-validation-for="FirstName" class="text-warning"></span>
+<div class="our-services section-padding2">
+    <div class="container">
+        <div class="row justify-content-sm-center">
+            <div class="cl-xl-7 col-lg-8 col-md-10">
+                <!-- Section Tittle -->
+                <div class="section-tittle text-center mb-70">
+                    <h2>Register New User</h2>
+                </div>
             </div>
+        </div>
 
-            <div class="form-group">
-                <label asp-for="LastName">Last Name</label>
-                <input asp-for="LastName" class="form-control" />
-                <span asp-validation-for="LastName" class="text-warning"></span>
-            </div>
+        <div class="row justify-content-sm-center mt-30">
+            <form method="post">
+                <div asp-validation-summary="ModelOnly"></div>
 
-            <div class="form-group">
-                <label asp-for="Username">Username</label>
-                <input asp-for="Username" class="form-control" />
-                <span asp-validation-for="Username" class="text-warning"></span>
-            </div>
+                <div class="mt-10">
+                    <input asp-for="FirstName" placeholder="First Name"
+                           onfocus="this.placeholder = ''" onblur="this.placeholder = 'First Name'" required
+                           class="single-input">
+                    <span asp-validation-for="FirstName" class="text-warning"></span>
+                </div>
 
-            <div class="form-group">
-                <label asp-for="Password">Password</label>
-                <input asp-for="Password" type="password" class="form-control" />
-                <span asp-validation-for="Password" class="text-warning"></span>
-            </div>
+                <div class="mt-10">
+                    <input asp-for="LastName" placeholder="Last Name"
+                           onfocus="this.placeholder = ''" onblur="this.placeholder = 'Last Name'" required
+                           class="single-input">
+                    <span asp-validation-for="LastName" class="text-warning"></span>
+                </div>
 
-            <div class="form-group">
-                <label asp-for="Confirm">Confirm</label>
-                <input asp-for="Confirm" type="password" class="form-control" />
-                <span asp-validation-for="Confirm" class="text-warning"></span>
-            </div>
+                <div class="mt-10">
+                    <input asp-for="Username" placeholder="Email address"
+                           onfocus="this.placeholder = ''" onblur="this.placeholder = 'Email address'" required
+                           class="single-input">
+                    <span asp-validation-for="Username" class="text-warning"></span>
+                </div>
 
-            <div class="form-group">
-                <input type="submit" value="Register New User" class="btn btn-primary" />
-            </div>
-        </form>
+                <div class="mt-10">
+                    <input asp-for="Password" type="password" placeholder="Password"
+                           onfocus="this.placeholder = ''" onblur="this.placeholder = 'Password'" required
+                           class="single-input">
+                    <span asp-validation-for="Password" class="text-warning"></span>
+                </div>
+
+                <div class="mt-10">
+                    <input asp-for="Confirm" type="password" placeholder="Confirm Password"
+                           onfocus="this.placeholder = ''" onblur="this.placeholder = 'Confirm Password'" required
+                           class="single-input">
+                    <span asp-validation-for="Confirm" class="text-warning"></span>
+                </div>
+
+                <div class="mt-30">
+                    <input type="submit" value="Register New User" class="genric-btn success radius" />
+                </div>
+            </form>
+        </div>
     </div>
 </div>
+
+
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

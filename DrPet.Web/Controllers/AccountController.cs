@@ -21,7 +21,11 @@ namespace DrPet.Web.Controllers
         private readonly IAdminRepository _adminRepository;
         private readonly IDoctorRepository _doctorRepository;
 
-        public AccountController(IUserHelper userHelper, IClientRepository clientRepository, IConverterHelper converterHelper, IAdminRepository adminRepository, IDoctorRepository doctorRepository)
+        public AccountController(IUserHelper userHelper,
+            IClientRepository clientRepository,
+            IConverterHelper converterHelper,
+            IAdminRepository adminRepository,
+            IDoctorRepository doctorRepository)
         {
             _userHelper = userHelper;
             _clientRepository = clientRepository;

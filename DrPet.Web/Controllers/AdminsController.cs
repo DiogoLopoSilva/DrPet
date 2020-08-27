@@ -7,82 +7,70 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DrPet.Web.Data;
 using DrPet.Web.Data.Entities;
-using DrPet.Web.Data.Repositories;
 using Microsoft.AspNetCore.Authorization;
-using DrPet.Web.Helpers;
+using DrPet.Web.Data.Repositories;
 
 namespace DrPet.Web.Controllers
 {
-    [Authorize(Roles =RoleNames.Administrator)]
-    public class ClientsController : Controller
+    [Authorize(Roles = RoleNames.Administrator)]
+    public class AdminsController : Controller
     {
         private readonly DataContext _context;
-        private readonly IClientRepository _clientRepository;
-        private readonly IUserHelper _userHelper;
+        private readonly IAdminRepository _adminRepository;
 
-        public ClientsController(DataContext context, IClientRepository clientRepository, IUserHelper userHelper)
+        public AdminsController(DataContext context, IAdminRepository adminRepository)
         {
             _context = context;
-            _clientRepository = clientRepository;
-            _userHelper = userHelper;
+            _adminRepository = adminRepository;
         }
 
-        // GET: Clients
-        public async Task<IActionResult> Index()
+        // GET: Admins
+        public IActionResult Index()
         {
-            //return View(await _context.Clients.ToListAsync());
-
-            return View(await _clientRepository.GetClientsAsync(this.User.Identity.Name));
+            return View(_adminRepository.GetAdmins());
         }
 
-        // GET: Clients/Details/5
-        public async Task<IActionResult> Details(string username)
+        // GET: Admins/Details/5
+        public async Task<IActionResult> Details(int? id)
         {
-            if (String.IsNullOrEmpty(username))
+            if (id == null)
             {
                 return NotFound();
             }
 
-            var user = await _userHelper.GetUserByEmailAsync(username);
-
-            if (user==null)
+            var admin = await _context.Admins
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (admin == null)
             {
                 return NotFound();
             }
 
-            var client = _clientRepository.GetClientByUser(user);
-
-            if (client == null)
-            {
-                return NotFound();
-            }
-
-            return View(client);
+            return View(admin);
         }
 
-        // GET: Clients/Create
+        // GET: Admins/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Clients/Create
+        // POST: Admins/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Client client)
+        public async Task<IActionResult> Create([Bind("Id")] Admin admin)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(client);
+                _context.Add(admin);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(client);
+            return View(admin);
         }
 
-        // GET: Clients/Edit/5
+        // GET: Admins/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -90,22 +78,22 @@ namespace DrPet.Web.Controllers
                 return NotFound();
             }
 
-            var client = await _context.Clients.FindAsync(id);
-            if (client == null)
+            var admin = await _context.Admins.FindAsync(id);
+            if (admin == null)
             {
                 return NotFound();
             }
-            return View(client);
+            return View(admin);
         }
 
-        // POST: Clients/Edit/5
+        // POST: Admins/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id")] Client client)
+        public async Task<IActionResult> Edit(int id, [Bind("Id")] Admin admin)
         {
-            if (id != client.Id)
+            if (id != admin.Id)
             {
                 return NotFound();
             }
@@ -114,12 +102,12 @@ namespace DrPet.Web.Controllers
             {
                 try
                 {
-                    _context.Update(client);
+                    _context.Update(admin);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ClientExists(client.Id))
+                    if (!AdminExists(admin.Id))
                     {
                         return NotFound();
                     }
@@ -130,10 +118,10 @@ namespace DrPet.Web.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(client);
+            return View(admin);
         }
 
-        // GET: Clients/Delete/5
+        // GET: Admins/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -141,30 +129,30 @@ namespace DrPet.Web.Controllers
                 return NotFound();
             }
 
-            var client = await _context.Clients
+            var admin = await _context.Admins
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (client == null)
+            if (admin == null)
             {
                 return NotFound();
             }
 
-            return View(client);
+            return View(admin);
         }
 
-        // POST: Clients/Delete/5
+        // POST: Admins/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var client = await _context.Clients.FindAsync(id);
-            _context.Clients.Remove(client);
+            var admin = await _context.Admins.FindAsync(id);
+            _context.Admins.Remove(admin);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ClientExists(int id)
+        private bool AdminExists(int id)
         {
-            return _context.Clients.Any(e => e.Id == id);
+            return _context.Admins.Any(e => e.Id == id);
         }
     }
 }

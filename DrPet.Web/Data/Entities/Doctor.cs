@@ -8,5 +8,6 @@ namespace DrPet.Web.Data.Entities
     public class Doctor : Human
     {
         public string Specialization { get; set; }
+
     }
 }

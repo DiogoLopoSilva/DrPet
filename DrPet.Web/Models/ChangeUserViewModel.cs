@@ -19,7 +19,7 @@ namespace DrPet.Web.Models
 
         [Required]
         [DataType(DataType.Date)]
-        public DateTime DateOfBirth { get; set; }
+        public DateTime? DateOfBirth { get; set; }
 
         [Required]
         public string DocumentNumber { get; set; }
