@@ -57,6 +57,7 @@ namespace DrPet.Web
             services.AddScoped<IAdminRepository, AdminRepository>();
             services.AddScoped<IClientRepository, ClientRepository>();
             services.AddScoped<IDoctorRepository, DoctorRepository>();
+            services.AddScoped<IAppointmentRepository, AppointmentRepository>();
 
             services.Configure<CookiePolicyOptions>(options =>
             {

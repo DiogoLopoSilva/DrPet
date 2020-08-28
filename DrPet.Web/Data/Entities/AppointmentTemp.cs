@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DrPet.Web.Data.Entities
 {
-    public class Appointment : IEntity
+    public class AppointmentTemp: IEntity
     {
         public int Id { get; set; }
 

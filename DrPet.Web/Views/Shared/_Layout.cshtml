@@ -7,6 +7,7 @@
 
     <environment include="Development">
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css" />
         <link rel="stylesheet" href="~/css/site.css" />
     </environment>
     <environment exclude="Development">
@@ -34,6 +35,7 @@
                     <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
                     <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
                     <li><a asp-area="" asp-controller="Animals" asp-action="Index">Animals</a></li>
+                    <li><a asp-area="" asp-controller="Appointments" asp-action="Index">Appointments</a></li>
                     @if (this.User.Identity.IsAuthenticated && this.User.IsInRole("Admin"))
                     {
                         <li class="dropdown">

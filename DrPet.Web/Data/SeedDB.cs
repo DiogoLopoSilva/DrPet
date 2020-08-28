@@ -15,13 +15,15 @@ namespace DrPet.Web.Data
         private readonly IUserHelper _userHelper;
         private readonly IClientRepository _clientRepository;
         private readonly IAdminRepository _adminRepository;
+        private readonly IDoctorRepository _doctorRepository;
 
-        public SeedDB(DataContext context, IUserHelper userHelper, IClientRepository clientRepository, IAdminRepository adminRepository)
+        public SeedDB(DataContext context, IUserHelper userHelper, IClientRepository clientRepository, IAdminRepository adminRepository, IDoctorRepository doctorRepository)
         {
             _context = context;
             _userHelper = userHelper;
             _clientRepository = clientRepository;
             _adminRepository = adminRepository;
+            _doctorRepository = doctorRepository;
         }
 
         public async Task SeedAsync()
@@ -61,12 +63,51 @@ namespace DrPet.Web.Data
                 };
 
                 await _adminRepository.CreateAsync(admin);
+
+                var isInRole = await _userHelper.IsUserInRoleAsync(user1, RoleNames.Administrator);
+                if (!isInRole)
+                {
+                    await _userHelper.AddUserToRoleAsync(user1, RoleNames.Administrator);
+                }
             }
 
-            var isInRole = await _userHelper.IsUserInRoleAsync(user1, RoleNames.Administrator);
-            if (!isInRole)
+            var user3 = await _userHelper.GetUserByEmailAsync("abc@abc.com");
+
+            if (user3 == null)
             {
-                await _userHelper.AddUserToRoleAsync(user1, RoleNames.Administrator);
+                user3 = new User
+                {
+                    Email = "abc@abc.com",
+                    UserName = "abc@abc.com",
+                    FirstName = "ANDRE",
+                    LastName = "ANDRE",
+                    DateOfBirth = Convert.ToDateTime("25/06/1992"),
+                    StreeName = "TESTE",
+                    PostalCode = "TESTE",
+                    Location = "TESTE",
+                    Phone = "123456789",
+                    DocumentNumber = "123456789",
+                };
+
+                var result = await _userHelper.AddUserAsync(user3, "123456");
+                if (result != IdentityResult.Success)
+                {
+                    throw new InvalidOperationException("Could not create the user in seeder");
+                }
+
+                var doctor = new Doctor
+                {
+                    User = user3,
+                    Specialization = "MESTRE"
+                };
+
+                await _doctorRepository.CreateAsync(doctor);
+
+                var isInRole = await _userHelper.IsUserInRoleAsync(user3, RoleNames.Client);
+                if (!isInRole)
+                {
+                    await _userHelper.AddUserToRoleAsync(user3, RoleNames.Client);
+                }
             }
 
             var user2 = await _userHelper.GetUserByEmailAsync("diogo.silva_92@hotmail.com");
@@ -77,8 +118,8 @@ namespace DrPet.Web.Data
                 {
                     Email = "diogo.silva_92@hotmail.com",
                     UserName = "diogo.silva_92@hotmail.com",
-                    FirstName = "Diogo",
-                    LastName = "Silva",
+                    FirstName = "DIOGO",
+                    LastName = "SILVA",
                     DateOfBirth = Convert.ToDateTime("25/06/1992"),
                     StreeName = "Praceta das flores nº4",
                     PostalCode = "2685-192",
@@ -87,7 +128,7 @@ namespace DrPet.Web.Data
                     DocumentNumber = "123456789",
                 };
 
-                var result = await _userHelper.AddUserAsync(user2, "654321");
+                var result = await _userHelper.AddUserAsync(user2, "123456");
                 if (result != IdentityResult.Success)
                 {
                     throw new InvalidOperationException("Could not create the user in seeder");
@@ -99,13 +140,35 @@ namespace DrPet.Web.Data
                 };
 
                 await _clientRepository.CreateAsync(client);
-            }
 
-            isInRole = await _userHelper.IsUserInRoleAsync(user2, RoleNames.Client);
-            if (!isInRole)
-            {
-                await _userHelper.AddUserToRoleAsync(user2, RoleNames.Client);
-            }
+                var isInRole = await _userHelper.IsUserInRoleAsync(user2, RoleNames.Client);
+                if (!isInRole)
+                {
+                    await _userHelper.AddUserToRoleAsync(user2, RoleNames.Client);
+                }
+
+                var animal = new Animal
+                {
+                    Name = "TesteConsulta",
+                    Sex = "M",
+                    Species = "CAO",
+                    Color = "Preto",
+                    User = user2
+                };
+
+                _context.Animals.Add(animal);
+
+                var appointment = new Appointment
+                {
+                    Client = client,
+                    Animal= animal,
+                    Doctor = _doctorRepository.GetDoctorByUser(await _userHelper.GetUserByEmailAsync("abc@abc.com")),
+                    Date = DateTime.Now,
+                    Notes = "TESTE CONSULTA ANIMAL"
+                };
+
+                _context.Appointments.Add(appointment);
+            }            
 
             if (!_context.Animals.Any())
             {
