@@ -1,5 +1,6 @@
 ﻿using DrPet.Web.Data.Entities;
 using DrPet.Web.Helpers;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,23 @@ namespace DrPet.Web.Data.Repositories
         {
             _context = context;
             _userHelper = userHelper;
+        }
+
+        public IEnumerable<SelectListItem> GetComboDoctors()
+        {
+            var list = _context.Doctors.Include(d => d.User).Select(d => new SelectListItem
+            {
+                Text = d.User.FullName,
+                Value = d.Id.ToString()
+            }).ToList();
+
+            list.Insert(0, new SelectListItem
+            {
+                Text = ("Select a Doctor..."),
+                Value = "0"
+            });
+
+            return list;
         }
 
         public Doctor GetDoctorByUser(User user) //TODO VER SE TEM MAL NAO SER ASYNC
@@ -44,6 +62,11 @@ namespace DrPet.Web.Data.Repositories
                 .Include(d => d.User)
                 .Where(c => c.User == user)
                 .OrderBy(d => d.User.FirstName);
+        }
+
+        public Doctor GetDoctorWithUser(int id)
+        {
+            return _context.Doctors.Include(a => a.User).FirstOrDefault(a => a.Id == id);            
         }
     }
 }

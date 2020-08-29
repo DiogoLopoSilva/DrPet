@@ -36,11 +36,11 @@ namespace DrPet.Web.Data
 
             modelBuilder.Entity<Appointment>()
              .Property(a => a.Date)
-             .HasColumnType("date");
+             .HasColumnType("datetime");
 
             modelBuilder.Entity<AppointmentTemp>()
              .Property(a => a.Date)
-             .HasColumnType("date");
+             .HasColumnType("datetime");
 
             //Cascading Delete Rule
             var cascadesFKs = modelBuilder.Model

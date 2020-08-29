@@ -40,8 +40,8 @@ namespace DrPet.Web.Data
             {
                 user1 = new User
                 {
-                    Email= "diogo.lopo.silva@formandos.cinel.pt",
-                    UserName= "diogo.lopo.silva@formandos.cinel.pt",
+                    Email = "diogo.lopo.silva@formandos.cinel.pt",
+                    UserName = "diogo.lopo.silva@formandos.cinel.pt",
                     FirstName = "Diogo",
                     LastName = "Silva",
                     DateOfBirth = Convert.ToDateTime("25/06/1992"),
@@ -53,13 +53,14 @@ namespace DrPet.Web.Data
                 };
 
                 var result = await _userHelper.AddUserAsync(user1, "123456");
-                if (result!=IdentityResult.Success)
+                if (result != IdentityResult.Success)
                 {
                     throw new InvalidOperationException("Could not create the user in seeder");
                 }
 
-                var admin = new Admin {
-                User = user1
+                var admin = new Admin
+                {
+                    User = user1
                 };
 
                 await _adminRepository.CreateAsync(admin);
@@ -103,10 +104,10 @@ namespace DrPet.Web.Data
 
                 await _doctorRepository.CreateAsync(doctor);
 
-                var isInRole = await _userHelper.IsUserInRoleAsync(user3, RoleNames.Client);
+                var isInRole = await _userHelper.IsUserInRoleAsync(user3, RoleNames.Doctor);
                 if (!isInRole)
                 {
-                    await _userHelper.AddUserToRoleAsync(user3, RoleNames.Client);
+                    await _userHelper.AddUserToRoleAsync(user3, RoleNames.Doctor);
                 }
             }
 
@@ -135,7 +136,7 @@ namespace DrPet.Web.Data
                 }
 
                 var client = new Client
-                {                   
+                {
                     User = user2
                 };
 
@@ -161,20 +162,20 @@ namespace DrPet.Web.Data
                 var appointment = new Appointment
                 {
                     Client = client,
-                    Animal= animal,
+                    Animal = animal,
                     Doctor = _doctorRepository.GetDoctorByUser(await _userHelper.GetUserByEmailAsync("abc@abc.com")),
                     Date = DateTime.Now,
                     Notes = "TESTE CONSULTA ANIMAL"
                 };
 
                 _context.Appointments.Add(appointment);
-            }            
+            }
 
             if (!_context.Animals.Any())
             {
                 this.AddProduct("Pipas", "Male", "Bird", "Black", user1);
-                this.AddProduct("Whity","Male", "Dog", "Black", user2);
-                this.AddProduct("Xaninha","Female", "Cat", "Black", user1);
+                this.AddProduct("Whity", "Male", "Dog", "Black", user2);
+                this.AddProduct("Xaninha", "Female", "Cat", "Black", user1);
                 await _context.SaveChangesAsync();
             }
         }
@@ -183,12 +184,12 @@ namespace DrPet.Web.Data
         {
             _context.Animals.Add(new Animal
             {
-                Name=name,
-                Sex=sex,
-                Species=species,
-                Color=color,
+                Name = name,
+                Sex = sex,
+                Species = species,
+                Color = color,
                 User = user
             });
         }
-    }    
+    }
 }

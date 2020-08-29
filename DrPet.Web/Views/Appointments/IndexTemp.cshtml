@@ -1,4 +1,4 @@
-﻿@model IEnumerable<DrPet.Web.Data.Entities.Appointment>
+﻿@model IEnumerable<DrPet.Web.Data.Entities.AppointmentTemp>
 
 @{
     ViewData["Title"] = "Index";
@@ -8,8 +8,6 @@
 
 <p>
     <a asp-action="Create">Create New</a>
-    <br>
-    <a asp-action="IndexTemp">Pending Aproval</a>
 </p>
 <table class="table">
     <thead>
@@ -60,7 +58,11 @@
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                     <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                    @if (this.User.IsInRole("Admin"))
+                    {
+                        <a asp-action="ConfirmAppointmentTemp" asp-route-id="@item.Id" class="btn btn-success" id="btnConfirmAppointmentTemp">Confirm Appointment</a>
+                    }
+                    <a asp-action="DeleteAppointmentTemp" asp-route-id="@item.Id" class="btn btn-danger" id="btnDeleteAppointmentTemp">Cancel Appointment</a>
                 </td>
             </tr>
         }

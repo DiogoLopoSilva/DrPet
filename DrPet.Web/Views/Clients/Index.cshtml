@@ -39,38 +39,43 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.User.FullName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.User.UserName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.User.DateOfBirth)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.User.DocumentNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.User.StreeName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.User.Location)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.User.PostalCode)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.User.Phone)
-            </td>
-            <td>
-                <a asp-controller="Account" asp-action="ChangeUser" asp-route-username="@item.User.UserName">Edit</a> |
-                <a asp-action="Details" asp-route-username="@item.User.UserName">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.User.FullName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.User.UserName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.User.DateOfBirth)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.User.DocumentNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.User.StreeName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.User.Location)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.User.PostalCode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.User.Phone)
+                </td>
+                <td>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a asp-controller="Appointments" asp-action="Create" asp-route-username="@item.User.UserName">Make Appointment</a>
+                    }
+                    <a asp-controller="Account" asp-action="ChangeUser" asp-route-username="@item.User.UserName">Edit</a> |
+                    <a asp-action="Details" asp-route-username="@item.User.UserName">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

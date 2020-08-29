@@ -9,6 +9,8 @@ using DrPet.Web.Data;
 using DrPet.Web.Data.Entities;
 using DrPet.Web.Data.Repositories;
 using Microsoft.AspNetCore.Authorization;
+using DrPet.Web.Models;
+using DrPet.Web.Helpers;
 
 namespace DrPet.Web.Controllers
 {
@@ -16,18 +18,48 @@ namespace DrPet.Web.Controllers
     public class AppointmentsController : Controller
     {
         private readonly DataContext _context;
+        private readonly IUserHelper _userHelper;
         private readonly IAppointmentRepository _appointmentRepository;
+        private readonly IAnimalRepository _animalRepository;
+        private readonly IDoctorRepository _doctorRepository;
+        private readonly IClientRepository _clientRepository;
 
-        public AppointmentsController(DataContext context, IAppointmentRepository appointmentRepository)
+        public AppointmentsController(DataContext context,
+            IUserHelper userHelper,
+            IAppointmentRepository appointmentRepository,
+            IAnimalRepository animalRepository,
+            IDoctorRepository doctorRepository,
+            IClientRepository clientRepository)
         {
             _context = context;
+            _userHelper = userHelper;
             _appointmentRepository = appointmentRepository;
+            _animalRepository = animalRepository;
+            _doctorRepository = doctorRepository;
+            _clientRepository = clientRepository;
         }
 
         // GET: Appointments
         public async Task<IActionResult> Index()
         {
-            return View(await _appointmentRepository.GetAppointments(this.User.Identity.Name));
+            //var model = new AppointmentsWithTempView
+            //{
+            //    Appointments = await _appointmentRepository.GetAppointmentsAsync(this.User.Identity.Name),
+            //    AppointmentsTemp = await _appointmentRepository.GetAppointmentsTempAsync(this.User.Identity.Name)
+            //};
+
+            return View(await _appointmentRepository.GetAppointmentsAsync(this.User.Identity.Name));         
+        }
+
+        public async Task<IActionResult> IndexTemp()
+        {
+            //var model = new AppointmentsWithTempView
+            //{
+            //    Appointments = await _appointmentRepository.GetAppointmentsAsync(this.User.Identity.Name),
+            //    AppointmentsTemp = await _appointmentRepository.GetAppointmentsTempAsync(this.User.Identity.Name)
+            //};
+
+            return View(await _appointmentRepository.GetAppointmentsTempAsync(this.User.Identity.Name));
         }
 
         // GET: Appointments/Details/5
@@ -49,9 +81,24 @@ namespace DrPet.Web.Controllers
         }
 
         // GET: Appointments/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create(string username) //TODO VERIFICAR QUE NAO TEM BUGS
         {
-            return View();
+
+            var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
+
+            if (username != null && await _userHelper.IsUserInRoleAsync(user, RoleNames.Administrator))
+            {
+                user = await _userHelper.GetUserByEmailAsync(username);
+            }
+
+            var model = new AppointmentViewModel
+            {
+                Animals = _animalRepository.GetComboAnimals(user.UserName),
+                Doctors = _doctorRepository.GetComboDoctors(),
+                User = user
+            };
+
+            return View(model);
         }
 
         // POST: Appointments/Create
@@ -59,15 +106,38 @@ namespace DrPet.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Date,Notes")] Appointment appointment)
+        public async Task<IActionResult> Create(AppointmentViewModel model)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(appointment);
-                await _context.SaveChangesAsync();
+                var user = await _userHelper.GetUserByEmailAsync(model.User.UserName);
+
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                var client = _clientRepository.GetClientByUser(user);
+
+                var animal = _animalRepository.GetAnimalWithUser(model.AnimalId);
+
+                var doctor = _doctorRepository.GetDoctorWithUser(model.DoctorId);
+                //TODO VERIFICAÇAOES SE USER EXISTE ETC ETC
+
+                var appointmentTemp = new AppointmentTemp
+                {
+                    Client = client,
+                    Animal= animal,
+                    Doctor = doctor,
+                    Date = model.Date,
+                    Notes = model.Notes
+                };
+
+                await _appointmentRepository.CreateAppointmentTemp(appointmentTemp);
+
                 return RedirectToAction(nameof(Index));
             }
-            return View(appointment);
+            return View(model);
         }
 
         // GET: Appointments/Edit/5
@@ -121,33 +191,33 @@ namespace DrPet.Web.Controllers
             return View(appointment);
         }
 
-        // GET: Appointments/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> DeleteAppointmentTemp(int? id)
         {
             if (id == null)
             {
-                return NotFound();
+                return NotFound(); //TODO REDIRECIONAR
             }
 
-            var appointment = await _context.Appointments
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (appointment == null)
-            {
-                return NotFound();
-            }
-
-            return View(appointment);
+            await _appointmentRepository.DeleteAppointmentTempAsync(id.Value);
+            return this.RedirectToAction("IndexTemp");
         }
 
-        // POST: Appointments/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        [Authorize(Roles = RoleNames.Administrator)]
+        public async Task<IActionResult> ConfirmAppointmentTemp(int? id)
         {
-            var appointment = await _context.Appointments.FindAsync(id);
-            _context.Appointments.Remove(appointment);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            if (id == null)
+            {
+                return NotFound(); //TODO REDIRECIONAR
+            }
+
+            var success = await _appointmentRepository.ConfirmAppointmentAsync(id.Value);
+
+            if (success)
+            {
+                return this.RedirectToAction(nameof(Index));
+            }
+
+            return this.RedirectToAction("IndexTemp");
         }
 
         private bool AppointmentExists(int id)

@@ -1,5 +1,6 @@
 ﻿using DrPet.Web.Data.Entities;
 using DrPet.Web.Helpers;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -39,6 +40,28 @@ namespace DrPet.Web.Data.Repositories
                 .Include(c => c.User)
                 .Where(c => c.User == user)
                 .OrderBy(c => c.User.FirstName);
+        }
+
+        public Animal GetAnimalWithUser(int id)
+        {
+            return _context.Animals.Include(a => a.User).FirstOrDefault(a => a.Id == id);
+        }
+
+        public IEnumerable<SelectListItem> GetComboAnimals(string userName)
+        {
+            var list = _context.Animals.Where(a => a.User.UserName == userName).Select(a => new SelectListItem
+            {
+                Text = a.Name,
+                Value = a.Id.ToString()
+            }).ToList();
+
+            list.Insert(0, new SelectListItem
+            {
+                Text = ("Select a animal..."),
+                Value = "0"
+            });
+
+            return list;
         }
     }
 }

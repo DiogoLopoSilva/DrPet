@@ -20,8 +20,8 @@ namespace DrPet.Web.Data.Entities
         public Doctor Doctor { get; set; }
 
         [Required]
-        [DataType(DataType.Date)]
-        public DateTime Date { get; set; }
+        [DataType(DataType.DateTime)]
+        public DateTime Date { get; set; } //TODO MUDAR PARA LOCAL TIME
 
         public string Notes { get; set; }
     }
