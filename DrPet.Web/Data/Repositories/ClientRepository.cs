@@ -25,6 +25,11 @@ namespace DrPet.Web.Data.Repositories
             return _context.Clients.FirstOrDefault(c => c.User == user);
         }
 
+        public Client GetClientWithUser(string username) //TODO VER SE TEM MAL NAO SER ASYNC
+        {
+            return _context.Clients.Include(c=> c.User).FirstOrDefault(c => c.User.UserName == username);
+        }
+
         public async Task<IQueryable<Client>> GetClientsAsync(string userName)
         {
             var user = await _userHelper.GetUserByEmailAsync(userName);

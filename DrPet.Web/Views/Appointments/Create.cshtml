@@ -1,49 +1,296 @@
 ﻿@model DrPet.Web.Models.AppointmentViewModel
 
+@using Syncfusion.EJ2
+
 @{
     ViewData["Title"] = "Create";
+
+    var dataManager = new DataManager()
+    {
+        Url = $"GetData?username={Model.ClientUsername}",
+        Adaptor = "UrlAdaptor",
+        CrudUrl = "UpdateData",
+        CrossDomain = true
+    };
 }
 
-<h2>Create</h2>
-
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-            <div class="form-group">
-                <label asp-for="AnimalId" class="control-label"></label>
-                <select asp-for="AnimalId" asp-items="Model.Animals" class="form-control"></select>
-                <span asp-validation-for="AnimalId" class="text-danger"></span>
+<div class="View">
+    <div class="row justify-content-center">
+        <div class="col-6">
+            <h2 class="mb-5 text-center">Double-Click on a Cell to schedule an appointment</h2>
+            <div class="mb-5">
+                <ejs-schedule id="schedule" height="550" startHour="09:00" endHour="18:00"
+                              allowMultiCellSelection="false" eventRendered="onEventRendered" actionBegin="onActionBegin" popupOpen="onPopupOpen" actionComplete="onActionComplete" showQuickInfo="false" eventClick="onClick" editorTemplate="#EventEditorTemplate">
+                    <e-schedule-views>
+                        <e-schedule-view option="WorkWeek"></e-schedule-view>
+                    </e-schedule-views>
+                    <e-schedule-eventsettings dataSource="dataManager"></e-schedule-eventsettings>
+                </ejs-schedule>
             </div>
-
-            <div class="form-group">
-                <label asp-for="DoctorId" class="control-label"></label>
-                <select asp-for="DoctorId" asp-items="Model.Doctors" class="form-control"></select>
-                <span asp-validation-for="DoctorId" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="Date" class="control-label"></label>
-                <input asp-for="Date" class="form-control" />
-                <span asp-validation-for="Date" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Notes" class="control-label"></label>
-                <input asp-for="Notes" class="form-control" />
-                <span asp-validation-for="Notes" class="text-danger"></span>
-            </div>
-
-            <input type="hidden" asp-for="User.UserName" />
-
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-                <a asp-action="Index" class="btn btn-success">Back to List</a>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
+
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+<script type="text/javascript">
+
+        function onClick(args) {
+        }
+
+    function GetListsEdit(args) {
+        var date = args.data.StartTime.toISOString();
+        var doctor = JSON.parse(JSON.stringify(args.data.Doctor.Id));
+        var client = JSON.parse(JSON.stringify(args.data.Client.User.UserName));
+        console.log('DATA');
+        console.log(args.data);
+             $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("GetLists", "Appointments")',
+                    data: {
+                        StartTime: date,
+                        DoctorId: doctor,
+                        ClientUsername: client
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.result == "Success") {
+                            //console.log(data.list);
+
+                            console.log(args.data.Doctor.Id);
+
+                            var statusElement = args.element.querySelector('#DoctorList');
+                            //console.log(statusElement);
+                            if (!statusElement.classList.contains('e-dropdownlist')) {
+                                var dropDownListObject = new ej.dropdowns.DropDownList({
+                                    placeholder: 'Choose status', value: statusElement.value,
+                                    dataSource: data.list,
+                                    fields: { text: 'Text', value: 'Value' },
+                                    value: String(args.data.Doctor.Id),
+                                    floatLabelType: 'Always', placeholder: 'Choose a Doctor'
+                                });
+
+                                dropDownListObject.appendTo(statusElement);
+                                statusElement.setAttribute('name', 'DoctorId');
+                            }
+
+                            console.log(args.data.Animal.Id);
+
+                            var statusElement = args.element.querySelector('#AnimalList');
+                            //console.log(statusElement);
+                            if (!statusElement.classList.contains('e-dropdownlist')) {
+                                var dropDownListObject = new ej.dropdowns.DropDownList({
+                                    placeholder: 'Choose status', value: statusElement.value,
+                                    dataSource: data.listAnimals,
+                                    fields: { text: 'Text', value: 'Value' },
+                                    value: String(args.data.Animal.Id),
+                                    floatLabelType: 'Always', placeholder: 'Choose an Animal'
+                                });
+
+                                dropDownListObject.appendTo(statusElement);
+                                statusElement.setAttribute('name', 'AnimalId');
+                            }
+
+                        }
+                        else {
+                            alert("NÃO DEU");
+                        }
+
+                        //Exiba as mensagens de erro neste espaço.
+                    }
+                });
+        }
+
+        function GetListsCreate(args) {
+            var date = args.data.StartTime.toISOString();
+            var username = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.ClientUsername));
+             $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("GetLists", "Appointments")',
+                    data: {
+                        StartTime: date,
+                        ClientUsername: username,
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.result == "Success") {
+
+                            if (data.list.length<=1) {
+
+                            }
+
+                            var statusElement = args.element.querySelector('#DoctorList');
+                            //console.log(statusElement);
+                            if (!statusElement.classList.contains('e-dropdownlist')) {
+                                var dropDownListObject = new ej.dropdowns.DropDownList({
+                                    placeholder: 'Choose status', value: statusElement.value,
+                                    dataSource: data.list,
+                                    fields: { text: 'Text', value: 'Value' },
+                                    floatLabelType: 'Always', placeholder: 'Choose a Doctor',
+                                    Id: 'ddldoctor'
+                                });
+
+                                dropDownListObject.appendTo(statusElement);
+                                statusElement.setAttribute('name', 'DoctorId');
+                            }
+
+                            var statusElement = args.element.querySelector('#AnimalList');
+                            //console.log(statusElement);
+                            if (!statusElement.classList.contains('e-dropdownlist')) {
+                                var dropDownListObject = new ej.dropdowns.DropDownList({
+                                    placeholder: 'Choose status', value: statusElement.value,
+                                    dataSource: data.listAnimals,
+                                    fields: { text: 'Text', value: 'Value' },
+                                    floatLabelType: 'Always', placeholder: 'Choose an Animal'
+                                });
+
+                                dropDownListObject.appendTo(statusElement);
+                                statusElement.setAttribute('name', 'AnimalId');
+                            }
+
+                        }
+                        else {
+                            alert("NÃO DEU");
+                        }
+
+                        //Exiba as mensagens de erro neste espaço.
+                    }
+             });
+
+    }
+
+    function onActionComplete(args) {        
+        if (args.requestType === 'eventCreated') {
+            
+            //window.location.href = '/Home/Index';
+            console.log("CREATED");
+            console.log(args);
+        }
+    }
+
+            function onActionBegin(args) {
+            if (args.requestType === 'eventCreate' || args.requestType === 'eventChange') {
+                var data;
+                if (args.requestType === 'eventCreate') {
+                    data = args.data[0];
+                    console.log('TEST');
+                    console.log(args);
+
+                    if (args.data[0].DoctorId === "" || args.data[0].AnimalId === "") {
+                        args.cancel = true;
+                    }
+
+                    args.data[0].ClientUsername = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.ClientUsername));
+
+                    console.log('ID');
+                    console.log(args.data[0].ClientUsername);
+
+                } else if (args.requestType === 'eventChange') {
+                    data = args.data;
+                }
+                var scheduleObj = document.getElementById('schedule').ej2_instances[0];
+                if (!scheduleObj.isSlotAvailable(data.StartTime, data.EndTime)) {
+                    args.cancel = true;
+                }
+            }
+            console.log('FORA');
+            console.log(args);
+             }
+
+        function onEventRendered(args) {
+            var categoryColor;
+            switch (args.data.Status) {
+                case 'Waiting Aproval':
+                    categoryColor = '#F57F17';
+                    break;
+                case 'Confirmed':
+                    categoryColor = '#7fa900';
+                    break;
+                case 'New':
+                    categoryColor = '#8e24aa';
+                    break;
+            }
+            if (!args.element || !categoryColor) {
+                return;
+            }
+            var scheduleObj = document.getElementById('schedule').ej2_instances[0];
+            if (scheduleObj.currentView === 'Agenda') {
+                (args.element.firstChild).style.borderLeftColor = categoryColor;
+            } else {
+                args.element.style.backgroundColor = categoryColor;
+            }
+    }
+
+        function onPopupOpen(args) {
+
+            if (args.type === 'Editor') {
+                var startElement = args.element.querySelector('#StartTime');
+                if (!startElement.classList.contains('e-datetimepicker')) {
+                    new ej.calendars.DateTimePicker({ value: new Date(startElement.value) || new Date() }, startElement);
+                }
+                var endElement = args.element.querySelector('#EndTime');
+                if (!endElement.classList.contains('e-datetimepicker')) {
+                    new ej.calendars.DateTimePicker({ value: new Date(endElement.value) || new Date() }, endElement);
+                }
+                //console.log(args);
+                //console.log(args.data);
+                //console.log(args.data.StartTime);
+
+                //console.log(JSON.stringify(args.data.StartTime));
+
+                //var date = JSON.parse(JSON.stringify(args.data.StartTime));
+                var date = args.data.StartTime.toISOString();
+                //console.log(date);
+
+                if (args.target.textContent === "") {
+                    GetListsCreate(args);
+                }
+                else {
+                    GetListsEdit(args);
+                }
+            }
+        }
+</script>
+
+
+    <script id="EventEditorTemplate" type="text/x-template">
+        <table class="custom-event-editor" width="100%" cellpadding="5">
+            <tbody>
+                <tr>
+                    <td class="e-textlabel">Animals</td>
+                    <td colspan="4">
+                        <input type="text" id="AnimalList" name="AnimalId" class="e-field" style="width: 100%" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="e-textlabel">Doctors</td>
+                    <td colspan="4">
+                        <input type="text" id="DoctorList" name="DoctorId" class="e-field" style="width: 100%" />
+                    </td>
+                </tr>
+                <tr style="visibility:hidden;">
+                    <td class="e-textlabel">From</td>
+                    <td colspan="4">
+                        <input id="StartTime" class="e-field" type="text" name="StartTime" />
+                    </td>
+                </tr>
+                <tr style="visibility:hidden;">
+                    <td class="e-textlabel">To</td>
+                    <td colspan="4">
+                        <input id="EndTime" class="e-field" type="text" name="EndTime" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="e-textlabel">Description</td>
+                    <td colspan="4">
+                        <textarea id="Description" class="e-field e-input" name="ClientDescription" rows="3" cols="50"
+                                  style="width: 100%; height: 60px !important; resize: vertical"></textarea>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </script>
+
 }

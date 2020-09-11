@@ -45,5 +45,11 @@ namespace DrPet.Web.Controllers
         {
             return View();
         }
+
+        public IActionResult ShowModal()
+        {
+            //specify the name or path of the partial view
+            return PartialView("_Login");
+        }
     }
 }

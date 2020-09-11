@@ -53,6 +53,14 @@
                     <span asp-validation-for="Confirm" class="text-warning"></span>
                 </div>
 
+                @if (this.User.Identity.IsAuthenticated && this.User.IsInRole("Admin"))
+                {
+                    <div class="mt-10 btn-group w-100">
+                        <select asp-for="RoleId" asp-items="Html.GetEnumSelectList<RolesEnum>()">class="form-control w-100"></select>
+                        <span asp-validation-for="RoleId" class="text-danger"></span>
+                    </div>
+                }
+
                 <div class="mt-30">
                     <input type="submit" value="Register New User" class="genric-btn success radius" />
                 </div>

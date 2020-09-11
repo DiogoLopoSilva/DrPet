@@ -1,6 +1,7 @@
 ﻿using DrPet.Web.Data.Entities;
 using DrPet.Web.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,6 +27,7 @@ namespace DrPet.Web.Helpers
 
         Task<bool> IsUserInRoleAsync(User user, string roleName);
 
-        Task AddUserToRoleAsync(User user, string roleName);        
+        Task AddUserToRoleAsync(User user, string roleName);
+        IEnumerable<SelectListItem> GetComboRoles();
     }
 }

@@ -48,8 +48,8 @@ namespace DrPet.Web.Data
                     StreeName = "Praceta das flores nº4",
                     PostalCode = "2685-192",
                     Location = "Loures",
-                    Phone = "916728644",
-                    DocumentNumber = "123456789",
+                    PhoneNumber = "916728644",
+                    DocumentNumber = "123456789",                   
                 };
 
                 var result = await _userHelper.AddUserAsync(user1, "123456");
@@ -80,13 +80,13 @@ namespace DrPet.Web.Data
                 {
                     Email = "abc@abc.com",
                     UserName = "abc@abc.com",
-                    FirstName = "ANDRE",
-                    LastName = "ANDRE",
+                    FirstName = "André",
+                    LastName = "Pina",
                     DateOfBirth = Convert.ToDateTime("25/06/1992"),
                     StreeName = "TESTE",
                     PostalCode = "TESTE",
                     Location = "TESTE",
-                    Phone = "123456789",
+                    PhoneNumber = "123456789",
                     DocumentNumber = "123456789",
                 };
 
@@ -111,6 +111,48 @@ namespace DrPet.Web.Data
                 }
             }
 
+            var user4 = await _userHelper.GetUserByEmailAsync("abc2@abc.com");
+
+            if (user4 == null)
+            {
+                user4 = new User
+                {
+                    Email = "abc2@abc.com",
+                    UserName = "abc2@abc.com",
+                    FirstName = "Sidney",
+                    LastName = "Major",
+                    DateOfBirth = Convert.ToDateTime("25/06/1992"),
+                    StreeName = "TESTE",
+                    PostalCode = "TESTE",
+                    Location = "TESTE",
+                    PhoneNumber = "123456789",
+                    DocumentNumber = "123456789",
+                };
+
+                var result = await _userHelper.AddUserAsync(user4, "123456");
+                if (result != IdentityResult.Success)
+                {
+                    throw new InvalidOperationException("Could not create the user in seeder");
+                }
+
+                var doctor = new Doctor
+                {
+                    User = user4,
+                    Specialization = "MESTRE 2"
+                };
+
+                await _doctorRepository.CreateAsync(doctor);
+
+                var isInRole = await _userHelper.IsUserInRoleAsync(user4, RoleNames.Doctor);
+                if (!isInRole)
+                {
+                    await _userHelper.AddUserToRoleAsync(user4, RoleNames.Doctor);
+                }
+            }
+
+
+
+
             var user2 = await _userHelper.GetUserByEmailAsync("diogo.silva_92@hotmail.com");
 
             if (user2 == null)
@@ -125,7 +167,7 @@ namespace DrPet.Web.Data
                     StreeName = "Praceta das flores nº4",
                     PostalCode = "2685-192",
                     Location = "Loures",
-                    Phone = "916728644",
+                    PhoneNumber = "916728644",
                     DocumentNumber = "123456789",
                 };
 
@@ -164,11 +206,39 @@ namespace DrPet.Web.Data
                     Client = client,
                     Animal = animal,
                     Doctor = _doctorRepository.GetDoctorByUser(await _userHelper.GetUserByEmailAsync("abc@abc.com")),
-                    Date = DateTime.Now,
-                    Notes = "TESTE CONSULTA ANIMAL"
+                    Subject="General",
+                    StartTime = Convert.ToDateTime($"{DateTime.Today.ToShortDateString()} 09:00"),
+                    DoctorNotes = "Teste 1",
+                    Status = "Confirmed"
                 };
 
                 _context.Appointments.Add(appointment);
+
+                var appointment2 = new Appointment
+                {
+                    Client = client,
+                    Animal = animal,
+                    Doctor = _doctorRepository.GetDoctorByUser(await _userHelper.GetUserByEmailAsync("abc@abc.com")),
+                    Subject = "General",
+                    StartTime = Convert.ToDateTime($"{DateTime.Today.ToShortDateString()} 09:30"),
+                    DoctorNotes = "Teste 2",
+                    Status = "Waiting Aproval"
+                };
+
+                _context.Appointments.Add(appointment2);
+
+                var appointment3 = new Appointment
+                {
+                    Client = client,
+                    Animal = animal,
+                    Doctor = _doctorRepository.GetDoctorByUser(await _userHelper.GetUserByEmailAsync("abc2@abc.com")),
+                    Subject = "General",
+                    StartTime = Convert.ToDateTime($"{DateTime.Today.ToShortDateString()} 09:30"),
+                    DoctorNotes = "Teste 3",
+                    Status = "Confirmed"
+                };
+
+                _context.Appointments.Add(appointment3);
             }
 
             if (!_context.Animals.Any())
@@ -178,6 +248,42 @@ namespace DrPet.Web.Data
                 this.AddProduct("Xaninha", "Female", "Cat", "Black", user1);
                 await _context.SaveChangesAsync();
             }
+
+            //for (int i = 0; i < 50; i++)
+            //{
+            //    var usertemp = new User
+            //    {
+            //        Email = $"tempuser{i}@abc.com",
+            //        UserName = $"tempuser{i}@abc.com",
+            //        FirstName = "TEMP",
+            //        LastName = i.ToString(),
+            //        DateOfBirth = Convert.ToDateTime("25/06/1992"),
+            //        StreeName = "",
+            //        PostalCode = "",
+            //        Location = "",
+            //        PhoneNumber = $"912{i}",
+            //        DocumentNumber = "123456789",
+            //    };
+
+            //    var result = await _userHelper.AddUserAsync(usertemp, "123456");
+            //    if (result != IdentityResult.Success)
+            //    {
+            //        throw new InvalidOperationException("Could not create the user in seeder");
+            //    }
+
+            //    var client = new Client
+            //    {
+            //        User = usertemp
+            //    };
+
+            //    await _clientRepository.CreateAsync(client);
+
+            //    var isInRole = await _userHelper.IsUserInRoleAsync(usertemp, RoleNames.Client);
+            //    if (!isInRole)
+            //    {
+            //        await _userHelper.AddUserToRoleAsync(usertemp, RoleNames.Client);
+            //    }
+            //}
         }
 
         private void AddProduct(string name, string sex, string species, string color, User user)

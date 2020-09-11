@@ -41,7 +41,7 @@ namespace DrPet.Web.Controllers
                 return NotFound();
             }
 
-            var doctor = await _context.Doctor
+            var doctor = await _context.Doctors
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (doctor == null)
             {
@@ -148,7 +148,7 @@ namespace DrPet.Web.Controllers
                 return NotFound();
             }
 
-            var doctor = await _context.Doctor
+            var doctor = await _context.Doctors
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (doctor == null)
             {
@@ -163,15 +163,15 @@ namespace DrPet.Web.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var doctor = await _context.Doctor.FindAsync(id);
-            _context.Doctor.Remove(doctor);
+            var doctor = await _context.Doctors.FindAsync(id);
+            _context.Doctors.Remove(doctor);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool DoctorExists(int id)
         {
-            return _context.Doctor.Any(e => e.Id == id);
+            return _context.Doctors.Any(e => e.Id == id);
         }
     }
 }

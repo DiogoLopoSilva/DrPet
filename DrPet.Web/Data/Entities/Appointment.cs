@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -20,9 +21,26 @@ namespace DrPet.Web.Data.Entities
         public Doctor Doctor { get; set; }
 
         [Required]
-        [DataType(DataType.DateTime)]
-        public DateTime Date { get; set; } //TODO MUDAR PARA LOCAL TIME
+        public string Subject { get; set; }
 
-        public string Notes { get; set; }
+        [Required]
+        public string Status { get; set; }     
+
+        [Required]
+        [DataType(DataType.DateTime)]
+        public DateTime StartTime { get; set; } //TODO MUDAR PARA LOCAL TIME        
+
+        [DataType(DataType.DateTime)]
+        public DateTime EndTime { get { return this.StartTime.AddMinutes(30); } } //TODO MUDAR PARA LOCAL TIME
+
+        public string DoctorNotes { get; set; }
+
+        public string ClientDescription { get; set; }
+
+        [NotMapped]
+        public bool IsBlock { get; set; }
+
+        [NotMapped]
+        public bool IsReadonly { get; set; }           
     }
 }

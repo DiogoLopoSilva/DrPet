@@ -52,7 +52,22 @@ namespace DrPet.Web.Helpers
                 PostalCode = user.PostalCode,
                 Location = user.Location,
                 DocumentNumber = user.DocumentNumber,
-                Phone = user.Phone
+                PhoneNumber = user.PhoneNumber
+            };
+        }
+
+        public UserProfileViewModel UserToUserProfileViewModel(User user)
+        {
+            return new UserProfileViewModel
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                DateOfBirth = user.DateOfBirth,
+                StreeName = user.StreeName,
+                PostalCode = user.PostalCode,
+                Location = user.Location,
+                DocumentNumber = user.DocumentNumber,
+                PhoneNumber = user.PhoneNumber
             };
         }
 
@@ -65,7 +80,7 @@ namespace DrPet.Web.Helpers
             user.PostalCode = model.PostalCode;
             user.Location = model.Location;
             user.DocumentNumber = model.DocumentNumber;
-            user.Phone = model.Phone;
+            user.PhoneNumber = model.PhoneNumber;
 
             return user;
         }

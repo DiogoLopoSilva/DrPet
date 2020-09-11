@@ -16,5 +16,7 @@ namespace DrPet.Web.Data.Repositories
         IEnumerable<SelectListItem> GetComboDoctors();
 
         Doctor GetDoctorWithUser(int id);
+
+        IEnumerable<SelectListItem> AvailableDoctors(DateTime date, int doctorId);
     }
 }

@@ -15,6 +15,7 @@ namespace DrPet.Web.Helpers
 
         ChangeUserViewModel UserToChangeUserViewModel(User user);
 
-        User ChangerUserViewModelToUser(ChangeUserViewModel model, User user);        
+        User ChangerUserViewModelToUser(ChangeUserViewModel model, User user);
+        UserProfileViewModel UserToUserProfileViewModel(User user);
     }
 }

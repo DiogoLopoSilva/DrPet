@@ -55,11 +55,11 @@ namespace DrPet.Web.Data.Repositories
                 Value = a.Id.ToString()
             }).ToList();
 
-            list.Insert(0, new SelectListItem
-            {
-                Text = ("Select a animal..."),
-                Value = "0"
-            });
+            //list.Insert(0, new SelectListItem
+            //{
+            //    Text = ("Select a animal..."),
+            //    Value = "0"
+            //});
 
             return list;
         }

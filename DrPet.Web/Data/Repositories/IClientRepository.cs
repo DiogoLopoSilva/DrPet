@@ -11,5 +11,6 @@ namespace DrPet.Web.Data.Repositories
         Client GetClientByUser(User user);
 
         Task<IQueryable<Client>> GetClientsAsync(string userName);
+        Client GetClientWithUser(string username);
     }
 }

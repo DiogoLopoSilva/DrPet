@@ -10,30 +10,25 @@ namespace DrPet.Web.Models
 {
     public class AppointmentViewModel
     {
-        //[Display(Name = "Product")]
-        //[Range(1, int.MaxValue, ErrorMessage = "You must select a Client.")]
-        //public int ClientId { get; set; }
+        [Display(Name = "Client")]
+        public string ClientUsername{ get; set; }
 
-        //public IEnumerable<SelectListItem> Clients { get; set; }
-
-        [Display(Name = "Product")]
-        [Range(1, int.MaxValue, ErrorMessage = "You must select an Animal.")]
+        [Display(Name = "Animal")]
         public int AnimalId { get; set; }
 
-        public IEnumerable<SelectListItem> Animals { get; set; }
-
-        [Display(Name = "Product")]
-        [Range(1, int.MaxValue, ErrorMessage = "You must select a Doctor.")]
+        [Display(Name = "Doctor")]
         public int DoctorId { get; set; }
 
-        public IEnumerable<SelectListItem> Doctors { get; set; }
-
-        [Required]
         [DataType(DataType.DateTime)]
-        public DateTime Date { get; set; }
+        public DateTime StartTime { get; set; } //TODO MUDAR PARA LOCAL TIME
+
+        [DataType(DataType.DateTime)]
+        public DateTime EndTime { get { return this.StartTime.AddMinutes(30); } } //TODO MUDAR PARA LOCAL TIME
+
+        public string Description { get; set; }
 
         public string Notes { get; set; }
 
-        public User User { get; set; }
+        public string TIAGOTESTE { get; set; }
     }
 }

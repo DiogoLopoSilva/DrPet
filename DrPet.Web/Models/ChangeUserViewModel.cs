@@ -35,11 +35,9 @@ namespace DrPet.Web.Models
 
         [Required]
         [DataType(DataType.PhoneNumber)]
-        public string Phone { get; set; }
+        public string PhoneNumber { get; set; }
 
         public User User { get; set; }
-
-        public string Role { get; set; }
 
         public Doctor Doctor { get; set; }
 

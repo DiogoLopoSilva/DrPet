@@ -34,7 +34,7 @@
                 @Html.DisplayNameFor(model => model.User.PostalCode)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.User.Phone)
+                @Html.DisplayNameFor(model => model.User.PhoneNumber)
             </th>
         </tr>
     </thead>
@@ -63,7 +63,7 @@
                 @Html.DisplayFor(modelItem => item.User.PostalCode)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.User.Phone)
+                @Html.DisplayFor(modelItem => item.User.PhoneNumber)
             </td>
             <td>
                 <a asp-controller="Account" asp-action="ChangeUser" asp-route-username="@item.User.UserName">Edit</a> |

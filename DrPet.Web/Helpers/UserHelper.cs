@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DrPet.Web.Data;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace DrPet.Web.Helpers
 {
@@ -25,6 +26,7 @@ namespace DrPet.Web.Helpers
 
         public async Task<IdentityResult> AddUserAsync(User user, string password)
         {
+            //user.DateCreated = DateTime.Today;
             return await _userManager.CreateAsync(user, password);
         }
 
@@ -79,6 +81,23 @@ namespace DrPet.Web.Helpers
         public async Task AddUserToRoleAsync(User user, string roleName)
         {
             await _userManager.AddToRoleAsync(user, roleName);
+        }
+
+        public IEnumerable<SelectListItem> GetComboRoles()
+        {
+            var list = _roleManager.Roles.Select(d => new SelectListItem
+            {
+                Text = d.Name,
+                Value = d.Id.ToString()
+            }).ToList();
+
+            list.Insert(0, new SelectListItem
+            {
+                Text = ("Select a Role..."),
+                Value = "0"
+            });
+
+            return list;
         }
     }
 }

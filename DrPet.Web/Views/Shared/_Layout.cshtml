@@ -1,92 +1,257 @@
 ﻿<!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Dr. Pet</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- <link rel="manifest" href="site.webmanifest">-->
+    <link rel="shortcut icon" type="image/x-icon" href="Theme/img/favicon.ico">
+
     <title>@ViewData["Title"] - DrPet.Web</title>
 
     <environment include="Development">
-        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+        <!-- CSS here -->
+        <link rel="stylesheet" href="~/Theme/css/bootstrap.min.css">
+        <link rel="stylesheet" href="~/Theme/css/owl.carousel.min.css">
+        <link rel="stylesheet" href="~/Theme/css/slicknav.css">
+        <link rel="stylesheet" href="~/Theme/css/flaticon.css">
+        <link rel="stylesheet" href="~/Theme/css/animate.min.css">
+        <link rel="stylesheet" href="~/Theme/css/magnific-popup.css">
+        <link rel="stylesheet" href="~/Theme/css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="~/Theme/css/themify-icons.css">
+        <link rel="stylesheet" href="~/Theme/css/slick.css">
+        <link rel="stylesheet" href="~/Theme/css/nice-select.css">
+        <link rel="stylesheet" href="~/Theme/css/style.css">
+        <link rel="stylesheet" href="~/Theme/css/Views.css">
         <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css" />
-        <link rel="stylesheet" href="~/css/site.css" />
     </environment>
     <environment exclude="Development">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
-              asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
+              asp-fallback-href="~/Theme/css/bootstrap.min.css"
               asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />
         <link rel="stylesheet" href="~/css/site.min.css" asp-append-version="true" />
+        <!-- CSS here -->
+        <link rel="stylesheet" href="~/Theme/css/bootstrap.min.css">
+        <link rel="stylesheet" href="~/Theme/css/owl.carousel.min.css">
+        <link rel="stylesheet" href="~/Theme/css/slicknav.css">
+        <link rel="stylesheet" href="~/Theme/css/flaticon.css">
+        <link rel="stylesheet" href="~/Theme/css/animate.min.css">
+        <link rel="stylesheet" href="~/Theme/css/magnific-popup.css">
+        <link rel="stylesheet" href="~/Theme/css/fontawesome-all.min.css">
+        <link rel="stylesheet" href="~/Theme/css/themify-icons.css">
+        <link rel="stylesheet" href="~/Theme/css/slick.css">
+        <link rel="stylesheet" href="~/Theme/css/nice-select.css">
+        <link rel="stylesheet" href="~/Theme/css/style.css">
+        <link rel="stylesheet" href="~/Theme/css/Views.css">
+        <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css" />
     </environment>
 </head>
 <body>
-    <nav class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">DrPet.Web</a>
-            </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
-                    <li><a asp-area="" asp-controller="Animals" asp-action="Index">Animals</a></li>
-                    <li><a asp-area="" asp-controller="Appointments" asp-action="Index">Appointments</a></li>
-                    @if (this.User.Identity.IsAuthenticated && this.User.IsInRole("Admin"))
-                    {
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin<b class="caret"></b></a>
-                            <ul class="dropdown-menu">
-                                <li><a asp-area="" asp-controller="Admins" asp-action="Index">Admin</a></li>
-                                <li><a asp-area="" asp-controller="Clients" asp-action="Index">Clients</a></li>
-                                <li><a asp-area="" asp-controller="Doctors" asp-action="Index">Doctors</a></li>
-                                <li><a asp-area="" asp-controller="" asp-action="">Roles</a></li>
-                            </ul>
-                        </li>
-
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Register<b class="caret"></b></a>
-                            <ul class="dropdown-menu">
-                                <li><a asp-area="" asp-controller="Account" asp-action="RegisterAdmin">Admin</a></li>
-                                <li><a asp-area="" asp-controller="Account" asp-action="Register">Clients</a></li>
-                                <li><a asp-area="" asp-controller="Account" asp-action="RegisterDoctor">Doctors</a></li>
-                            </ul>
-                        </li>
-                    }
-                </ul>
-                <ul class="nav navbar-nav navbar-right">
-                    @if (this.User.Identity.IsAuthenticated)
-                    {
-                        <li><a asp-area="" asp-controller="Account" asp-action="ChangeUser">@this.User.Identity.Name</a></li>
-                        <li><a asp-area="" asp-controller="Account" asp-action="Logout">Logout</a></li>
-                    }
-                    else
-                    {
-                        <li><a asp-area="" asp-controller="Account" asp-action="Login">Login</a></li>
-                    }
-                </ul>
+    <!-- Preloader Start -->
+    <div id="preloader-active">
+        <div class="preloader d-flex align-items-center justify-content-center">
+            <div class="preloader-inner position-relative">
+                <div class="preloader-circle"></div>
+                <div class="preloader-img pere-text">
+                    <img src="~/Theme/img/logo/logo.png" alt="">
+                </div>
             </div>
         </div>
-    </nav>
+    </div>
+    <!-- Preloader Start -->
+    <header>
+        <!--? Header Start -->
+        <div class="header-area header-transparent">
+            <div class="main-header header-sticky">
+                <div class="container-fluid">
+                    <div class="row align-items-center">
+                        <div class="col-xl-12 col-lg-12 col-md-12">
+                            <div class="menu-main d-flex align-items-center w-100">
+                                <div class="logo mr-50">
+                                    <a asp-area="" asp-controller="Home" asp-action="Index"><img src="~/Theme/img/logo/logo.png" alt=""></a>
+                                </div>
+                                <!-- Main-menu -->
+                                <div class="main-menu f-right d-none d-lg-block w-100">
+                                    <nav>
+                                        <ul id="navigation">
+                                            <li><a asp-area="" asp-controller="Animals" asp-action="Index">Animals</a></li>
+                                            <li><a href="services.html">Services</a></li>
+                                            @if (this.User.Identity.IsAuthenticated && this.User.IsInRole("Admin"))
+                                            {
+                                                <li>
+                                                    <a href="blog.html">Admin</a>
+                                                    <ul class="submenu">
+                                                        <li><a asp-area="" asp-controller="Admins" asp-action="Index">Admin</a></li>
+                                                        <li><a asp-area="" asp-controller="Clients" asp-action="Index">Clients</a></li>
+                                                        <li><a asp-area="" asp-controller="Doctors" asp-action="Index">Doctors</a></li>
+                                                        <li><a asp-area="" asp-controller="" asp-action="">Roles</a></li>
+                                                    </ul>
+                                                </li>
+                                            }
+                                            <li><a asp-area="" asp-controller="Appointments" asp-action="Index">Appointments</a></li>
+                                            <li class="w-25 ml-200 mr-100"><a></a></li>
+                                            @if (this.User.Identity.IsAuthenticated)
+                                            {
+                                                <li><a asp-area="" asp-controller="Account" asp-action="ChangeUser">Account</a></li>
+
+                                                <li><a asp-area="" asp-controller="Account" asp-action="Logout">Logout</a></li>
+                                            }
+                                            else
+                                            {
+                                                <li><a data-toggle="modal" data-target="#LoginTeste" role="menuitem">Login</a></li>
+                                            }
+                                        </ul>
+                                    </nav>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Mobile Menu -->
+                    <div class="col-12">
+                        <div class="mobile_menu d-block d-lg-none"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Header End -->
+    </header>
 
     <partial name="_CookieConsentPartial" />
 
-    <div class="container body-content">
+    <div>
+        <!-- <div class="container body-content">-->
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; 2020 - DrPet.Web</p>
+            <!-- Footer Start-->
+            <div class="footer-area footer-padding">
+                <div class="container">
+                    <div class="row d-flex justify-content-between">
+                        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-6">
+                            <div class="single-footer-caption mb-50">
+                                <div class="single-footer-caption mb-30">
+                                    <!-- logo -->
+                                    <div class="footer-logo mb-25">
+                                        <a href="index.html"><img src="~/Theme/img/logo/logo2_footer.png" alt=""></a>
+                                    </div>
+                                    <div class="footer-tittle">
+                                        <div class="footer-pera">
+                                            <p>Lorem ipsum dolor sit amet, adipiscing elit, sed do eiusmod tempor elit. </p>
+                                        </div>
+                                    </div>
+                                    <!-- social -->
+                                    <div class="footer-social">
+                                        <a href="https://www.facebook.com/sai4ull"><i class="fab fa-facebook-square"></i></a>
+                                        <a href="#"><i class="fab fa-twitter-square"></i></a>
+                                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                                        <a href="#"><i class="fab fa-pinterest-square"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-2 col-lg-2 col-md-4 col-sm-5">
+                            <div class="single-footer-caption mb-50">
+                                <div class="footer-tittle">
+                                    <h4>Company</h4>
+                                    <ul>
+                                        <li><a href="index.html">Home</a></li>
+                                        <li><a href="about.html">About Us</a></li>
+                                        <li><a href="single-blog.html">Services</a></li>
+                                        <li><a href="#">Cases</a></li>
+                                        <li><a href="contact.html">  Contact Us</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-7">
+                            <div class="single-footer-caption mb-50">
+                                <div class="footer-tittle">
+                                    <h4>Services</h4>
+                                    <ul>
+                                        <li><a href="#">Commercial Cleaning</a></li>
+                                        <li><a href="#">Office Cleaning</a></li>
+                                        <li><a href="#">Building Cleaning</a></li>
+                                        <li><a href="#">Floor Cleaning</a></li>
+                                        <li><a href="#">Apartment Cleaning</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-5">
+                            <div class="single-footer-caption mb-50">
+                                <div class="footer-tittle">
+                                    <h4>Get in Touch</h4>
+                                    <ul>
+                                        <li><a href="#">152-515-6565</a></li>
+                                        <li><a href="#"> Demomail@gmail.com</a></li>
+                                        <li><a href="#">New Orleans, USA</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- footer-bottom area -->
+            <div class="footer-bottom-area">
+                <div class="container">
+                    <div class="footer-border">
+                        <div class="row d-flex align-items-center">
+                            <div class="col-xl-12 ">
+                                <div class="footer-copy-right text-center">
+                                    <p>
+                                        <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                                        Copyright &copy;
+                                        <script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
+                                        <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Footer End-->
         </footer>
+        <!-- Scroll Up -->
+        <div id="back-top">
+            <a title="Go to Top" href="#"> <i class="fas fa-level-up-alt"></i></a>
+        </div>
     </div>
 
     <environment include="Development">
         <script src="~/lib/jquery/dist/jquery.js"></script>
         <script src="~/lib/bootstrap/dist/js/bootstrap.js"></script>
         <script src="~/js/site.js" asp-append-version="true"></script>
+        <!-- JS here -->
+
+        <script src="~/Theme/js/vendor/modernizr-3.5.0.min.js"></script>
+        <!-- Jquery, Popper, Bootstrap -->
+        <script src="~/Theme/js/vendor/jquery-1.12.4.min.js"></script>
+        <script src="~/Theme/js/popper.min.js"></script>
+        <script src="~/Theme/js/bootstrap.min.js"></script>
+        <!-- Jquery Mobile Menu -->
+        <script src="~/Theme/js/jquery.slicknav.min.js"></script>
+
+        <!-- Jquery Slick , Owl-Carousel Plugins -->
+        <script src="~/Theme/js/owl.carousel.min.js"></script>
+        <script src="~/Theme/js/slick.min.js"></script>
+        <!-- One Page, Animated-HeadLin -->
+        <script src="~/Theme/js/wow.min.js"></script>
+        <script src="~/Theme/js/animated.headline.js"></script>
+        <script src="~/Theme/js/jquery.magnific-popup.js"></script>
+
+        <!-- Nice-select, sticky -->
+        <script src="~/Theme/js/jquery.nice-select.min.js"></script>
+        <script src="~/Theme/js/jquery.sticky.js"></script>
+
+        <!-- contact js -->
+
+        <!-- Jquery Plugins, main Jquery -->
+        <script src="~/Theme/js/plugins.js"></script>
+        <script src="~/Theme/js/main.js"></script>
     </environment>
     <environment exclude="Development">
         <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-3.3.1.min.js"
@@ -102,7 +267,37 @@
                 integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd">
         </script>
         <script src="~/js/site.min.js" asp-append-version="true"></script>
+        <!-- JS here -->
+
+        <script src="~/Theme/js/vendor/modernizr-3.5.0.min.js"></script>
+        <!-- Jquery, Popper, Bootstrap -->
+        <script src="~/Theme/js/vendor/jquery-1.12.4.min.js"></script>
+        <script src="~/Theme/js/popper.min.js"></script>
+        <script src="~/Theme/js/bootstrap.min.js"></script>
+        <!-- Jquery Mobile Menu -->
+        <script src="~/Theme/js/jquery.slicknav.min.js"></script>
+
+        <!-- Jquery Slick , Owl-Carousel Plugins -->
+        <script src="~/Theme/js/owl.carousel.min.js"></script>
+        <script src="~/Theme/js/slick.min.js"></script>
+        <!-- One Page, Animated-HeadLin -->
+        <script src="~/Theme/js/wow.min.js"></script>
+        <script src="~/Theme/js/animated.headline.js"></script>
+        <script src="~/Theme/js/jquery.magnific-popup.js"></script>
+
+        <!-- Nice-select, sticky -->
+        <script src="~/Theme/js/jquery.nice-select.min.js"></script>
+        <script src="~/Theme/js/jquery.sticky.js"></script>
+
+        <!-- contact js -->
+
+        <!-- Jquery Plugins, main Jquery -->
+        <script src="~/Theme/js/plugins.js"></script>
+        <script src="~/Theme/js/main.js"></script>
     </environment>
+
+    <!--LOGIN MODAL-->
+    <partial name="_LoginTeste" model="new LoginViewModel()" />
 
     @RenderSection("Scripts", required: false)
 </body>

@@ -1,0 +1,137 @@
+﻿
+@{
+    ViewData["Title"] = "Create";
+}
+
+@using Syncfusion.EJ2
+@{
+
+
+    var dataManager = new DataManager()
+    {
+        Url = "GetData?username=diogo.silva_92@hotmail.com",
+        Adaptor = "UrlAdaptor",
+        CrudUrl = "UpdateData",
+        CrossDomain = true
+    };
+}
+
+<div class="View">
+    <div class="row justify-content-center">
+        <div class="col-6">
+            <div class="mb-5">
+                <ejs-schedule id="schedule" height="550" startHour="09:00" endHour="18:00"
+                              allowMultiCellSelection="false" actionComplete="Test" popupOpen="onPopupOpen" editorTemplate="#EventEditorTemplate">
+                    <e-schedule-views>
+                        <e-schedule-view option="WorkWeek"></e-schedule-view>
+                    </e-schedule-views>
+                    <e-schedule-eventsettings dataSource="dataManager"></e-schedule-eventsettings>
+                </ejs-schedule>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+
+        function Test(args) {
+            if (args.requestType === 'eventCreated') {
+                window.location.href = '/Appointments/Index';
+            }
+        };
+
+    </script>
+
+    <script type="text/javascript">
+        function onPopupOpen(args) {
+            if (args.type === 'Editor') {
+                console.log(args.data.StartTime);
+
+                console.log(JSON.stringify(args.data.StartTime));
+
+                var date = JSON.parse(JSON.stringify(args.data.StartTime));
+                console.log(date);
+
+                 $.ajax({
+                type: "POST",
+                url: '@Url.Action("DoctorList", "Appointments")',
+                     data: {
+                         StartTime: date
+                },
+                dataType: "json",
+                success: function (data) {
+                    if (data.result == "Success") {
+                        console.log(data.list);
+                        alert("DEU");
+
+                        @*var doctors =  @(Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Doctors)));
+                        console.log(doctors);*@
+
+                        var statusElement = args.element.querySelector('#EventType');
+                             if (!statusElement.classList.contains('e-dropdownlist')) {
+                             var dropDownListObject = new ej.dropdowns.DropDownList({
+                        placeholder: 'Choose status', value: statusElement.value,
+                        dataSource: data.list,
+                        fields: { text: 'Text', value: 'Value' },
+                        value: (args.data).EventType,
+                        floatLabelType: 'Always', placeholder: 'Event Type'
+                    });
+
+                    dropDownListObject.appendTo(statusElement);
+                    statusElement.setAttribute('name', 'EventType');
+                }
+
+                    }
+                    else {
+                        alert("NÃO DEU");
+                    }
+
+                    //Exiba as mensagens de erro neste espaço.
+                }
+            });
+            }
+        }
+    </script>
+
+    <script id="EventEditorTemplate" type="text/template">
+        <table class="custom-event-editor" width="100%" cellpadding="5">
+            <tbody>
+                <tr>
+                    <td class="e-textlabel">Summary</td>
+                    <td colspan="4">
+                        <input id="Subject" class="e-field e-input" type="text" value="" name="Subject" style="width: 100%" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="e-textlabel">Status</td>
+                    <td colspan="4">
+                        <input type="text" id="EventType" name="EventType" class="e-field" style="width: 100%" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="e-textlabel">From</td>
+                    <td colspan="4">
+                        <input id="StartTime" class="e-field" type="text" name="StartTime" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="e-textlabel">To</td>
+                    <td colspan="4">
+                        <input id="EndTime" class="e-field" type="text" name="EndTime" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="e-textlabel">Reason</td>
+                    <td colspan="4">
+                        <textarea id="Description" class="e-field e-input" name="Description" rows="3" cols="50" style="width: 100%; height: 60px !important; resize: vertical"></textarea>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </script>
+
+}

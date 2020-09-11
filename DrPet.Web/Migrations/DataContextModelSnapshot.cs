@@ -81,14 +81,22 @@ namespace DrPet.Web.Migrations
 
                     b.Property<int>("AnimalId");
 
-                    b.Property<int>("ClientId");
+                    b.Property<string>("ClientDescription");
 
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("date");
+                    b.Property<int>("ClientId");
 
                     b.Property<int>("DoctorId");
 
-                    b.Property<string>("Notes");
+                    b.Property<string>("DoctorNotes");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("Status")
+                        .IsRequired();
+
+                    b.Property<string>("Subject")
+                        .IsRequired();
 
                     b.HasKey("Id");
 
@@ -99,34 +107,6 @@ namespace DrPet.Web.Migrations
                     b.HasIndex("DoctorId");
 
                     b.ToTable("Appointments");
-                });
-
-            modelBuilder.Entity("DrPet.Web.Data.Entities.AppointmentTemp", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("AnimalId");
-
-                    b.Property<int>("ClientId");
-
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("date");
-
-                    b.Property<int>("DoctorId");
-
-                    b.Property<string>("Notes");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AnimalId");
-
-                    b.HasIndex("ClientId");
-
-                    b.HasIndex("DoctorId");
-
-                    b.ToTable("AppointmentsTemp");
                 });
 
             modelBuilder.Entity("DrPet.Web.Data.Entities.Client", b =>
@@ -158,7 +138,7 @@ namespace DrPet.Web.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Doctor");
+                    b.ToTable("Doctors");
                 });
 
             modelBuilder.Entity("DrPet.Web.Data.Entities.User", b =>
@@ -170,6 +150,8 @@ namespace DrPet.Web.Migrations
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken();
+
+                    b.Property<DateTime>("DateCreated");
 
                     b.Property<DateTime?>("DateOfBirth")
                         .HasColumnType("date");
@@ -198,8 +180,6 @@ namespace DrPet.Web.Migrations
                         .HasMaxLength(256);
 
                     b.Property<string>("PasswordHash");
-
-                    b.Property<string>("Phone");
 
                     b.Property<string>("PhoneNumber");
 
@@ -354,24 +334,6 @@ namespace DrPet.Web.Migrations
                 });
 
             modelBuilder.Entity("DrPet.Web.Data.Entities.Appointment", b =>
-                {
-                    b.HasOne("DrPet.Web.Data.Entities.Animal", "Animal")
-                        .WithMany()
-                        .HasForeignKey("AnimalId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("DrPet.Web.Data.Entities.Client", "Client")
-                        .WithMany()
-                        .HasForeignKey("ClientId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("DrPet.Web.Data.Entities.Doctor", "Doctor")
-                        .WithMany()
-                        .HasForeignKey("DoctorId")
-                        .OnDelete(DeleteBehavior.Restrict);
-                });
-
-            modelBuilder.Entity("DrPet.Web.Data.Entities.AppointmentTemp", b =>
                 {
                     b.HasOne("DrPet.Web.Data.Entities.Animal", "Animal")
                         .WithMany()

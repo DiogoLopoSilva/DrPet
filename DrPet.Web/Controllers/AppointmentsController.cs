@@ -51,15 +51,10 @@ namespace DrPet.Web.Controllers
             return View(await _appointmentRepository.GetAppointmentsAsync(this.User.Identity.Name));         
         }
 
-        public async Task<IActionResult> IndexTemp()
+        // GET: AppointmentsNotConfirmed
+        public async Task<IActionResult> IndexNotConfirmed()
         {
-            //var model = new AppointmentsWithTempView
-            //{
-            //    Appointments = await _appointmentRepository.GetAppointmentsAsync(this.User.Identity.Name),
-            //    AppointmentsTemp = await _appointmentRepository.GetAppointmentsTempAsync(this.User.Identity.Name)
-            //};
-
-            return View(await _appointmentRepository.GetAppointmentsTempAsync(this.User.Identity.Name));
+            return View(await _appointmentRepository.GetUnconfirmedAppointmentsAsync(this.User.Identity.Name));
         }
 
         // GET: Appointments/Details/5
@@ -83,22 +78,125 @@ namespace DrPet.Web.Controllers
         // GET: Appointments/Create
         public async Task<IActionResult> Create(string username) //TODO VERIFICAR QUE NAO TEM BUGS
         {
-
             var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
 
-            if (username != null && await _userHelper.IsUserInRoleAsync(user, RoleNames.Administrator))
+            bool isAdmin = await _userHelper.IsUserInRoleAsync(user, RoleNames.Administrator);
+
+            if(String.IsNullOrEmpty(username) && isAdmin)
+            {
+                return NotFound();
+            }
+
+            if (username != null && isAdmin)
             {
                 user = await _userHelper.GetUserByEmailAsync(username);
             }
 
             var model = new AppointmentViewModel
             {
-                Animals = _animalRepository.GetComboAnimals(user.UserName),
-                Doctors = _doctorRepository.GetComboDoctors(),
-                User = user
+                //Animals = _animalRepository.GetComboAnimals(user.UserName),
+                ClientUsername = user.UserName,
+                //Date = DateTime.Today, //Para começar com a data currente
+                //Appointments = _appointmentRepository.GetAllWithModels()
             };
 
+            //ViewBag.appointments = GetScheduleData();
             return View(model);
+        }
+
+        public JsonResult GetData(string username)  // Here we get the Start and End Date and based on that can filter the data and return to Scheduler --VER Passing additional parameters to the server
+        {
+            var data = _appointmentRepository.GetAllWithModels().ToList();
+
+            foreach (var item in data)
+            {
+                if (item.Client.User.UserName != username)
+                {
+                    item.IsReadonly = true;
+                    item.Subject = "Date not available";
+                }
+                else
+                {
+                    item.Subject = "Your appointment";
+                }
+            }
+
+            return Json(data);
+        }
+
+        [HttpPost]
+        public JsonResult GetLists(AppointmentViewModel Consulta)  // Here we get the Start and End Date and based on that can filter the data and return to Scheduler --VER Passing additional parameters to the server
+        {
+            var doctors = _doctorRepository.AvailableDoctors(Consulta.StartTime, Consulta.DoctorId);
+
+            if (Consulta.ClientUsername == null)
+            {
+                return Json(new { result = "Error" });
+            }
+
+            var Animals = _animalRepository.GetComboAnimals(Consulta.ClientUsername);
+
+            return Json(new { result = "Success", list = doctors, listAnimals = Animals });
+        }
+
+        [HttpPost]
+        public async Task<JsonResult> UpdateData([FromBody]EditParams param)
+        {
+            if (param.action == "insert" || (param.action == "batch" && param.added != null)) // this block of code will execute while inserting the appointments
+            {
+                var value = (param.action == "insert") ? param.value : param.added[0];
+
+
+                var client = _clientRepository.GetClientWithUser(value.ClientUsername);
+
+                var doctor =  _doctorRepository.GetDoctorWithUser(value.DoctorId);
+
+                var animal = _animalRepository.GetAnimalWithUser(value.AnimalId);
+
+                Appointment appointment = new Appointment()
+                {
+                    Client = client,
+                    Animal = animal,
+                    Doctor = doctor,
+                    Subject = "POR ALGO AQUI",
+                    Status = "Waiting Aproval",
+                    StartTime = value.StartTime.ToLocalTime(),
+                    ClientDescription = value.Description
+                };
+
+                await _appointmentRepository.CreateAsync(appointment);
+
+                var data = _appointmentRepository.GetAllWithModels().ToList();
+
+                foreach (var item in data)
+                {
+                    //item.IsReadonly = true;
+                    item.Subject = "Not available";
+                }
+
+                return Json(data, new Newtonsoft.Json.JsonSerializerSettings());
+            }
+            if (param.action == "update" || (param.action == "batch" && param.changed != null)) // this block of code will execute while updating the appointment
+            {
+                
+            }
+            if (param.action == "remove" || (param.action == "batch" && param.deleted != null)) // this block of code will execute while removing the appointment
+            {
+                if (param.action == "remove")
+                {
+                    
+                }
+                else
+                {
+                    foreach (var apps in param.deleted)
+                    {
+                        
+                    }
+                }
+               
+            }
+
+            return Json(new { result = "Failed" });
         }
 
         // POST: Appointments/Create
@@ -110,7 +208,7 @@ namespace DrPet.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await _userHelper.GetUserByEmailAsync(model.User.UserName);
+                var user = await _userHelper.GetUserByEmailAsync(model.ClientUsername);
 
                 if (user == null)
                 {
@@ -124,18 +222,18 @@ namespace DrPet.Web.Controllers
                 var doctor = _doctorRepository.GetDoctorWithUser(model.DoctorId);
                 //TODO VERIFICAÇAOES SE USER EXISTE ETC ETC
 
-                var appointmentTemp = new AppointmentTemp
-                {
-                    Client = client,
-                    Animal= animal,
-                    Doctor = doctor,
-                    Date = model.Date,
-                    Notes = model.Notes
-                };
+                //var appointmentTemp = new AppointmentTemp
+                //{
+                //    Client = client,
+                //    Animal= animal,
+                //    Doctor = doctor,
+                //    Date = model.Date,
+                //    Notes = model.Notes
+                //};
 
-                await _appointmentRepository.CreateAppointmentTemp(appointmentTemp);
+                //await _appointmentRepository.CreateAppointmentTemp(appointmentTemp);
 
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("IndexTemp");
             }
             return View(model);
         }
@@ -191,34 +289,34 @@ namespace DrPet.Web.Controllers
             return View(appointment);
         }
 
-        public async Task<IActionResult> DeleteAppointmentTemp(int? id)
+        public IActionResult DeleteAppointmentTemp(int? id)
         {
             if (id == null)
             {
                 return NotFound(); //TODO REDIRECIONAR
             }
 
-            await _appointmentRepository.DeleteAppointmentTempAsync(id.Value);
+            //await _appointmentRepository.DeleteAppointmentTempAsync(id.Value);
             return this.RedirectToAction("IndexTemp");
         }
 
-        [Authorize(Roles = RoleNames.Administrator)]
-        public async Task<IActionResult> ConfirmAppointmentTemp(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound(); //TODO REDIRECIONAR
-            }
+        //[Authorize(Roles = RoleNames.Administrator)]
+        //public async Task<IActionResult> ConfirmAppointmentTemp(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound(); //TODO REDIRECIONAR
+        //    }
 
-            var success = await _appointmentRepository.ConfirmAppointmentAsync(id.Value);
+        //    var success = await _appointmentRepository.ConfirmAppointmentAsync(id.Value);
 
-            if (success)
-            {
-                return this.RedirectToAction(nameof(Index));
-            }
+        //    if (success)
+        //    {
+        //        return this.RedirectToAction(nameof(Index));
+        //    }
 
-            return this.RedirectToAction("IndexTemp");
-        }
+        //    return this.RedirectToAction("IndexTemp");
+        //}
 
         private bool AppointmentExists(int id)
         {

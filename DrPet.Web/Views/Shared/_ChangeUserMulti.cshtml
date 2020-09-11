@@ -46,9 +46,9 @@
                 <span asp-validation-for="C.PostalCode" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="C.Phone" class="control-label"></label>
-                <input asp-for="C.Phone" class="form-control" />
-                <span asp-validation-for="C.Phone" class="text-danger"></span>
+                <label asp-for="C.PhoneNumber" class="control-label"></label>
+                <input asp-for="C.PhoneNumber" class="form-control" />
+                <span asp-validation-for="C.PhoneNumber" class="text-danger"></span>
             </div>
 
             @if (this.User.Identity.IsAuthenticated && this.User.IsInRole("Doctor"))

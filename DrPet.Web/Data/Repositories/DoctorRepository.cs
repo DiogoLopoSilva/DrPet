@@ -68,5 +68,45 @@ namespace DrPet.Web.Data.Repositories
         {
             return _context.Doctors.Include(a => a.User).FirstOrDefault(a => a.Id == id);            
         }
+
+        public IEnumerable<SelectListItem> AvailableDoctors(DateTime date, int doctorId)
+        {
+            //var list = _context.Appointments.Include(d => d.Doctor).ThenInclude(u => u.User).Where(d => d.StartTime == date);
+
+            //var doctors = _context.Doctors.Include(d => d.User).ToList();
+
+            //foreach (var item in list)
+            //{
+            //    doctors.Remove(item.Doctor);
+            //}
+
+            //doctors.Select(d => new SelectListItem
+            //{
+            //    Text = d.User.FullName,
+            //    Value = d.Id.ToString()
+            //}).ToList();
+
+            //return doctors;
+
+            var list = _context.Appointments.Include(d => d.Doctor).ThenInclude(u => u.User).Where(d => d.StartTime == date);
+
+            var doctors = _context.Doctors.Include(d => d.User).Select(d => new SelectListItem
+            {
+                Text = $"Dr. {d.User.FullName}",
+                Value = d.Id.ToString()
+            }).ToList();
+
+            foreach (var item in list)
+            {
+                var doc = doctors.ToList().FirstOrDefault(d => d.Value == item.Doctor.Id.ToString() && d.Value != doctorId.ToString());
+
+                if (doc != null)
+                {
+                    doctors.Remove(doc);
+                }
+            }
+
+            return doctors;
+        }
     }
 }
