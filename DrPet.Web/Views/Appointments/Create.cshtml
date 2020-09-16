@@ -168,6 +168,9 @@
             console.log("CREATED");
             console.log(args);
         }
+
+        console.log("OUTRO");
+        console.log(args);
     }
 
             function onActionBegin(args) {
@@ -179,7 +182,6 @@
                     console.log(args);
 
                     if (args.data[0].DoctorId === "" || args.data[0].AnimalId === "") {
-                        args.cancel = true;
                     }
 
                     args.data[0].ClientUsername = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.ClientUsername));
@@ -202,7 +204,7 @@
         function onEventRendered(args) {
             var categoryColor;
             switch (args.data.Status) {
-                case 'Waiting Aproval':
+                case 'Waiting':
                     categoryColor = '#F57F17';
                     break;
                 case 'Confirmed':
@@ -243,6 +245,9 @@
                 //var date = JSON.parse(JSON.stringify(args.data.StartTime));
                 var date = args.data.StartTime.toISOString();
                 //console.log(date);
+
+                console.log("TARGET");
+                console.log(args.target);
 
                 if (args.target.textContent === "") {
                     GetListsCreate(args);
@@ -285,8 +290,8 @@
                 <tr>
                     <td class="e-textlabel">Description</td>
                     <td colspan="4">
-                        <textarea id="Description" class="e-field e-input" name="ClientDescription" rows="3" cols="50"
-                                  style="width: 100%; height: 60px !important; resize: vertical"></textarea>
+                        <textarea id="ClientDescription" class="e-field e-input" name="ClientDescription" rows="3" cols="50"
+                                  style="width: 100%; height: 60px !important; resize: vertical"  placeholder="Gives us a small description for the reason of this appointment"></textarea>
                     </td>
                 </tr>
             </tbody>

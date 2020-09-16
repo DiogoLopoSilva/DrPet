@@ -27,6 +27,7 @@ namespace DrPet.Web.Data.Entities
         public string Status { get; set; }     
 
         [Required]
+        [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy HH:mm}", ApplyFormatInEditMode = false)]
         [DataType(DataType.DateTime)]
         public DateTime StartTime { get; set; } //TODO MUDAR PARA LOCAL TIME        
 

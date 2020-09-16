@@ -4,27 +4,61 @@
     ViewData["Title"] = "Details";
 }
 
-<h2>Details</h2>
 
-<div>
-    <h4>Appointment</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.StartTime)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.StartTime)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.DoctorNotes)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.DoctorNotes)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+
+<div class=" container View">
+    <div class="row justify-content-center">
+        <div class="col-6 text-center align-middle">
+            <h1 class="mb-5 p-0">Details</h1>
+            <table class="col-12">
+                <tbody>
+                    <tr>
+                        <td class="text-right col-4 pr-4">
+                            <h2>Client</h2>
+                        </td>
+                        <td class="col-4">
+                            @Html.DisplayFor(model => model.Client.User.FullName)
+                        </td>
+                        <td class="col-4">
+                            <a asp-controller="Account" asp-action="Profile" asp-route-username="@Model.Client.User.UserName"><span class="fas fa-search"></span></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-right col-4 pr-4">
+                            <h2>Animal</h2>
+                        </td>
+                        <td class="col-4 py-5">
+                            @Html.DisplayFor(model => model.Animal.Name)
+                        </td>
+                        <td class="col-4">
+                            <a asp-controller="Animals" asp-action="Details" asp-route-id="@Model.Animal.Id"><span class="fas fa-search"></span></a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="text-right col-4 pr-4">
+                            <h2>Doctor</h2>
+                        </td>
+                        <td class="col-4">
+                            @Html.DisplayFor(model => model.Doctor.User.FullName)
+                        </td>
+                        <td class="col-4">
+                            <a asp-controller="Account" asp-action="Profile" asp-route-username="@Model.Doctor.User.UserName"><span class="fas fa-search"></span></a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            @if (!String.IsNullOrEmpty(Model.ClientDescription))
+            {
+                <div class="m-5">
+                    <h2> Description</h2>
+                    <textarea class="form-control" readonly style="resize:none">@Html.DisplayFor(model => model.ClientDescription)</textarea>
+                </div>
+            }
+            <div class="m-5">
+                <h2> Notes</h2>
+                <textarea class="form-control" style="resize:none"></textarea>
+                <br>
+            </div>
+        </div>
+    </div>
 </div>

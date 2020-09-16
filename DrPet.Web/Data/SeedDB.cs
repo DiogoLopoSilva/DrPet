@@ -222,7 +222,7 @@ namespace DrPet.Web.Data
                     Subject = "General",
                     StartTime = Convert.ToDateTime($"{DateTime.Today.ToShortDateString()} 09:30"),
                     DoctorNotes = "Teste 2",
-                    Status = "Waiting Aproval"
+                    Status = "Waiting"
                 };
 
                 _context.Appointments.Add(appointment2);

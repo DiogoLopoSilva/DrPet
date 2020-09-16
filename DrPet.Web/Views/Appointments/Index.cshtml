@@ -1,68 +1,142 @@
 ﻿@model IEnumerable<DrPet.Web.Data.Entities.Appointment>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Appointments";
 }
 
-<h2>Index</h2>
+<div id="appointmentTable">
+    <partial name="_TablePartial" />
+</div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-    <br>
-    <a asp-action="IndexNotConfirmed">Pending Aproval</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            @if (this.User.IsInRole("Admin"))
-            {
-                <th>
-                    @Html.DisplayNameFor(model => model.Client)
-                </th>
-            }
-            <th>
-                @Html.DisplayNameFor(model => model.Animal)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Doctor)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StartTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DoctorNotes)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                @if (this.User.IsInRole("Admin"))
-                {
-                    <td>
-                        @Html.DisplayFor(modelItem => item.Client.User.FullName)
-                    </td>
+
+<div class="modal fade" id="ModalTeste">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Login</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <label id="labeldata"></label>
+                    <input type="button" value="Accept" id="Accept" />
+                </form>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).on('click', '.changeScheduleDate', function (event) {
+        console.log('CLICK EVENT');
+        console.log(event.currentTarget);
+        var selectedDate = event.currentTarget.attributes[1].value;
+
+
+
+        date = moment(selectedDate, 'DD/MM/YYYY').format("MM/DD/YYYY"); //TODO VER OS FORMATOS DA DATA DO CALENDARIO, DE MOMENTO ACEITA MM/DD/YYYY
+        console.log(selectedDate);
+
+        console.log(date);
+
+        var scheduleObj = document.getElementById('schedule').ej2_instances[0];
+        scheduleObj.selectedDate = date;
+
+        $("html, body").animate({ scrollTop: 0 }, "slow");
+    });
+</script>
+
+<script>
+        $(document).on('keyup', '#searchbox',function () {
+        var searchtext = $(this).val();
+        $("table.user-list tr").each(function (results) {
+            if (results !== 0) {
+                var name = $(this).find("td:nth-child(1)").text();
+                var phone = $(this).find("td:nth-child(5)").text();
+                var searchName = name.indexOf(searchtext) !== 0 && name.toLowerCase().indexOf(searchtext.toLowerCase()) < 0;
+                var searchPhone = phone.indexOf(searchtext) !== 0 && phone.toLowerCase().indexOf(searchtext.toLowerCase()) < 0;
+                if (searchName && searchPhone) {
+                    $(this).hide();
                 }
-                <td>
-                    @Html.DisplayFor(modelItem => item.Animal.Name)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Doctor.User.FullName)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.StartTime)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.DoctorNotes)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+                else {
+                    $(this).show();
+                }
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    var appointment;
+
+    $("#Accept").click(function () {
+
+        ////console.log(appointment);
+
+        //var route = "/Appointments/TableData?status=";
+
+        //var status = "Confirmed";
+
+        //var result = route.concat(status);
+
+        //$("#appointmentTable").load(result);
+        ////window.location.href = '/Appointments/Index';
+
+        console.log('works');
+    });
+    
+
+    @*$(document).ready(function () {
+        var lastFilter;
+
+        //var appointments = @(Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model)));
+        //console.log(appointments);
+
+        //var route = "/Appointments/TableData";
+
+        //$("#appointmentTable").load(route);
+
+     
+
+    });*@
+</script>
+
+<script>
+
+    $(document).on('click', '.listFilter', function (results) {
+        //alert('click');
+        console.log(results);
+
+        var status = results.currentTarget.attributes[3].value;
+
+        //if (lastFilter == status) {
+        //    //alert('Igual');
+        //    return;
+        //}
+
+        //lastFilter = status;
+        console.log('###STATUS###')
+        console.log(status);
+
+        var ajax = new ej.base.Ajax('/Appointments/TableData' + '?status=' + status, 'GET', true);
+
+        ajax.send().then(function (result) {
+
+            //console.log(result);
+
+            // append partial view controls into created element
+
+            $("#appointmentTable").html(result);
+
+            //eval(document.getElementById('appointmentTable').querySelector('script').innerHTML);
+        });
+
+    });
+
+</script>
+
+

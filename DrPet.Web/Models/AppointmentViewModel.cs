@@ -25,10 +25,8 @@ namespace DrPet.Web.Models
         [DataType(DataType.DateTime)]
         public DateTime EndTime { get { return this.StartTime.AddMinutes(30); } } //TODO MUDAR PARA LOCAL TIME
 
-        public string Description { get; set; }
+        public string ClientDescription { get; set; }
 
         public string Notes { get; set; }
-
-        public string TIAGOTESTE { get; set; }
     }
 }

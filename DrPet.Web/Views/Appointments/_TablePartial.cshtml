@@ -1,0 +1,188 @@
+﻿@model IEnumerable<DrPet.Web.Data.Entities.Appointment>
+
+<div class="View">
+    <div class="row justify-content-center">
+        <div class="col-6">
+            <p>
+                @if (!User.IsInRole("Admin"))
+                {
+                    <a asp-action="Create">Schedule an Appointment</a>
+                    <br>
+                }
+                <a asp-action="IndexNotConfirmed">Pending Aproval</a>
+            </p>
+            <div class="mb-5">
+                <ejs-schedule id="schedule" height="550" startHour="09:00" endHour="18:00"
+                              allowMultiCellSelection="false" eventRendered="onEventRendered" readonly="true" eventClick="onEventClick">
+                    <e-schedule-views>
+                        <e-schedule-view option="WorkWeek"></e-schedule-view>
+                    </e-schedule-views>
+                    <e-schedule-eventsettings dataSource="@Model"></e-schedule-eventsettings>
+                </ejs-schedule>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-center">
+    <!--TODO MUDAR AS OUTRAS LIST VIEWS PARA ESTE ASPETO-->
+    <div class="col-8">
+        <div class="row">
+            <h2 class="justify-content-start">Appointments</h2>
+            <input type="text" class="form-control w-auto ml-auto justify-content-end" id="searchbox" placeholder="search..." maxlength="50" />
+            <div class="col-lg-12 p-0">
+                <div>
+                    <input type="button" class="btn listFilter" value="All" data-status="All" /> |
+                    <input type="button" class="btn listFilter" value="Confirmed" data-status="Confirmed" /> |
+                    <input type="button" class="btn listFilter" value="Waiting Aproval" data-status="Waiting" />
+                </div>
+                <!--TODO VER SE ESTE PADDING TEM PROBLEMAS AQUI-->
+                <div class="main-box clearfix">
+                    <div class="table-responsive">
+                        <table class="table user-list">
+                            <thead>
+                                <tr>
+                                    <th><span>Client</span></th>
+                                    <th><span>Animal</span></th>
+                                    <th><span>Doctor</span></th>
+                                    <th><span>Date</span></th>
+                                    <th class="text-center"><span>Status</span></th>
+                                    <th>&nbsp;</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <img src="~/images/Default/nopicture.png" alt=""> <!--MUDAR ISTO PARA UMA IMAGEM DEFAULT-->
+                                            <a href="#" class="user-link">@Html.DisplayFor(modelItem => item.Client.User.FullName)</a>
+                                            <span class="user-subhead">
+                                                @Html.DisplayFor(modelItem => item.Client.User.UserName)
+                                            </span>
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Animal.Name)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Doctor.User.FullName)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.StartTime)
+                                        </td>
+                                        <td class="text-center">
+                                            @if (item.Status == "Confirmed")
+                                            {
+                                                <span class="badge badge-success">Confirmed</span>
+                                            }
+                                            else if (item.Status == "Waiting")
+                                            {
+                                                <span class="badge badge-warning">Waiting Aproval</span>
+                                            }
+                                        </td>
+                                        <td class="w-25 text-center">
+                                            <a class="table-link changeScheduleDate" data-appointment-date="@Html.DisplayFor(modelItem => item.StartTime)">
+                                                <span class="fa-stack">
+                                                    <i class="fa fa-square fa-stack-2x"></i>
+                                                    <i class="fa fa-search-plus fa-stack-1x fa-inverse"></i>
+                                                </span>
+                                            </a>
+                                            <a asp-controller="Account" asp-action="ChangeUser" class="table-link">
+                                                <span class="fa-stack">
+                                                    <i class="fa fa-square fa-stack-2x"></i>
+                                                    <i class="fa fa-pencil-alt fa-stack-1x fa-inverse"></i>
+                                                </span>
+                                            </a>
+                                            <a asp-controller="Appointments" asp-action="Index" class="table-link">
+                                                <span class="fa-stack">
+                                                    <i class="fa fa-square fa-stack-2x"></i>
+                                                    <i class="fa fa-calendar-alt fa-stack-1x fa-inverse"></i>
+                                                </span>
+                                            </a>
+                                            <a href="#" class="table-link danger">
+                                                <span class="fa-stack">
+                                                    <i class="fa fa-square fa-stack-2x"></i>
+                                                    <i class="fa fa-trash-alt fa-stack-1x fa-inverse"></i>
+                                                </span>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <ul class="pagination justify-content-end">
+                        <li class="page-item"><a class="page-link" href="#"><i class="fa fa-chevron-left"></i></a></li>
+                        <li class="page-item"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item"><a class="page-link" href="#"><i class="fa fa-chevron-right"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+    //$(document).ready(function () {
+
+    //            $("#appointmentTable").load("/Appointments/TableData");
+    //});
+
+
+    function onEventRendered(args) {
+        var categoryColor;
+        switch (args.data.Status) {
+            case 'Waiting':
+                categoryColor = '#F57F17';
+                break;
+            case 'Confirmed':
+                categoryColor = '#7fa900';
+                break;
+            case 'New':
+                categoryColor = '#8e24aa';
+                break;
+        }
+        if (!args.element || !categoryColor) {
+            return;
+        }
+        var scheduleObj = document.getElementById('schedule').ej2_instances[0];
+        if (scheduleObj.currentView === 'Agenda') {
+            (args.element.firstChild).style.borderLeftColor = categoryColor;
+        } else {
+            args.element.style.backgroundColor = categoryColor;
+        }
+    }
+
+
+    function onEventClick(args) {
+        console.log(args);
+
+        var isAdmin = '@User.IsInRole("Admin")'.toLowerCase();
+        console.log(isAdmin);
+
+        if (args.event.Status === "Waiting" && isAdmin == 'true') {
+
+            //console.log('DATE');
+            //console.log(moment(args.event.StartTime).format('LLL'));
+            //console.log(moment().format('LLL'));
+
+            var date = moment(args.event.StartTime).format('LLL');
+
+            if (moment().format('LLL') <= date) {
+                args.cancel = true;
+                $('#labeldata').text("TESTE MUDAR");
+                appointment = args.event;
+                $('#ModalTeste').modal('show');
+            }
+        }
+    }
+
+</script>
+
+
+
+<ejs-scripts></ejs-scripts>

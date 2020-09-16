@@ -4,63 +4,86 @@
     ViewData["Title"] = "Doctors";
 }
 
-<div class="View container col-xl-auto">
-    <div class="row justify-content-center">
-        <div>
-            <!--class="card"-->
-            <div class="card-body d-flex align-items-center pl-12 mb-20">
-                <h5 class="card-title text-uppercase m-0">Manage Doctors</h5>
-                <input type="text" class="form-control w-auto ml-auto" />
-            </div>
-            <div class="table-responsive">
-                <table class="table no-wrap user-table mb-0">
-                    <thead>
-                        <tr>
-                            <th scope="col" class="border-0 text-uppercase font-medium"> @Html.DisplayNameFor(model => model.User.FullName)</th>
-                            <th scope="col" class="border-0 text-uppercase font-medium"> @Html.DisplayNameFor(model => model.User.UserName)</th>
-                            <th scope="col" class="border-0 text-uppercase font-medium"> @Html.DisplayNameFor(model => model.Specialization)</th>
-                            <th scope="col" class="border-0 text-uppercase font-medium"> @Html.DisplayNameFor(model => model.User.DateOfBirth)</th>
-                            <th scope="col" class="border-0 text-uppercase font-medium">@Html.DisplayNameFor(model => model.User.DocumentNumber)</th>
-                            <th scope="col" class="border-0 text-uppercase font-medium">@Html.DisplayNameFor(model => model.User.PhoneNumber)</th>
-                            <th scope="col" class="border-0 text-uppercase font-medium text-center">Manage</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model)
-                        {
+<div class="container View">
+    <div class="row">
+        <h2 class="justify-content-start">Doctors</h2>
+        <input type="text" class="form-control w-auto ml-auto justify-content-end" />
+        <div class="col-lg-12 p-0">
+            <!--TODO VER SE ESTE PADDING TEM PROBLEMAS AQUI-->
+            <div class="main-box clearfix">
+                <div class="table-responsive">
+                    <table class="table user-list">
+                        <thead>
+                            <tr>
+                                <th><span>User</span></th>
+                                <th><span>Created</span></th>
+                                <th><span>Speciality</span></th>
+                                <th class="text-center"><span>Status</span></th>
+                                <th><span>Phone</span></th>
+                                <th>&nbsp;</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
                             <tr>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.User.FullName)
+                                    <img src="~/images/Default/nopicture.png" alt=""> <!--MUDAR ISTO PARA UMA IMAGEM DEFAULT-->
+                                    <a href="#" class="user-link">@Html.DisplayFor(modelItem => item.User.FullName)</a>
+                                    <span class="user-subhead">
+                                        @Html.DisplayFor(modelItem => item.User.UserName)
+                                    </span>
                                 </td>
                                 <td>
-                                    @Html.DisplayFor(modelItem => item.User.UserName)
+                                    @Html.DisplayFor(modelItem => item.User.DateCreated)
                                 </td>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.Specialization)
                                 </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.User.DateOfBirth)
-                                </td>
-                                <td>
-                                    @Html.DisplayFor(modelItem => item.User.DocumentNumber)
+                                <td class="text-center">
+                                    <span class="badge badge-success">Active</span>
                                 </td>
                                 <td>
                                     @Html.DisplayFor(modelItem => item.User.PhoneNumber)
                                 </td>
-                                <td>
-                                    @if (User.IsInRole("Admin"))
-                                    {
-                                        <a asp-controller="Appointments" asp-action="Create" asp-route-username="@item.User.UserName" type="button" class="btn btn-outline-info btn-circle btn-lg btn-circle"><i class="fa fa-calendar-plus"></i> </a>
-                                    }
-                                    <button type="button" class="btn btn-outline-info btn-circle btn-lg btn-circle ml-2"><i class="fa fa-key"></i> </button>
-                                    <a asp-action="Delete" asp-route-id="@item.Id" type="button" class="btn btn-outline-info btn-circle btn-lg btn-circle ml-2"><i class="fa fa-trash"></i> </a>
-                                    <a asp-controller="Account" asp-action="ChangeUser" asp-route-username="@item.User.UserName" type="button" class="btn btn-outline-info btn-circle btn-lg btn-circle ml-2"><i class="fa fa-edit"></i> </a>
-                                    <button type="button" class="btn btn-outline-info btn-circle btn-lg btn-circle ml-2"><i class="fa fa-upload"></i> </button>
+                                <td class="w-25 text-center">
+                                    <a asp-controller="Account" asp-action="Profile" asp-route-username="@item.User.UserName" class="table-link">
+                                        <span class="fa-stack">
+                                            <i class="fa fa-square fa-stack-2x"></i>
+                                            <i class="fa fa-search-plus fa-stack-1x fa-inverse"></i>
+                                        </span>
+                                    </a>
+                                    <a asp-controller="Account" asp-action="ChangeUser" asp-route-username="@item.User.UserName" class="table-link">
+                                        <span class="fa-stack">
+                                            <i class="fa fa-square fa-stack-2x"></i>
+                                            <i class="fa fa-pencil-alt fa-stack-1x fa-inverse"></i>
+                                        </span>
+                                    </a>
+                                    <a asp-controller="Appointments" asp-action="Index" asp-route-username="@item.User.UserName" class="table-link">
+                                        <span class="fa-stack">
+                                            <i class="fa fa-square fa-stack-2x"></i>
+                                            <i class="fa fa-calendar-alt fa-stack-1x fa-inverse"></i>
+                                        </span>
+                                    </a>
+                                    <a href="#" class="table-link danger">
+                                        <span class="fa-stack">
+                                            <i class="fa fa-square fa-stack-2x"></i>
+                                            <i class="fa fa-trash-alt fa-stack-1x fa-inverse"></i>
+                                        </span>
+                                    </a>
                                 </td>
                             </tr>
-                        }
-                    </tbody>
-                </table>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <ul class="pagination justify-content-end">
+                    <li class="page-item"><a class="page-link" href="#"><i class="fa fa-chevron-left"></i></a></li>
+                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item"><a class="page-link" href="#"><i class="fa fa-chevron-right"></i></a></li>
+                </ul>
             </div>
         </div>
     </div>

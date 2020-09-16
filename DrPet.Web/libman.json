@@ -10,6 +10,10 @@
       "provider": "unpkg",
       "library": "bootstrap@4.5.2",
       "destination": "wwwroot/lib/bootstrap/"
+    },
+    {
+      "library": "moment.js@2.27.0",
+      "destination": "wwwroot/lib/moment.js/"
     }
   ]
 }

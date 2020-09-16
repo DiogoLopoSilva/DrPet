@@ -4,82 +4,105 @@
     ViewData["Title"] = "Clients";
 }
 
-<div class="container View">
-    <div class="row">
-        <h2 class="justify-content-start">Clients</h2>
-        <input type="text" class="form-control w-auto ml-auto justify-content-end" />
-        <div class="col-lg-12 p-0"> <!--TODO VER SE ESTE PADDING TEM PROBLEMAS AQUI-->
-            <div class="main-box clearfix">
-                <div class="table-responsive">
-                    <table class="table user-list">
-                        <thead>
-                            <tr>
-                                <th><span>User</span></th>
-                                <th><span>Created</span></th>
-                                <th class="text-center"><span>Status</span></th>
-                                <th><span>Phone</span></th>
-                                <th>&nbsp;</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model)
-                            {
+<div class="row justify-content-center View">
+    <div class="col-8">
+        <div class="row">
+            <h2 class="justify-content-start">Clients</h2>
+            <input type="text" class="form-control w-auto ml-auto justify-content-end" id="searchbox" placeholder="search..." maxlength="50" />
+            <div class="col-lg-12 p-0">
+                <!--TODO VER SE ESTE PADDING TEM PROBLEMAS AQUI-->
+                <div class="main-box clearfix">
+                    <div class="table-responsive">
+                        <table class="table user-list">
+                            <thead>
                                 <tr>
-                                    <td>
-                                        <img src="~/images/Default/nopicture.png" alt=""> <!--MUDAR ISTO PARA UMA IMAGEM DEFAULT-->
-                                        <a href="#" class="user-link">@Html.DisplayFor(modelItem => item.User.FullName)</a>
-                                        <span class="user-subhead">
-                                            @Html.DisplayFor(modelItem => item.User.UserName)
-                                        </span>
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.User.DateCreated)
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="badge badge-success">Active</span>
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.User.PhoneNumber)
-                                    </td>
-                                    <td class="w-25 text-center">
-                                        <a asp-controller="Account" asp-action="Profile" asp-route-username="@item.User.UserName" class="table-link">
-                                            <span class="fa-stack">
-                                                <i class="fa fa-square fa-stack-2x"></i>
-                                                <i class="fa fa-search-plus fa-stack-1x fa-inverse"></i>
-                                            </span>
-                                        </a>
-                                        <a asp-controller="Account" asp-action="ChangeUser" asp-route-username="@item.User.UserName" class="table-link">
-                                            <span class="fa-stack">
-                                                <i class="fa fa-square fa-stack-2x"></i>
-                                                <i class="fa fa-pencil-alt fa-stack-1x fa-inverse"></i>
-                                            </span>
-                                        </a>
-                                        <a asp-controller="Appointments" asp-action="Create" asp-route-username="@item.User.UserName" class="table-link">
-                                            <span class="fa-stack">
-                                                <i class="fa fa-square fa-stack-2x"></i>
-                                                <i class="fa fa-calendar-alt fa-stack-1x fa-inverse"></i>
-                                            </span>
-                                        </a>
-                                        <a href="#" class="table-link danger">
-                                            <span class="fa-stack">
-                                                <i class="fa fa-square fa-stack-2x"></i>
-                                                <i class="fa fa-trash-alt fa-stack-1x fa-inverse"></i>
-                                            </span>
-                                        </a>
-                                    </td>
+                                    <th><span>User</span></th>
+                                    <th><span>Created</span></th>
+                                    <th class="text-center"><span>Status</span></th>
+                                    <th><span>Phone</span></th>
+                                    <th>&nbsp;</th>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            <img src="~/images/Default/nopicture.png" alt=""> <!--MUDAR ISTO PARA UMA IMAGEM DEFAULT-->
+                                            <a href="#" class="user-link">@Html.DisplayFor(modelItem => item.User.FullName)</a>
+                                            <span class="user-subhead">
+                                                @Html.DisplayFor(modelItem => item.User.UserName)
+                                            </span>
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.User.DateCreated)
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge badge-success">Active</span>
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.User.PhoneNumber)
+                                        </td>
+                                        <td class="w-25 text-center">
+                                            <a asp-controller="Account" asp-action="Profile" asp-route-username="@item.User.UserName" class="table-link">
+                                                <span class="fa-stack">
+                                                    <i class="fa fa-square fa-stack-2x"></i>
+                                                    <i class="fa fa-search-plus fa-stack-1x fa-inverse"></i>
+                                                </span>
+                                            </a>
+                                            <a asp-controller="Account" asp-action="ChangeUser" asp-route-username="@item.User.UserName" class="table-link">
+                                                <span class="fa-stack">
+                                                    <i class="fa fa-square fa-stack-2x"></i>
+                                                    <i class="fa fa-pencil-alt fa-stack-1x fa-inverse"></i>
+                                                </span>
+                                            </a>
+                                            <a asp-controller="Appointments" asp-action="Create" asp-route-username="@item.User.UserName" class="table-link">
+                                                <span class="fa-stack">
+                                                    <i class="fa fa-square fa-stack-2x"></i>
+                                                    <i class="fa fa-calendar-alt fa-stack-1x fa-inverse"></i>
+                                                </span>
+                                            </a>
+                                            <a href="#" class="table-link danger">
+                                                <span class="fa-stack">
+                                                    <i class="fa fa-square fa-stack-2x"></i>
+                                                    <i class="fa fa-trash-alt fa-stack-1x fa-inverse"></i>
+                                                </span>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <ul class="pagination justify-content-end">
+                        <li class="page-item"><a class="page-link" href="#"><i class="fa fa-chevron-left"></i></a></li>
+                        <li class="page-item"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                        <li class="page-item"><a class="page-link" href="#"><i class="fa fa-chevron-right"></i></a></li>
+                    </ul>
                 </div>
-                <ul class="pagination justify-content-end">
-                    <li class="page-item"><a class="page-link" href="#"><i class="fa fa-chevron-left"></i></a></li>
-                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                    <li class="page-item"><a class="page-link" href="#"><i class="fa fa-chevron-right"></i></a></li>
-                </ul>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    $("#searchbox").keyup(function () {
+        var searchtext = $(this).val();
+        $("table tr").each(function (results) {
+            if (results !== 0) {
+                var name = $(this).find("td:nth-child(1)").text();
+                var phone = $(this).find("td:nth-child(4)").text();
+                var searchName = name.indexOf(searchtext) !== 0 && name.toLowerCase().indexOf(searchtext.toLowerCase()) < 0;
+                var searchPhone = phone.indexOf(searchtext) !== 0 && phone.toLowerCase().indexOf(searchtext.toLowerCase()) < 0;
+                if (searchName && searchPhone) {
+                    $(this).hide();
+                }
+                else {
+                    $(this).show();
+                }
+            }
+        });
+    });
+</script>

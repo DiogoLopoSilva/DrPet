@@ -40,7 +40,7 @@ namespace DrPet.Web.Controllers
         }
 
         // GET: Appointments
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string username)
         {
             //var model = new AppointmentsWithTempView
             //{
@@ -48,7 +48,64 @@ namespace DrPet.Web.Controllers
             //    AppointmentsTemp = await _appointmentRepository.GetAppointmentsTempAsync(this.User.Identity.Name)
             //};
 
-            return View(await _appointmentRepository.GetAppointmentsAsync(this.User.Identity.Name));         
+            var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
+
+            if (username != null && await _userHelper.IsUserInRoleAsync(user, RoleNames.Administrator))
+            {
+                user = await _userHelper.GetUserByEmailAsync(username);
+            }
+
+            //var model = new AppointmentIndexViewModel
+            //{
+            //    CompleteList = await _appointmentRepository.GetAppointmentsAsync(user.UserName)
+            //};
+
+            //var model = new AppointmentIndexViewModel(await _appointmentRepository.GetAppointmentsAsync(user.UserName));
+
+
+            return View(await _appointmentRepository.GetAppointmentsAsync(user.UserName));
+        }
+
+        public IActionResult Teste()
+        {
+            return View();
+        }
+
+        public IActionResult TesteView()
+        {
+            return PartialView("_TestePartial");
+        }
+
+        public async Task<ActionResult> TableData(string status) //TODO FAZER UM GET APPOINTMENTS BY STATUS
+        {
+            var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
+
+            //if (username != null && await _userHelper.IsUserInRoleAsync(user, RoleNames.Administrator))
+            //{
+            //    user = await _userHelper.GetUserByEmailAsync(username);
+            //}
+
+            if (string.IsNullOrEmpty(status) || status == "All") // TENTAR AMANHA FAZER UM METODO JSON QUE DEVOLVE A LISTA DE DATA E UM PartialView("_TablePartial", allitems);
+            {
+                var allitems = await _appointmentRepository.GetAppointmentsAsync(user.UserName);
+
+                //return Json(new { result = "Success", list = allitems });
+
+                return PartialView("_TablePartial", allitems);
+            }           
+
+            var items = await _appointmentRepository.GetAppointmentsByStatusAsync(user.UserName,status);
+
+            //return Json(new { result = "Success", list = items });
+
+            return PartialView("_TablePartial", items); //TODO SE O .HTML NAO DER, USAR .REPLACE
+        }
+
+        public IActionResult TableView(string JsonList)
+        {
+            var listAppointment = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<Appointment>>(JsonList);
+
+            return PartialView("_TablePartial",listAppointment);
         }
 
         // GET: AppointmentsNotConfirmed
@@ -58,15 +115,16 @@ namespace DrPet.Web.Controllers
         }
 
         // GET: Appointments/Details/5
-        public async Task<IActionResult> Details(int? id)
+        [Authorize(Roles = "Admin,Doctor")]
+        public IActionResult Details(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var appointment = await _context.Appointments
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var appointment = _appointmentRepository.GetByIdWithModels(id.Value);
+
             if (appointment == null)
             {
                 return NotFound();
@@ -82,7 +140,7 @@ namespace DrPet.Web.Controllers
 
             bool isAdmin = await _userHelper.IsUserInRoleAsync(user, RoleNames.Administrator);
 
-            if(String.IsNullOrEmpty(username) && isAdmin)
+            if (String.IsNullOrEmpty(username) && isAdmin)
             {
                 return NotFound();
             }
@@ -104,11 +162,27 @@ namespace DrPet.Web.Controllers
             return View(model);
         }
 
-        public JsonResult GetData(string username)  // Here we get the Start and End Date and based on that can filter the data and return to Scheduler --VER Passing additional parameters to the server
+        public async Task<JsonResult> GetData(string username)  // Here we get the Start and End Date and based on that can filter the data and return to Scheduler --VER Passing additional parameters to the server
         {
+
+            if (!this.User.IsInRole(RoleNames.Administrator)) //TESTE SE ESTE PEDAÇO DE CODIGO NAO TRAZ PROBLEMAS. ADMIN TRAZ TUDO, MEDICO TRAZ AS DELE, CLIENT NAO TRAZ NADA
+            {
+                var clientdata = await _appointmentRepository.GetAppointmentsAsync(this.User.Identity.Name);
+
+                foreach (var item in clientdata)
+                {
+                    if (item.Status=="Confirmed" || item.StartTime.Date <= DateTime.Today.Date)
+                    {
+                        item.IsReadonly = true;
+                    }
+                }
+
+                return Json(clientdata);
+            }
+
             var data = _appointmentRepository.GetAllWithModels().ToList();
 
-            foreach (var item in data)
+            foreach (var item in data) //TODO NAO DEIXAR ABRIR O EDITOR PARA CONSULTAS MARCADAS
             {
                 if (item.Client.User.UserName != username)
                 {
@@ -140,16 +214,20 @@ namespace DrPet.Web.Controllers
         }
 
         [HttpPost]
-        public async Task<JsonResult> UpdateData([FromBody]EditParams param)
+        public async Task<JsonResult> UpdateData([FromBody] EditParams param)
         {
+            if (param==null)
+            {
+                return Json(NotFound());
+            }
+
             if (param.action == "insert" || (param.action == "batch" && param.added != null)) // this block of code will execute while inserting the appointments
             {
                 var value = (param.action == "insert") ? param.value : param.added[0];
 
-
                 var client = _clientRepository.GetClientWithUser(value.ClientUsername);
 
-                var doctor =  _doctorRepository.GetDoctorWithUser(value.DoctorId);
+                var doctor = _doctorRepository.GetDoctorWithUser(value.DoctorId);
 
                 var animal = _animalRepository.GetAnimalWithUser(value.AnimalId);
 
@@ -159,9 +237,9 @@ namespace DrPet.Web.Controllers
                     Animal = animal,
                     Doctor = doctor,
                     Subject = "POR ALGO AQUI",
-                    Status = "Waiting Aproval",
+                    Status = "Waiting",
                     StartTime = value.StartTime.ToLocalTime(),
-                    ClientDescription = value.Description
+                    ClientDescription = value.ClientDescription
                 };
 
                 await _appointmentRepository.CreateAsync(appointment);
@@ -178,22 +256,22 @@ namespace DrPet.Web.Controllers
             }
             if (param.action == "update" || (param.action == "batch" && param.changed != null)) // this block of code will execute while updating the appointment
             {
-                
+
             }
             if (param.action == "remove" || (param.action == "batch" && param.deleted != null)) // this block of code will execute while removing the appointment
             {
                 if (param.action == "remove")
                 {
-                    
+
                 }
                 else
                 {
                     foreach (var apps in param.deleted)
                     {
-                        
+
                     }
                 }
-               
+
             }
 
             return Json(new { result = "Failed" });

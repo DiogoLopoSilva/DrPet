@@ -1,6 +1,7 @@
 ﻿using DrPet.Web.Data.Entities;
 using DrPet.Web.Helpers;
 using Microsoft.EntityFrameworkCore;
+using Syncfusion.EJ2.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,7 +47,6 @@ namespace DrPet.Web.Data.Repositories
                       .Include(a => a.Animal)
                       .Include(a => a.Doctor)
                       .ThenInclude(d => d.User)
-                      .Where(a => a.Status == "Confirmed")
                       .OrderBy(a => a.StartTime);
             }
 
@@ -66,7 +66,47 @@ namespace DrPet.Web.Data.Repositories
                   .Include(a => a.Animal)
                   .Include(a => a.Doctor)
                   .ThenInclude(d => d.User)
-                  .Where(a => a.Client.User == user && a.Status == "Confirmed")
+                  .Where(a => a.Client.User == user)
+                  .OrderBy(a => a.StartTime);
+        }
+
+        public async Task<IQueryable<Appointment>> GetAppointmentsByStatusAsync(string userName,string status)
+        {
+            var user = await _userHelper.GetUserByEmailAsync(userName);
+
+            if (user == null)
+            {
+                return null;
+            }
+
+            if (await _userHelper.IsUserInRoleAsync(user, RoleNames.Administrator))
+            {
+                return _context.Appointments.Include(a => a.Client)
+                      .ThenInclude(c => c.User)
+                      .Include(a => a.Animal)
+                      .Include(a => a.Doctor)
+                      .ThenInclude(d => d.User)
+                      .Where(a => a.Status == status)
+                      .OrderBy(a => a.StartTime);
+            }
+
+            if (await _userHelper.IsUserInRoleAsync(user, RoleNames.Doctor))
+            {
+                return _context.Appointments.Include(a => a.Client)
+                 .ThenInclude(c => c.User)
+                 .Include(a => a.Animal)
+                 .Include(a => a.Doctor)
+                 .ThenInclude(d => d.User)
+                 .Where(a => a.Doctor.User == user && a.Status == "Confirmed") //TODO VER SE DEIXO O DOCTOR VER MAIS SEM SER CONFIRMED
+                 .OrderBy(a => a.StartTime);
+            }
+
+            return _context.Appointments.Include(a => a.Client)
+                  .ThenInclude(c => c.User)
+                  .Include(a => a.Animal)
+                  .Include(a => a.Doctor)
+                  .ThenInclude(d => d.User)
+                  .Where(a => a.Client.User == user && a.Status == status)
                   .OrderBy(a => a.StartTime);
         }
 
@@ -86,7 +126,7 @@ namespace DrPet.Web.Data.Repositories
                       .Include(a => a.Animal)
                       .Include(a => a.Doctor)
                       .ThenInclude(d => d.User)
-                      .Where(a => a.Status == "Waiting Aproval")
+                      .Where(a => a.Status == "Waiting")
                       .OrderBy(a => a.StartTime);
             }
 
@@ -97,7 +137,7 @@ namespace DrPet.Web.Data.Repositories
                  .Include(a => a.Animal)
                  .Include(a => a.Doctor)
                  .ThenInclude(d => d.User)
-                 .Where(a => a.Doctor.User == user && a.Status == "Waiting Aproval")
+                 .Where(a => a.Doctor.User == user && a.Status == "Waiting")
                  .OrderBy(a => a.StartTime);
             }
 
@@ -106,7 +146,7 @@ namespace DrPet.Web.Data.Repositories
                   .Include(a => a.Animal)
                   .Include(a => a.Doctor)
                   .ThenInclude(d => d.User)
-                  .Where(a => a.Client.User == user && a.Status == "Waiting Aproval")
+                  .Where(a => a.Client.User == user && a.Status == "Waiting")
                   .OrderBy(a => a.StartTime);
         }
 
@@ -128,6 +168,17 @@ namespace DrPet.Web.Data.Repositories
                   .Where(a => a.Doctor.User == user)
                   .OrderBy(a => a.StartTime);
         }
+
+        public Appointment GetByIdWithModels(int id)
+        {
+            return _context.Appointments.Include(a => a.Client)
+                  .ThenInclude(c => c.User)
+                  .Include(a => a.Animal)
+                  .Include(a => a.Doctor)
+                  .ThenInclude(d => d.User)
+                  .FirstOrDefault(d => d.Id == id);
+        }
+
 
         //public async Task<IQueryable<AppointmentTemp>> GetAppointmentsTempAsync(string userName)
         //{
