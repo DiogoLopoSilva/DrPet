@@ -28,7 +28,14 @@
                                 {
                                     <tr>
                                         <td>
-                                            <img src="~/images/Default/nopicture.png" alt=""> <!--MUDAR ISTO PARA UMA IMAGEM DEFAULT-->
+                                            @if (!string.IsNullOrEmpty(item.User.ImageUrl)) //TODO VER SE DEIXO IMAGEM AQUI
+                                            {
+                                                <img src="@Url.Content(item.User.ImageUrl)" onerror="this.src='../images/Default/nopicture.png'" alt="user avatar" id="test" style="width:auto;height:50px;" />
+                                            }
+                                            else
+                                            {
+                                                <img src="~/images/Default/nopicture.png" alt="user avatar" id="test" style="width:auto;height:50px;">
+                                            }
                                             <a href="#" class="user-link">@Html.DisplayFor(modelItem => item.User.FullName)</a>
                                             <span class="user-subhead">
                                                 @Html.DisplayFor(modelItem => item.User.UserName)

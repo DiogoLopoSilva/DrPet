@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DrPet.Web.Data.Repositories;
+using Microsoft.AspNetCore.Http;
 
 namespace DrPet.Web.Controllers
 {
@@ -21,13 +22,15 @@ namespace DrPet.Web.Controllers
         private readonly IAdminRepository _adminRepository;
         private readonly IDoctorRepository _doctorRepository;
         private readonly IAppointmentRepository _appointmentRepository;
+        private readonly IImageHelper _imageHelper;
 
         public AccountController(IUserHelper userHelper,
             IClientRepository clientRepository,
             IConverterHelper converterHelper,
             IAdminRepository adminRepository,
             IDoctorRepository doctorRepository,
-            IAppointmentRepository appointmentRepository)
+            IAppointmentRepository appointmentRepository,
+            IImageHelper imageHelper)
         {
             _userHelper = userHelper;
             _clientRepository = clientRepository;
@@ -35,6 +38,7 @@ namespace DrPet.Web.Controllers
             _adminRepository = adminRepository;
             _doctorRepository = doctorRepository;
             _appointmentRepository = appointmentRepository;
+            _imageHelper = imageHelper;
         }
 
         //public IActionResult Login()
@@ -88,7 +92,29 @@ namespace DrPet.Web.Controllers
             return Json(new { result = "Failed" });
         }
 
-        public async Task<IActionResult> Profile(string username)
+        public async Task<JsonResult> UploadImage(IFormCollection form)
+        {          
+            string username = Request.Form["username"];
+
+            var user = await _userHelper.GetUserByEmailAsync(username);
+
+            if (user!=null)
+            {
+                IFormFile image = form.Files[0];
+
+                string path = await _imageHelper.UploadImageAsync(image, "Users");
+
+                user.ImageUrl = path;
+
+                await _userHelper.UpdateUserAsync(user);
+
+                return Json(new { result = "Success" });
+            }            
+
+            return Json(new { result = "Failed" });
+        }
+
+        public async Task<IActionResult> Profile(string username) //TODO POR AUTHORIZE NO PROFILE
         {
             var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
 
@@ -97,14 +123,9 @@ namespace DrPet.Web.Controllers
                 user = await _userHelper.GetUserByEmailAsync(username);
             }
 
-            var model = new UserProfileViewModel();
-
-
             if (user != null)
             {
-                model = _converterHelper.UserToUserProfileViewModel(user);
-
-                model.User = user;
+               var model = _converterHelper.UserToUserProfileViewModel(user);
 
                 if (await _userHelper.IsUserInRoleAsync(user, RoleNames.Doctor))
                 {
@@ -116,9 +137,51 @@ namespace DrPet.Web.Controllers
                 {
                     model.Appointments = await _appointmentRepository.GetAppointmentsAsync(user.UserName);
                 }
+
+                return View(model);
             };
 
-            return View(model); //TODO RETURN NOT FOUND
+            return NotFound(); //TODO RETURN NOT FOUND
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateUser(UserProfileViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                if ((this.User.Identity.Name != model.UserName) && !this.User.IsInRole("Admin"))
+                {
+                    return NotFound();
+                }
+
+                var user = await _userHelper.GetUserByEmailAsync(model.UserName);
+                if (user != null)
+                {
+                    user = _converterHelper.ChangerUserProfileViewModelToUser(model, user); //FIZ ISTO PARA ATUALIZAR O USER COM O QUE ESTA NO MODEL
+
+                    var response = await _userHelper.UpdateUserAsync(user);
+
+                    if (model.Doctor != null)
+                    {
+                        await _doctorRepository.UpdateAsync(model.Doctor);
+                    }
+
+                    if (response.Succeeded)
+                    {
+                        ViewBag.UserMessage = "User update!";
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, response.Errors.FirstOrDefault().Description);
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "user not found!");
+                }
+            }
+
+            return RedirectToAction("Profile", new { username = model.UserName});
         }
 
         public async Task<IActionResult> Logout()
@@ -146,6 +209,12 @@ namespace DrPet.Web.Controllers
                 var user = await _userHelper.GetUserByEmailAsync(model.Username);
                 if (user == null)
                 {
+                    if (model.RoleId >= 1 && !this.User.IsInRole("Admin"))
+                    {
+                        this.ModelState.AddModelError(string.Empty, "Stop trying to hack.");
+                        return this.View(model);
+                    }
+
                     user = new User
                     {                       
                         Email = model.Username,
@@ -209,7 +278,7 @@ namespace DrPet.Web.Controllers
                                 await _doctorRepository.CreateAsync(doctor);
                                 break;
                             default:
-                                this.ModelState.AddModelError(string.Empty, "The user coudln't be created.");
+                                this.ModelState.AddModelError(string.Empty, "The user couldn't be created.");
                                 return this.View(model);
                         }
                     }                                  
@@ -228,7 +297,7 @@ namespace DrPet.Web.Controllers
                         return this.RedirectToAction("Index", "Home");
                     }
 
-                    this.ModelState.AddModelError(string.Empty, "The user coudln't login.");
+                    this.ModelState.AddModelError(string.Empty, "The user couldn't login.");
                     return this.View(model);
                 }
 

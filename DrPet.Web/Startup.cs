@@ -87,7 +87,7 @@ namespace DrPet.Web
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/Home/Error"); //TODO QUANDO NO AZURE, VERIFICAR QUE O ERROR 404.7 NAO APARECE
                 app.UseHsts();
             }
 

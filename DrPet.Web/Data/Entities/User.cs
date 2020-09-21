@@ -34,6 +34,9 @@ namespace DrPet.Web.Data.Entities
         [Display(Name = "Date Created")]
         [DataType(DataType.Date)]
         public DateTime DateCreated { get; set; } = DateTime.Today; //TODO VER SE ISTO NAO CAUSA CONFLITOS COM UPDATES DE USERS
-        
+
+        [Display(Name = "Image")]
+        public string ImageUrl { get; set; }
+
     }
 }

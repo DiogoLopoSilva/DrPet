@@ -60,14 +60,17 @@ namespace DrPet.Web.Helpers
         {
             return new UserProfileViewModel
             {
+                UserName= user.UserName,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 DateOfBirth = user.DateOfBirth,
-                StreeName = user.StreeName,
+                StreetName = user.StreeName,
                 PostalCode = user.PostalCode,
                 Location = user.Location,
                 DocumentNumber = user.DocumentNumber,
-                PhoneNumber = user.PhoneNumber
+                PhoneNumber = user.PhoneNumber,
+                DateCreated = user.DateCreated,
+                ImageUrl = user.ImageUrl
             };
         }
 
@@ -77,6 +80,20 @@ namespace DrPet.Web.Helpers
             user.LastName = model.LastName;
             user.DateOfBirth = model.DateOfBirth;
             user.StreeName = model.StreeName;
+            user.PostalCode = model.PostalCode;
+            user.Location = model.Location;
+            user.DocumentNumber = model.DocumentNumber;
+            user.PhoneNumber = model.PhoneNumber;
+
+            return user;
+        }
+
+        public User ChangerUserProfileViewModelToUser(UserProfileViewModel model, User user)
+        {
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
+            user.DateOfBirth = model.DateOfBirth;
+            user.StreeName = model.StreetName;
             user.PostalCode = model.PostalCode;
             user.Location = model.Location;
             user.DocumentNumber = model.DocumentNumber;

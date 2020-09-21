@@ -8,35 +8,67 @@
     <partial name="_TablePartial" />
 </div>
 
+<ejs-toast id="toast_type" created="createdToast">
+    <e-toast-position X="Right"></e-toast-position>
+</ejs-toast>
 
 <div class="modal fade" id="ModalTeste">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Login</h5>
+                <h5 class="modal-title font-weight-bold">Appointment</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <form>
-                    <label id="labeldata"></label>
-                    <input type="button" value="Accept" id="Accept" />
+                <form class="row justify-content-start">
+                    <div>
+                        <br />
+                        <label id="labeldata"></label>
+                        <span class="font-weight-bold">Doctor: </span>
+                        <span id="modalDoctor"></span>
+                        <br />
+                        <br />
+                        <span class="font-weight-bold">Client: </span>
+                        <span id="modalClient"></span>
+                        <br />
+                        <br />
+                        <span class="font-weight-bold">Animal: </span>
+                        <span id="modalAnimal"></span>
+                        <br />
+                        <br />
+                        <span class="font-weight-bold">Date: </span>
+                        <span id="modalDate"></span>
+                        <br />
+                        <br />
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
+                <input type="button" class="btn btn-success" value="Accept" id="Accept" />
+                <input type="button" class="btn btn-danger" value="Cancel" id="Cancel" />
             </div>
         </div>
     </div>
 </div>
 
 <script>
+    var toastObj;
+
+    function createdToast(args) {
+        toastObj = this;
+    }  
+
+    var toasts = [
+        { title: 'Success!', content: 'Appointment confirmed.', cssClass: 'e-toast-success', icon: 'e-success toast-icons' },
+        { title: 'Canceled!', content: 'Appointment not aproved.', cssClass: 'e-toast-danger', icon: 'e-error toast-icons' }
+    ];  
+
     $(document).on('click', '.changeScheduleDate', function (event) {
         console.log('CLICK EVENT');
         console.log(event.currentTarget);
         var selectedDate = event.currentTarget.attributes[1].value;
-
-
 
         date = moment(selectedDate, 'DD/MM/YYYY').format("MM/DD/YYYY"); //TODO VER OS FORMATOS DA DATA DO CALENDARIO, DE MOMENTO ACEITA MM/DD/YYYY
         console.log(selectedDate);
@@ -51,7 +83,7 @@
 </script>
 
 <script>
-        $(document).on('keyup', '#searchbox',function () {
+    $(document).on('keyup', '#searchbox', function () {
         var searchtext = $(this).val();
         $("table.user-list tr").each(function (results) {
             if (results !== 0) {
@@ -75,7 +107,36 @@
 
     $("#Accept").click(function () {
 
-        ////console.log(appointment);
+        console.log("APPOINTMENT");
+        console.log(appointment);
+
+        alert(lastFilter); //TODO CHAMAR O AJAX TABLEDATA PARA ATUALIZAR TUDO DEPOIS DO UPDATE
+
+         $.ajax({
+                type: "POST",
+                url: '@Url.Action("ConfirmAppointment", "Appointments")',
+             data: {
+                 Id: appointment.Id
+                },
+                dataType: "json",
+                success: function (data) {
+                    if (data.result == "Success") {
+                        $('#ModalTeste').modal('hide');
+
+                        toastObj.show(toasts[0]);
+
+                        GetData(lastFilter);
+                        //window.location.href = '/Appointments/Index';
+                    }
+                    else {
+                        alert("NOT FOUND");
+                        $('#ModalTeste').modal('hide');
+                    }
+                },
+                error: function (data) {
+                    alert('ERRO')
+                }
+             });
 
         //var route = "/Appointments/TableData?status=";
 
@@ -88,7 +149,35 @@
 
         console.log('works');
     });
-    
+
+    $("#Cancel").click(function () {
+         $.ajax({
+                type: "POST",
+                url: '@Url.Action("CancelAppointment", "Appointments")',
+             data: {
+                 Id: appointment.Id
+                },
+                dataType: "json",
+                success: function (data) {
+                    if (data.result == "Success") {
+                        $('#ModalTeste').modal('hide');
+
+                        toastObj.show(toasts[1]);
+
+                        GetData(lastFilter);
+                        //window.location.href = '/Appointments/Index';
+                    }
+                    else {
+                        alert("NOT FOUND");
+                        $('#ModalTeste').modal('hide');
+                    }
+                },
+                error: function (data) {
+                    alert('ERRO')
+                }
+             });
+    });
+
 
     @*$(document).ready(function () {
         var lastFilter;
@@ -100,27 +189,39 @@
 
         //$("#appointmentTable").load(route);
 
-     
+
 
     });*@
 </script>
 
 <script>
+    var lastFilter = 'All';
 
-    $(document).on('click', '.listFilter', function (results) {
+    $(document).on('click', '.listFilter', function (results) {       
+
         //alert('click');
         console.log(results);
 
         var status = results.currentTarget.attributes[3].value;
 
-        //if (lastFilter == status) {
-        //    //alert('Igual');
-        //    return;
-        //}
+        if (lastFilter == status) {
+            //alert('Igual');
+            return;
+        }
 
-        //lastFilter = status;
+       
         console.log('###STATUS###')
         console.log(status);
+
+        GetData(status);
+
+    });
+
+    function GetData(status) {
+        var scheduleObj = document.getElementById('schedule').ej2_instances[0];
+        var currentSchedulerDate = scheduleObj.selectedDate;
+
+        lastFilter = status;
 
         var ajax = new ej.base.Ajax('/Appointments/TableData' + '?status=' + status, 'GET', true);
 
@@ -132,11 +233,12 @@
 
             $("#appointmentTable").html(result);
 
+            var scheduleNew = document.getElementById('schedule').ej2_instances[0];
+            scheduleNew.selectedDate = currentSchedulerDate;
+
             //eval(document.getElementById('appointmentTable').querySelector('script').innerHTML);
         });
-
-    });
-
+    };
 </script>
 
 

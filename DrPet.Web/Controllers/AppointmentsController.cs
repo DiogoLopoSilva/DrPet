@@ -101,6 +101,38 @@ namespace DrPet.Web.Controllers
             return PartialView("_TablePartial", items); //TODO SE O .HTML NAO DER, USAR .REPLACE
         }
 
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult> ConfirmAppointment(int Id) //TODO FAZER UM GET APPOINTMENTS BY STATUS
+        {
+            var appointment = _appointmentRepository.GetByIdWithModels(Id);
+
+            if (appointment!=null)
+            {
+                appointment.Status = "Confirmed";
+
+                await _appointmentRepository.UpdateAsync(appointment);
+
+                return Json(new { result = "Success" });
+            }
+
+            return Json(new { result = "NotFound" });
+        }
+
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult> CancelAppointment(int Id) //TODO FAZER UM GET APPOINTMENTS BY STATUS
+        {
+            var appointment = _appointmentRepository.GetByIdWithModels(Id);
+
+            if (appointment != null)
+            {
+                await _appointmentRepository.DeleteAsync(appointment);
+
+                return Json(new { result = "Success" });
+            }
+
+            return Json(new { result = "NotFound" });
+        }
+
         public IActionResult TableView(string JsonList)
         {
             var listAppointment = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<Appointment>>(JsonList);

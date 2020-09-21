@@ -73,11 +73,19 @@
                                         <td class="text-center">
                                             @if (item.Status == "Confirmed")
                                             {
-                                                <span class="badge badge-success">Confirmed</span>
+                                                <span class="badge badge-primary">Confirmed</span>
                                             }
                                             else if (item.Status == "Waiting")
                                             {
                                                 <span class="badge badge-warning">Waiting Aproval</span>
+                                            }
+                                            else if (item.Status == "InProgress")
+                                            {
+                                                <span class="badge badge-info">In Progress</span>
+                                            }
+                                            else if (item.Status == "Completed")
+                                            {
+                                                <span class="badge badge-success">Completed</span>
                                             }
                                         </td>
                                         <td class="w-25 text-center">
@@ -93,7 +101,7 @@
                                                     <i class="fa fa-pencil-alt fa-stack-1x fa-inverse"></i>
                                                 </span>
                                             </a>
-                                            <a asp-controller="Appointments" asp-action="Index" class="table-link">
+                                            <a asp-controller="Appointments" asp-action="Details" asp-route-id="@item.Id" class="table-link">
                                                 <span class="fa-stack">
                                                     <i class="fa fa-square fa-stack-2x"></i>
                                                     <i class="fa fa-calendar-alt fa-stack-1x fa-inverse"></i>
@@ -174,8 +182,13 @@
 
             if (moment().format('LLL') <= date) {
                 args.cancel = true;
-                $('#labeldata').text("TESTE MUDAR");
+                //$('#labeldata').text("TESTE MUDAR");
                 appointment = args.event;
+                console.log(args.event);
+                $('#modalDoctor').text(args.event.Doctor.User.FullName);
+                $('#modalClient').text(args.event.Client.User.FullName);
+                $('#modalAnimal').text(args.event.Animal.Name);
+                $('#modalDate').text(moment(args.event.StartTime).format('LLL'));
                 $('#ModalTeste').modal('show');
             }
         }

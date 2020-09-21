@@ -56,9 +56,52 @@
             }
             <div class="m-5">
                 <h2> Notes</h2>
-                <textarea class="form-control" style="resize:none"></textarea>
+                <textarea class="form-control" style="resize:none" id="notes" readonly></textarea>
                 <br>
             </div>
+            <div>
+                <input type="button" value="Start Appointment" id="start"/>
+                <input type="button" value="End Appointment" id="end"/>
+            </div>
+
         </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function () {
+
+        var Status = '@Model.Status';
+
+        if (Status == 'Confirmed') {
+            $('#end').hide();
+
+        }
+        else if (Status == 'InProgress') {
+            $('#start').hide();
+            $('#notes').removeAttr('readonly');
+        }
+        else {
+            $('#start').hide();
+            $('#end').hide();
+        }
+    });
+
+
+    //$('#start').click(function () {
+    //    $('#start').hide();
+    //    $('#end').show();
+
+    //});
+
+    $('#start').click(function (e) {             
+        $('#start').hide();
+        $('#end').show();
+        $('#notes').removeAttr('readonly');
+    });
+
+    $('#end').click(function () {
+        $('#end').hide();
+        $('#notes').attr('readonly', true);
+    });
+</script>

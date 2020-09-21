@@ -25,12 +25,14 @@
                 </div>
                 <div class="form-group">
                     <label asp-for="ImageFile" class="control-label"></label>
-                    <input asp-for="ImageFile" class="form-control" type="file" />
+                    <ejs-uploader id="ImageFile" multiple="false" autoUpload="false"></ejs-uploader>
                     <span asp-validation-for="ImageFile" class="text-danger"></span>
                 </div>
                 <div class="form-group">
                     <label asp-for="Sex" class="control-label"></label>
-                    <input asp-for="Sex" class="form-control" />
+                    <br>
+                    <ejs-radiobutton id="Sex1" label="Male" value="Male" name="Sex" checked="true"></ejs-radiobutton>
+                    <ejs-radiobutton id="Sex2" label="Female" value="Female" name="Sex"></ejs-radiobutton>
                     <span asp-validation-for="Sex" class="text-danger"></span>
                 </div>
                 <div class="form-group">
@@ -56,6 +58,7 @@
                 <div class="form-group">
                     <input type="submit" value="Create" class="btn btn-primary" />
                     <a asp-action="Index" class="btn btn-success">Back to List</a>
+                    <input type="button" value="TEST" class="btn btn-primary" id="test" />
                 </div>
             </form>
         </div>
@@ -65,3 +68,11 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+<script>
+    $("#test").click(function () {
+        $("#ImageFile").click();
+    });
+
+    //TODO VER SE TER ADICIONADO O UPLOAD DO SYNCFUSION NAO CRIOU PROBLEMAS
+</script>
+

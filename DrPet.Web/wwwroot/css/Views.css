@@ -657,3 +657,7 @@
 .blacktest {
     background-color: blue;
 }
+
+.FileUploadProfile{
+    display: none;
+}

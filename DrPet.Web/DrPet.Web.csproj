@@ -2,6 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
+    <UserSecretsId>34955a3e-0175-46cc-bc17-6a956f334fe6</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,6 +20,7 @@
 
   <ItemGroup>
     <Folder Include="wwwroot\images\Animals\" />
+    <Folder Include="wwwroot\images\Users\" />
   </ItemGroup>
 
   <ItemGroup>
