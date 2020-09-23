@@ -14,6 +14,8 @@ namespace DrPet.Web.Data.Entities
 
         [Display(Name = "Last Name")]
         public string LastName { get; set; }
+     
+        public string Gender { get; set; }
 
         [Display(Name = "Date of Birth")]
         [DataType(DataType.Date)]

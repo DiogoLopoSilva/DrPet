@@ -5,11 +5,10 @@ using System.Threading.Tasks;
 
 namespace DrPet.Web.Data.Entities
 {
-    public class Doctor : Human
+    public class Specialization : IEntity
     {
-        public int SpecializationId { get; set; }
+        public int Id { get; set; }
 
-        public Specialization Specialization { get; set; }
-
+        public string Name { get; set; }
     }
 }

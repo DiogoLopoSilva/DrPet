@@ -66,16 +66,6 @@ namespace DrPet.Web.Controllers
             return View(await _appointmentRepository.GetAppointmentsAsync(user.UserName));
         }
 
-        public IActionResult Teste()
-        {
-            return View();
-        }
-
-        public IActionResult TesteView()
-        {
-            return PartialView("_TestePartial");
-        }
-
         public async Task<ActionResult> TableData(string status) //TODO FAZER UM GET APPOINTMENTS BY STATUS
         {
             var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
@@ -229,8 +219,7 @@ namespace DrPet.Web.Controllers
 
             return Json(data);
         }
-
-        [HttpPost]
+        
         public JsonResult GetLists(AppointmentViewModel Consulta)  // Here we get the Start and End Date and based on that can filter the data and return to Scheduler --VER Passing additional parameters to the server
         {
             var doctors = _doctorRepository.AvailableDoctors(Consulta.StartTime, Consulta.DoctorId);
@@ -270,7 +259,7 @@ namespace DrPet.Web.Controllers
                     Doctor = doctor,
                     Subject = "POR ALGO AQUI",
                     Status = "Waiting",
-                    StartTime = value.StartTime.ToLocalTime(),
+                    StartTime = value.StartTime,
                     ClientDescription = value.ClientDescription
                 };
 

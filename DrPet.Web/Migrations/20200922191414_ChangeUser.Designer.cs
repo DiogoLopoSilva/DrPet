@@ -4,14 +4,16 @@ using DrPet.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace DrPet.Web.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20200922191414_ChangeUser")]
+    partial class ChangeUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -130,30 +132,15 @@ namespace DrPet.Web.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("SpecializationId");
+                    b.Property<string>("Specialization");
 
                     b.Property<string>("UserId");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SpecializationId");
-
                     b.HasIndex("UserId");
 
                     b.ToTable("Doctors");
-                });
-
-            modelBuilder.Entity("DrPet.Web.Data.Entities.Specialization", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Name");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Specializations");
                 });
 
             modelBuilder.Entity("DrPet.Web.Data.Entities.User", b =>
@@ -379,11 +366,6 @@ namespace DrPet.Web.Migrations
 
             modelBuilder.Entity("DrPet.Web.Data.Entities.Doctor", b =>
                 {
-                    b.HasOne("DrPet.Web.Data.Entities.Specialization", "Specialization")
-                        .WithMany()
-                        .HasForeignKey("SpecializationId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("DrPet.Web.Data.Entities.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId");

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using DrPet.Web.Data;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using DrPet.Web.Data.Enums;
 
 namespace DrPet.Web.Helpers
 {

@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using DrPet.Web.Data.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json;
 
 namespace DrPet.Web
 {
@@ -31,6 +32,7 @@ namespace DrPet.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("MzIxMTA5QDMxMzgyZTMyMmUzMEFhNGRaLzVOL0dWVTU0MGZveFh5VzBmbVBlZ1RKTkhGZ2JZNnJwdks0dEk9");
 
             services.AddIdentity<User, IdentityRole>(cfg =>
             {
@@ -59,6 +61,7 @@ namespace DrPet.Web
             services.AddScoped<IClientRepository, ClientRepository>();
             services.AddScoped<IDoctorRepository, DoctorRepository>();
             services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+            services.AddScoped<ISpecializationRepository, SpecializationRepository>();
 
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -75,7 +78,13 @@ namespace DrPet.Web
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
-            services.AddMvc().AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver()); //ADICIONEI POR CAUSA DO CALENDARIO
+            //services.AddMvc().AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver()); //ADICIONEI POR CAUSA DO CALENDARIO
+
+            services.AddMvc()
+    .AddJsonOptions(options => options.SerializerSettings.ContractResolver = new DefaultContractResolver())
+    .AddJsonOptions(options => options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore)
+    .AddJsonOptions(opt => opt.SerializerSettings.DateFormatHandling = DateFormatHandling.MicrosoftDateFormat)
+    .AddJsonOptions(opt => opt.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

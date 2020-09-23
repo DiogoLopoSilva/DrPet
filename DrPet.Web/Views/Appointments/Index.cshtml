@@ -46,8 +46,15 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <input type="button" class="btn btn-success" value="Accept" id="Accept" />
-                <input type="button" class="btn btn-danger" value="Cancel" id="Cancel" />
+                <div id="AcceptCancel">
+                    <input type="button" class="btn btn-success" value="Accept" id="Accept" />
+                    <input type="button" class="btn btn-danger" value="Deny" id="Cancel" />
+                </div>
+                <div id="AreYouSure">
+                    <span>Are you sure?</span>
+                    <input type="button" class="btn btn-success" value="Confirm" id="AreYouSureConfirm" />
+                    <input type="button" class="btn btn-danger" value="Cancel" id="AreYouSureCancel" />
+                </div>
             </div>
         </div>
     </div>
@@ -58,12 +65,12 @@
 
     function createdToast(args) {
         toastObj = this;
-    }  
+    }
 
     var toasts = [
         { title: 'Success!', content: 'Appointment confirmed.', cssClass: 'e-toast-success', icon: 'e-success toast-icons' },
         { title: 'Canceled!', content: 'Appointment not aproved.', cssClass: 'e-toast-danger', icon: 'e-error toast-icons' }
-    ];  
+    ];
 
     $(document).on('click', '.changeScheduleDate', function (event) {
         console.log('CLICK EVENT');
@@ -107,10 +114,10 @@
 
     $("#Accept").click(function () {
 
-        console.log("APPOINTMENT");
-        console.log(appointment);
+        //console.log("APPOINTMENT");
+        //console.log(appointment);
 
-        alert(lastFilter); //TODO CHAMAR O AJAX TABLEDATA PARA ATUALIZAR TUDO DEPOIS DO UPDATE
+        //alert(lastFilter);
 
          $.ajax({
                 type: "POST",
@@ -151,7 +158,18 @@
     });
 
     $("#Cancel").click(function () {
-         $.ajax({
+        $('#AreYouSure').show();
+        $('#AcceptCancel').hide();
+    });
+
+    $("#AreYouSureCancel").click(function () {
+        $('#AreYouSure').hide();
+        $('#AcceptCancel').show();
+    });
+
+    $("#AreYouSureConfirm").click(function () {
+
+           $.ajax({
                 type: "POST",
                 url: '@Url.Action("CancelAppointment", "Appointments")',
              data: {
@@ -178,9 +196,10 @@
              });
     });
 
+    $(document).ready(function () {
+        $('#AreYouSure').hide();
 
-    @*$(document).ready(function () {
-        var lastFilter;
+        //var lastFilter;
 
         //var appointments = @(Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model)));
         //console.log(appointments);
@@ -191,13 +210,13 @@
 
 
 
-    });*@
+    });
 </script>
 
 <script>
     var lastFilter = 'All';
 
-    $(document).on('click', '.listFilter', function (results) {       
+    $(document).on('click', '.listFilter', function (results) {
 
         //alert('click');
         console.log(results);
@@ -209,7 +228,7 @@
             return;
         }
 
-       
+
         console.log('###STATUS###')
         console.log(status);
 

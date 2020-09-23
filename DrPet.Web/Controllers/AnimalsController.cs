@@ -64,9 +64,28 @@ namespace DrPet.Web.Controllers
         }
 
         // GET: Animals/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create(string username)
         {
-            return View();
+            var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
+
+            bool isAdmin = await _userHelper.IsUserInRoleAsync(user, RoleNames.Administrator);
+
+            if (String.IsNullOrEmpty(username) && isAdmin)
+            {
+                return NotFound();
+            }
+
+            if (username != null && isAdmin)
+            {
+                user = await _userHelper.GetUserByEmailAsync(username);
+            }
+
+            var model = new AnimalViewModel
+            {
+                User = user
+            };
+
+            return View(model);
         }
 
         // POST: Animals/Create
@@ -78,6 +97,18 @@ namespace DrPet.Web.Controllers
         {
             if (ModelState.IsValid)
             {
+                if ((this.User.Identity.Name != model.User.UserName) && !this.User.IsInRole("Admin")) //TODO VER SE NAO DEVO POR SO O USERNAME
+                {
+                    return NotFound();
+                }
+
+                var user = await _userHelper.GetUserByEmailAsync(model.User.UserName);
+
+                if (user==null)
+                {
+                    return NotFound();
+                }
+
                 var path = string.Empty;
 
                 if (model.ImageFile != null) //Verificar se preciso de ver se a Length é maior que 0
@@ -87,7 +118,7 @@ namespace DrPet.Web.Controllers
 
                 var animal = _converterHelper.ToAnimal(model, path, true);
 
-                animal.User = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
+                animal.User = user;
                 await _animalRepository.CreateAsync(animal);
                 return RedirectToAction(nameof(Index));
             }

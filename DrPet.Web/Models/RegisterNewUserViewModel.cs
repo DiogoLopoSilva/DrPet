@@ -18,6 +18,13 @@ namespace DrPet.Web.Models
         [Display(Name = "Last Name")]
         public string LastName { get; set; }
 
+        [Required]
+        public string Gender { get; set; }
+
+        [Required]
+        [Display(Name = "Date of Birth")]
+        [DataType(DataType.Date)]
+        public DateTime? DateOfBirth { get; set; }
 
         [Required]
         [DataType(DataType.EmailAddress)]
@@ -39,8 +46,8 @@ namespace DrPet.Web.Models
     }
     public enum RolesEnum //TODO ORDERNAR POR CLIENT,DOCTOR,ADMIN
     {
-        Admin = 1,
-        Client = 2,
-        Doctor = 3
+        Client = 1,
+        Doctor = 2,
+        Admin = 3,
     }
 }

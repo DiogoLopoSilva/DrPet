@@ -3,76 +3,84 @@
     ViewData["Title"] = "Login";
 }
 
-
-    <div asp-validation-summary="ModelOnly"></div>
-    <div class="form-group">
-        <label asp-for="Username">Username</label>
-        <input asp-for="Username" id="username" class="form-control" />
-        <span asp-validation-for="Username" class="text-warning"></span>
-    </div>
-    <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
-    <div class="form-group">
-        <label asp-for="Password">Password</label>
-        <input asp-for="Password" type="password" id="password" class="form-control" />
-        <span asp-validation-for="Password" class="text-warning"></span>
-    </div>
-    <div class="form-group">
-        <div class="form-check">
-            <input asp-for="RememberMe" type="checkbox" class="form-check-input" />
-            <label asp-for="RememberMe" class="form-check-label">Remember Me?</label>
+<div class="modal fade" id="Login">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Login</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="form col-md-12 center-block">
+                    <div asp-validation-summary="ModelOnly"></div>
+                    <div class="form-group">
+                        <label asp-for="Username">Username</label>
+                        <input asp-for="Username" id="username" class="form-control" />
+                        <span asp-validation-for="Username" class="text-warning"></span>
+                    </div>
+                    <script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+                    <div class="form-group">
+                        <label asp-for="Password">Password</label>
+                        <input asp-for="Password" type="password" id="password" class="form-control" />
+                        <span asp-validation-for="Password" class="text-warning"></span>
+                    </div>
+                    <div class="form-group">
+                        <input type="button" value="Login" id="LoginModal" class="btn btn-primary btn-lg btn-block" />
+                    </div>
+                    <label class="alert-danger float-right" id="loginfail">Wrong Username or Password</label>
+                    <div class="form-group">
+                        <div class="form-check">
+                            <input asp-for="RememberMe" type="checkbox" id="rememberme" class="form-check-input" />
+                            <label asp-for="RememberMe" class="form-check-label">Remember Me?</label>
+                        </div>
+                        <span asp-validation-for="RememberMe" class="text-warning"></span>
+                    </div>
+                    <span class="float-right"><a asp-controller="Account" asp-action="Register">Register</a></span>
+                    <span><a href="#">Forgot your password?</a></span>
+                </form>
+            </div>
+            <div class="modal-footer">
+            </div>
         </div>
-        <span asp-validation-for="RememberMe" class="text-warning"></span>
     </div>
-    <div class="form-group">
-        <!--<input type="submit" value="Login" id="Login" class="btn btn-success" />-->
-        <button value="Login" id="LoginModal" class="btn btn-success" />
-        <a asp-action="Register" class="btn btn-primary">Register New User</a>
-    </div>
+</div>
 
+<script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 
 <script type="text/javascript">
-    $("#LoginModal").click(function () {
-        debugger;
-        $.ajax({
-            type: "POST",
-            url: '@Url.Action("Login", "Account")',
-            data: {
-            Username: $("#username").val(),
-            Password: $("#password").val()
-            },
-            dataType: "json",
-            success: function (data) {
-            if (data.result == "Success") {
-            window.location.href = '/Home/Index';
+    $(document).ready(function () {
+        $("#loginfail").hide();
+        $("#LoginModal").click(function () {
+
+            if ($("form").valid()) {
+                    $.ajax({
+                type: "POST",
+                url: '@Url.Action("Login", "Account")',
+                data: {
+                    Username: $("#username").val(),
+                    Password: $("#password").val(),
+                    RememberMe: $("#rememberme").is(':checked')
+                },
+                dataType: "json",
+                success: function (data) {
+                    if (data.result == "Success") {
+                        window.location.href = '/Home/Index';
+                    }
+                    else {
+                        $("#loginfail").show();
+                    }
+                    //Exiba as mensagens de erro neste espaço.
+                }
+                });
             }
             else {
-            alert("NÃO DEU");
-            }
-
-            //Exiba as mensagens de erro neste espaço.
-            }
-            });
-           });
-
-    function LoginFunc() {
-              $.ajax({
-            type: "POST",
-            url: '@Url.Action("Login", "Account")',
-            data: {
-            Username: $("#username").val(),
-            Password: $("#password").val()
-            },
-            dataType: "json",
-            success: function (data) {
-            if (data.result == "Success") {
-            window.location.href = '/Home/Index';
-            }
-            else {
-            alert("NÃO DEU");
-            }
-
-            //Exiba as mensagens de erro neste espaço.
-            }
-            });
-        }
+                alert('NOT VALID');
+            };
+        });
+    });
 </script>
+
+

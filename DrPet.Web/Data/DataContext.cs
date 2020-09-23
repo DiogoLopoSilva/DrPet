@@ -17,6 +17,8 @@ namespace DrPet.Web.Data
 
         public DbSet<Appointment> Appointments { get; set; }
 
+        public DbSet<Specialization> Specializations { get; set; }
+
         public DataContext(DbContextOptions<DataContext> options) : base(options)
         {
 

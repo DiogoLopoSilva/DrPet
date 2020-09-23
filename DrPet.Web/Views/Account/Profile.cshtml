@@ -4,7 +4,7 @@
 }
 
 @{
-    var asyncSettings = new Syncfusion.EJ2.Inputs.UploaderAsyncSettings { SaveUrl = "/Account/UploadImage"};
+    var asyncSettings = new Syncfusion.EJ2.Inputs.UploaderAsyncSettings { SaveUrl = "/Account/UploadImage" };
 }
 
 <div class="container my-5 pt-50 userprofilefont">
@@ -16,13 +16,12 @@
                         <div class="user-box">
                             @if (!string.IsNullOrEmpty(Model.ImageUrl))
                             {
-                                <img src="@Url.Content(Model.ImageUrl)" onerror="this.src='../images/Default/nopicture.png'" alt="user avatar" id="test" style="width:100px;height:100px;"/>
+                                <img src="@Url.Content(Model.ImageUrl)" onerror="this.src='../images/Default/nopicture.png'" alt="user avatar" id="test" style="width:100px;height:100px;" />
                             }
                             else
                             {
                                 <img src="~/images/Default/nopicture.png" alt="user avatar" id="test" style="width:100px;height:100px;">
                             }
-                            <ejs-uploader id="ImageFile" uploading="onFileUpload" multiple="false" autoUpload="true" asyncSettings="@asyncSettings" success="onSuccess" cssClass="FileUploadProfile" allowedExtensions=".jpg, .jpeg, .bmp, .png"></ejs-uploader>
                         </div>
                         <h5 class="mb-1 text-white">@Html.DisplayFor(model => model.FullName)</h5>
                         <h6 class="text-light">@Html.DisplayFor(model => model.Role)</h6>
@@ -79,7 +78,7 @@
                             <a href="javascript:void();" data-target="#profile" data-toggle="pill" class="nav-link active show"><i class="icon-user"></i> <span class="hidden-xs">Profile</span></a>
                         </li>
                         <li class="nav-item">
-                            <a href="javascript:void();" data-target="#messages" data-toggle="pill" class="nav-link"><i class="icon-envelope-open"></i> <span class="hidden-xs">Messages</span></a>
+                            <a href="javascript:void();" data-target="#appointments" data-toggle="pill" class="nav-link" id="appointmentsClick"><i class="icon-envelope-open"></i> <span class="hidden-xs">Appointments</span></a>
                         </li>
                         <li class="nav-item">
                             <a href="javascript:void();" data-target="#edit" data-toggle="pill" class="nav-link"><i class="icon-note"></i> <span class="hidden-xs">Edit</span></a>
@@ -124,7 +123,7 @@
                                                 {
                                                     <tr>
                                                         <td>
-                                                            <strong> @Html.DisplayFor(modelItem => item.StartTime)</strong> Appointment for  @Html.DisplayFor(modelItem => item.Animal.Name)<strong>` DR. @Html.DisplayFor(modelItem => item.Doctor.User.FullName)`</strong>
+                                                            <strong> @Html.DisplayFor(modelItem => item.StartTime)</strong> Appointment for  @Html.DisplayFor(modelItem => item.Animal.Name)<strong>` Dr. @Html.DisplayFor(modelItem => item.Doctor.User.FullName)`</strong>
                                                         </td>
                                                     </tr>
                                                 }
@@ -137,53 +136,18 @@
                                                     </td>
                                                 </tr>
                                             }
-
-
                                         </tbody>
                                     </table>
                                 </div>
                             </div>
                             <!--/row-->
                         </div>
-                        <div class="tab-pane" id="messages">
-                            <div class="alert alert-info alert-dismissible" role="alert">
-                                <button type="button" class="close" data-dismiss="alert">×</button>
-                                <div class="alert-icon">
-                                    <i class="icon-info"></i>
-                                </div>
-                                <div class="alert-message">
-                                    <span><strong>Info!</strong> Lorem Ipsum is simply dummy text.</span>
-                                </div>
-                            </div>
-                            <table class="table table-hover table-striped">
-                                <tbody>
-                                    <tr>
-                                        <td>
-                                            <span class="float-right font-weight-bold">3 hrs ago</span> Here is your a link to the latest summary report from the..
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <span class="float-right font-weight-bold">Yesterday</span> There has been a request on your account since that was..
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <span class="float-right font-weight-bold">9/10</span> Porttitor vitae ultrices quis, dapibus id dolor. Morbi venenatis lacinia rhoncus.
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <span class="float-right font-weight-bold">9/4</span> Vestibulum tincidunt ullamcorper eros eget luctus.
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <span class="float-right font-weight-bold">9/4</span> Maxamillion ais the fix for tibulum tincidunt ullamcorper eros.
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <div class="tab-pane" id="appointments">
+                            <ejs-schedule id="schedule" startHour="09:00" endHour="18:00" allowMultiCellSelection="false" readonly="true" eventRendered="onEventRendered">
+                                <e-schedule-views>
+                                    <e-schedule-view option="WorkWeek"></e-schedule-view>
+                                </e-schedule-views>
+                            </ejs-schedule>
                         </div>
                         <div class="tab-pane" id="edit">
                             <form method="post">
@@ -235,12 +199,16 @@
                                 @if (this.User.Identity.IsAuthenticated && Model.Doctor != null)
                                 {
                                     <div class="form-group">
-                                        <label asp-for="Doctor.Specialization" class="control-label"></label>
-                                        <input asp-for="Doctor.Specialization" class="form-control" />
-                                        <span asp-validation-for="Doctor.Specialization" class="text-danger"></span>
+                                        <label asp-for="SpecializationId" class="control-label"></label>
+                                        <select asp-for="SpecializationId" asp-items="Model.Specializations" class="form-control"></select>
+                                        <span asp-validation-for="SpecializationId" class="text-danger"></span>
                                     </div>
 
                                     <input type="hidden" asp-for="Doctor.Id" />
+                                }
+                                else
+                                {
+                                    <input type="hidden" asp-for="SpecializationId" />
                                 }
                                 <input type="hidden" asp-for="UserName" class="form-control" />
                                 <div class="form-group row">
@@ -258,6 +226,12 @@
         </div>
     </div>
 </div>
+<ejs-uploader id="ImageFile" uploading="onFileUpload" multiple="false" autoUpload="true" asyncSettings="@asyncSettings" success="onSuccess" cssClass="FileUploadProfile" allowedExtensions=".jpg, .jpeg, .bmp, .png"></ejs-uploader>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
 
 <script>
     $("#test").click(function () {
@@ -276,5 +250,34 @@
           location.reload();
     }
 
-    //TODO VER SE TER ADICIONADO O UPLOAD DO SYNCFUSION NAO CRIOU PROBLEMAS
+    function onEventRendered(args) {
+        var categoryColor;
+        switch (args.data.Status) {
+            case 'Waiting':
+                categoryColor = '#F57F17';
+                break;
+            case 'Confirmed':
+                categoryColor = '#7fa900';
+                break;
+            case 'New':
+                categoryColor = '#8e24aa';
+                break;
+        }
+        if (!args.element || !categoryColor) {
+            return;
+        }
+        var scheduleObj = document.getElementById('schedule').ej2_instances[0];
+        if (scheduleObj.currentView === 'Agenda') {
+            (args.element.firstChild).style.borderLeftColor = categoryColor;
+        } else {
+            args.element.style.backgroundColor = categoryColor;
+        }
+    }
+
+    $("#appointmentsClick").click(function () {
+        var data = @(Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Appointments)));
+        var scheduleObj = document.getElementById('schedule').ej2_instances[0];
+        scheduleObj.eventSettings.dataSource = data;
+        scheduleObj.dataBind();
+    });
 </script>

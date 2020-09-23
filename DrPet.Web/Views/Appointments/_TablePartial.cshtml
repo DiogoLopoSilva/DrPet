@@ -9,11 +9,9 @@
                     <a asp-action="Create">Schedule an Appointment</a>
                     <br>
                 }
-                <a asp-action="IndexNotConfirmed">Pending Aproval</a>
             </p>
             <div class="mb-5">
-                <ejs-schedule id="schedule" height="550" startHour="09:00" endHour="18:00"
-                              allowMultiCellSelection="false" eventRendered="onEventRendered" readonly="true" eventClick="onEventClick">
+                <ejs-schedule id="schedule" height="550" startHour="09:00" endHour="18:00" allowMultiCellSelection="false" eventRendered="onEventRendered" readonly="true" eventClick="onEventClick">
                     <e-schedule-views>
                         <e-schedule-view option="WorkWeek"></e-schedule-view>
                     </e-schedule-views>
@@ -189,6 +187,8 @@
                 $('#modalClient').text(args.event.Client.User.FullName);
                 $('#modalAnimal').text(args.event.Animal.Name);
                 $('#modalDate').text(moment(args.event.StartTime).format('LLL'));
+                $('#AreYouSure').hide();
+                $('#AcceptCancel').show();
                 $('#ModalTeste').modal('show');
             }
         }

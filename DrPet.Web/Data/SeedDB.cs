@@ -34,6 +34,15 @@ namespace DrPet.Web.Data
             await _userHelper.CheckRoleAsync(RoleNames.Client);
             await _userHelper.CheckRoleAsync(RoleNames.Doctor);
 
+            if (!_context.Specializations.Any())
+            {
+                this.AddSpecialization("General");
+                this.AddSpecialization("Vaccination");
+                this.AddSpecialization("Surgery");
+                this.AddSpecialization("Others");
+                await _context.SaveChangesAsync();
+            }
+
             var user1 = await _userHelper.GetUserByEmailAsync("diogo.lopo.silva@formandos.cinel.pt");
 
             if (user1 == null)
@@ -44,7 +53,7 @@ namespace DrPet.Web.Data
                     UserName = "diogo.lopo.silva@formandos.cinel.pt",
                     FirstName = "Diogo",
                     LastName = "Silva",
-                    DateOfBirth = Convert.ToDateTime("25/06/1992"),
+                    DateOfBirth = DateTime.Now,
                     StreeName = "Praceta das flores nº4",
                     PostalCode = "2685-192",
                     Location = "Loures",
@@ -82,7 +91,7 @@ namespace DrPet.Web.Data
                     UserName = "abc@abc.com",
                     FirstName = "André",
                     LastName = "Pina",
-                    DateOfBirth = Convert.ToDateTime("25/06/1992"),
+                    DateOfBirth = DateTime.Now,
                     StreeName = "TESTE",
                     PostalCode = "TESTE",
                     Location = "TESTE",
@@ -99,7 +108,8 @@ namespace DrPet.Web.Data
                 var doctor = new Doctor
                 {
                     User = user3,
-                    Specialization = "MESTRE"
+                    SpecializationId = _context.Specializations.FirstOrDefault().Id,
+                    Specialization = _context.Specializations.FirstOrDefault()
                 };
 
                 await _doctorRepository.CreateAsync(doctor);
@@ -121,7 +131,7 @@ namespace DrPet.Web.Data
                     UserName = "abc2@abc.com",
                     FirstName = "Sidney",
                     LastName = "Major",
-                    DateOfBirth = Convert.ToDateTime("25/06/1992"),
+                    DateOfBirth = DateTime.Now,
                     StreeName = "TESTE",
                     PostalCode = "TESTE",
                     Location = "TESTE",
@@ -138,7 +148,8 @@ namespace DrPet.Web.Data
                 var doctor = new Doctor
                 {
                     User = user4,
-                    Specialization = "MESTRE 2"
+                    SpecializationId = _context.Specializations.FirstOrDefault().Id,
+                    Specialization = _context.Specializations.FirstOrDefault()
                 };
 
                 await _doctorRepository.CreateAsync(doctor);
@@ -163,7 +174,7 @@ namespace DrPet.Web.Data
                     UserName = "diogo.silva_92@hotmail.com",
                     FirstName = "DIOGO",
                     LastName = "SILVA",
-                    DateOfBirth = Convert.ToDateTime("25/06/1992"),
+                    DateOfBirth = DateTime.Now,
                     StreeName = "Praceta das flores nº4",
                     PostalCode = "2685-192",
                     Location = "Loures",
@@ -207,7 +218,7 @@ namespace DrPet.Web.Data
                     Animal = animal,
                     Doctor = _doctorRepository.GetDoctorByUser(await _userHelper.GetUserByEmailAsync("abc@abc.com")),
                     Subject="General",
-                    StartTime = Convert.ToDateTime($"{DateTime.Today.ToShortDateString()} 09:00"),
+                    StartTime = DateTime.Now,
                     DoctorNotes = "Teste 1",
                     Status = "Confirmed"
                 };
@@ -220,7 +231,7 @@ namespace DrPet.Web.Data
                     Animal = animal,
                     Doctor = _doctorRepository.GetDoctorByUser(await _userHelper.GetUserByEmailAsync("abc@abc.com")),
                     Subject = "General",
-                    StartTime = Convert.ToDateTime($"{DateTime.Today.ToShortDateString()} 09:30"),
+                    StartTime = DateTime.Now,
                     DoctorNotes = "Teste 2",
                     Status = "Waiting"
                 };
@@ -233,7 +244,7 @@ namespace DrPet.Web.Data
                     Animal = animal,
                     Doctor = _doctorRepository.GetDoctorByUser(await _userHelper.GetUserByEmailAsync("abc2@abc.com")),
                     Subject = "General",
-                    StartTime = Convert.ToDateTime($"{DateTime.Today.ToShortDateString()} 09:30"),
+                    StartTime = DateTime.Now,
                     DoctorNotes = "Teste 3",
                     Status = "Confirmed"
                 };
@@ -243,11 +254,12 @@ namespace DrPet.Web.Data
 
             if (!_context.Animals.Any())
             {
-                this.AddProduct("Pipas", "Male", "Bird", "Black", user1);
-                this.AddProduct("Whity", "Male", "Dog", "Black", user2);
-                this.AddProduct("Xaninha", "Female", "Cat", "Black", user1);
+                this.AddAnimal("Pipas", "Male", "Bird", "Black", user1);
+                this.AddAnimal("Whity", "Male", "Dog", "Black", user2);
+                this.AddAnimal("Xaninha", "Female", "Cat", "Black", user1);
                 await _context.SaveChangesAsync();
             }
+
 
             //for (int i = 0; i < 50; i++)
             //{
@@ -286,7 +298,7 @@ namespace DrPet.Web.Data
             //}
         }
 
-        private void AddProduct(string name, string sex, string species, string color, User user)
+        private void AddAnimal(string name, string sex, string species, string color, User user)
         {
             _context.Animals.Add(new Animal
             {
@@ -295,6 +307,14 @@ namespace DrPet.Web.Data
                 Species = species,
                 Color = color,
                 User = user
+            });
+        }
+
+        private void AddSpecialization(string name)
+        {
+            _context.Specializations.Add(new Specialization
+            {
+                Name = name
             });
         }
     }

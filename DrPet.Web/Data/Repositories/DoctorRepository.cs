@@ -23,7 +23,7 @@ namespace DrPet.Web.Data.Repositories
 
         public IEnumerable<SelectListItem> GetComboDoctors()
         {
-            var list = _context.Doctors.Include(d => d.User).Select(d => new SelectListItem
+            var list = _context.Doctors.Include(d => d.User).Include(d=> d.Specialization).Select(d => new SelectListItem
             {
                 Text = d.User.FullName,
                 Value = d.Id.ToString()
@@ -55,18 +55,20 @@ namespace DrPet.Web.Data.Repositories
             {
                 return _context.Doctors
                     .Include(d => d.User)
+                    .Include(d => d.Specialization)
                     .OrderBy(u => u.User.FirstName);
             }
 
             return _context.Doctors
                 .Include(d => d.User)
+                .Include(d => d.Specialization)
                 .Where(c => c.User == user)
                 .OrderBy(d => d.User.FirstName);
         }
 
         public Doctor GetDoctorWithUser(int id)
         {
-            return _context.Doctors.Include(a => a.User).FirstOrDefault(a => a.Id == id);            
+            return _context.Doctors.Include(a => a.User).Include(d => d.Specialization).FirstOrDefault(a => a.Id == id);            
         }
 
         public IEnumerable<SelectListItem> AvailableDoctors(DateTime date, int doctorId)
@@ -90,7 +92,7 @@ namespace DrPet.Web.Data.Repositories
 
             var list = _context.Appointments.Include(d => d.Doctor).ThenInclude(u => u.User).Where(d => d.StartTime == date);
 
-            var doctors = _context.Doctors.Include(d => d.User).Select(d => new SelectListItem
+            var doctors = _context.Doctors.Include(d => d.User).Include(d => d.Specialization).Select(d => new SelectListItem
             {
                 Text = $"Dr. {d.User.FullName}",
                 Value = d.Id.ToString()

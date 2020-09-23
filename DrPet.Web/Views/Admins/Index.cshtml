@@ -1,76 +1,96 @@
 ﻿@model IEnumerable<DrPet.Web.Data.Entities.Admin>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Admins";
 }
 
-<h2>Index</h2>
+<div class="row justify-content-center View">
+    <div class="col-8">
+        <div class="row">
+            <h2 class="justify-content-start">Admins</h2>
+            <input type="text" class="form-control w-auto ml-auto justify-content-end" id="searchbox" placeholder="search..." maxlength="50" />
+            <div class="col-lg-12 p-0">
+                <!--TODO VER SE ESTE PADDING TEM PROBLEMAS AQUI-->
+                <div class="main-box clearfix">
+                    <div class="table-responsive">
+                        <table class="table user-list">
+                            <thead>
+                                <tr>
+                                    <th><span>User</span></th>
+                                    <th><span>Created</span></th>
+                                    <th class="text-center"><span>Status</span></th>
+                                    <th><span>Phone</span></th>
+                                    <th>&nbsp;</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(item.User.ImageUrl)) //TODO VER SE DEIXO IMAGEM AQUI
+                                            {
+                                                <img src="@Url.Content(item.User.ImageUrl)" onerror="this.src='../images/Default/nopicture.png'" alt="user avatar" id="test" style="width:auto;height:50px;" />
+                                            }
+                                            else
+                                            {
+                                                <img src="~/images/Default/nopicture.png" alt="user avatar" id="test" style="width:auto;height:50px;">
+                                            }
+                                            <a href="#" class="user-link">@Html.DisplayFor(modelItem => item.User.FullName)</a>
+                                            <span class="user-subhead">
+                                                @Html.DisplayFor(modelItem => item.User.UserName)
+                                            </span>
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.User.DateCreated)
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge badge-success">Active</span>
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.User.PhoneNumber)
+                                        </td>
+                                        <td class="text-center">
+                                            <a asp-controller="Account" asp-action="Profile" asp-route-username="@item.User.UserName" class="table-link">
+                                                <span class="fa-stack">
+                                                    <i class="fa fa-square fa-stack-2x"></i>
+                                                    <i class="fa fa-search-plus fa-stack-1x fa-inverse"></i>
+                                                </span>
+                                            </a>                                           
+                                            <a href="#" class="table-link danger">
+                                                <span class="fa-stack">
+                                                    <i class="fa fa-square fa-stack-2x"></i>
+                                                    <i class="fa fa-trash-alt fa-stack-1x fa-inverse"></i>
+                                                </span>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.User.FullName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.User.UserName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.User.DateOfBirth)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.User.DocumentNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.User.StreeName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.User.Location)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.User.PostalCode)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.User.PhoneNumber)
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.User.FullName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.User.UserName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.User.DateOfBirth)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.User.DocumentNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.User.StreeName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.User.Location)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.User.PostalCode)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.User.PhoneNumber)
-            </td>
-            <td>
-                <a asp-controller="Account" asp-action="ChangeUser" asp-route-username="@item.User.UserName">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<script>
+    $("#searchbox").keyup(function () {
+        var searchtext = $(this).val();
+        $("table tr").each(function (results) {
+            if (results !== 0) {
+                var name = $(this).find("td:nth-child(1)").text();
+                var phone = $(this).find("td:nth-child(4)").text();
+                var searchName = name.indexOf(searchtext) !== 0 && name.toLowerCase().indexOf(searchtext.toLowerCase()) < 0;
+                var searchPhone = phone.indexOf(searchtext) !== 0 && phone.toLowerCase().indexOf(searchtext.toLowerCase()) < 0;
+                if (searchName && searchPhone) {
+                    $(this).hide();
+                }
+                else {
+                    $(this).show();
+                }
+            }
+        });
+    });
+</script>

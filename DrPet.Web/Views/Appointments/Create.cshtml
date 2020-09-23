@@ -19,8 +19,8 @@
         <div class="col-6">
             <h2 class="mb-5 text-center">Double-Click on a Cell to schedule an appointment</h2>
             <div class="mb-5">
-                <ejs-schedule id="schedule" height="550" startHour="09:00" endHour="18:00"
-                              allowMultiCellSelection="false" eventRendered="onEventRendered" actionBegin="onActionBegin" popupOpen="onPopupOpen" actionComplete="onActionComplete" showQuickInfo="false" eventClick="onClick" editorTemplate="#EventEditorTemplate">
+                <ejs-schedule id="schedule" height="550" startHour="09:00" endHour="18:00" allowDragAndDrop="false" minDate="@DateTime.Today.AddDays(1)" maxDate="@DateTime.Today.AddMonths(1)" allowResizing="false"
+                              allowMultiCellSelection="false" timezone="UTC" eventRendered="onEventRendered" actionBegin="onActionBegin" popupOpen="onPopupOpen" actionComplete="onActionComplete" showQuickInfo="false" eventClick="onClick" editorTemplate="#EventEditorTemplate">
                     <e-schedule-views>
                         <e-schedule-view option="WorkWeek"></e-schedule-view>
                     </e-schedule-views>
@@ -47,7 +47,7 @@
         console.log('DATA');
         console.log(args.data);
              $.ajax({
-                    type: "POST",
+                    type: "GET",
                     url: '@Url.Action("GetLists", "Appointments")',
                     data: {
                         StartTime: date,
@@ -107,7 +107,7 @@
             var date = args.data.StartTime.toISOString();
             var username = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.ClientUsername));
              $.ajax({
-                    type: "POST",
+                    type: "GET",
                     url: '@Url.Action("GetLists", "Appointments")',
                     data: {
                         StartTime: date,

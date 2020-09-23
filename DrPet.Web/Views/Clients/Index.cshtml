@@ -57,10 +57,10 @@
                                                     <i class="fa fa-search-plus fa-stack-1x fa-inverse"></i>
                                                 </span>
                                             </a>
-                                            <a asp-controller="Account" asp-action="ChangeUser" asp-route-username="@item.User.UserName" class="table-link">
+                                            <a asp-controller="Animals" asp-action="Create" asp-route-username="@item.User.UserName" class="table-link">
                                                 <span class="fa-stack">
                                                     <i class="fa fa-square fa-stack-2x"></i>
-                                                    <i class="fa fa-pencil-alt fa-stack-1x fa-inverse"></i>
+                                                    <i class="fas fa-dog fa-stack-1x fa-inverse"></i>
                                                 </span>
                                             </a>
                                             <a asp-controller="Appointments" asp-action="Create" asp-route-username="@item.User.UserName" class="table-link">
@@ -81,13 +81,6 @@
                             </tbody>
                         </table>
                     </div>
-                    <ul class="pagination justify-content-end">
-                        <li class="page-item"><a class="page-link" href="#"><i class="fa fa-chevron-left"></i></a></li>
-                        <li class="page-item"><a class="page-link" href="#">1</a></li>
-                        <li class="page-item"><a class="page-link" href="#">2</a></li>
-                        <li class="page-item"><a class="page-link" href="#">3</a></li>
-                        <li class="page-item"><a class="page-link" href="#"><i class="fa fa-chevron-right"></i></a></li>
-                    </ul>
                 </div>
             </div>
         </div>
