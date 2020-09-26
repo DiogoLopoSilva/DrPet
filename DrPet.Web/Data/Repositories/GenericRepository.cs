@@ -45,8 +45,7 @@ namespace DrPet.Web.Data.Repositories
 
         public async Task<T> GetByIdAsync(int id)
         {
-            return await  _context.Set<T>().AsNoTracking()
-                .FirstOrDefaultAsync(e => e.Id == id);
+            return await  _context.Set<T>().FirstOrDefaultAsync(e => e.Id == id);
         }
 
         public async Task UpdateAsync(T entity)

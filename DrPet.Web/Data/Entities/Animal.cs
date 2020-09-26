@@ -35,5 +35,6 @@ namespace DrPet.Web.Data.Entities
 
         [Display(Name="Owner")]
         public User User { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }

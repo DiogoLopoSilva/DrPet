@@ -11,6 +11,9 @@
         <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css" />
         <link rel="stylesheet" href="~/Novo/css/style.css" />
         <link rel="stylesheet" href="~/css/Views.css" />
+
+        <link rel="stylesheet" href="~/assets/css/flaticon.css">
+
         <!-- Syncfusion Essential JS 2 Styles -->
         <link rel="stylesheet" href="https://cdn.syncfusion.com/ej2/material.css" />
 
@@ -23,6 +26,10 @@
         <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css" />
         <link rel="stylesheet" href="~/Novo/css/style.css" asp-append-version="true" />
         <link rel="stylesheet" href="~/css/Views.css" />
+
+
+        <link rel="stylesheet" href="~/assets/css/flaticon.css">
+
         <!-- Syncfusion Essential JS 2 Styles -->
         <link rel="stylesheet" href="https://cdn.syncfusion.com/ej2/material.css" />
 
@@ -32,7 +39,16 @@
     </environment>
 </head>
 <body>
-
+      <div id="preloader-active">
+        <div class="preloader d-flex align-items-center justify-content-center">
+            <div class="preloader-inner position-relative">
+                <div class="preloader-circle"></div>
+                <div class="preloader-img pere-text">
+                    <img src="~/Novo/img/drpetlogo.png" alt="">
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- Top Bar -->
     <div class="top-bar">
         <div class="container">
@@ -65,8 +81,7 @@
                     @if (this.User.Identity.IsAuthenticated)
                     {
                         if (this.User.IsInRole("Admin"))
-                        {
-                            <li class="nav-item"><a asp-area="" asp-controller="Account" asp-action="Register" class="nav-link">Register User</a></li>
+                        {                           
                             <li class="dropdown nav-item">
                                 <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">Admin<b class="caret"></b></a>
                                 <ul class="dropdown-menu">
@@ -74,7 +89,7 @@
                                     <li class="nav-item"><a asp-area="" asp-controller="Clients" asp-action="Index" class="nav-link">Clients</a></li>
                                     <li class="nav-item"><a asp-area="" asp-controller="Doctors" asp-action="Index" class="nav-link">Doctors</a></li>
                                     <li class="nav-item"><a asp-area="" asp-controller="Specializations" asp-action="Index" class="nav-link">Specializations</a></li>
-
+                                    <li class="nav-item"><a asp-area="" asp-controller="Account" asp-action="Register" class="nav-link">Register</a></li>
                                 </ul>
                             </li>
                         }

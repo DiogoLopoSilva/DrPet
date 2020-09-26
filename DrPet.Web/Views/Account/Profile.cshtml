@@ -24,7 +24,7 @@
                             }
                         </div>
                         <h5 class="mb-1 text-white">@Html.DisplayFor(model => model.FullName)</h5>
-                        <h6 class="text-light">@Html.DisplayFor(model => model.Role)</h6>
+                        <!--<h6 class="text-light">@Html.DisplayFor(model => model.Role)</h6>-->
                     </div>
                     <div class="card-body">
                         <ul class="list-group shadow-none">
@@ -80,9 +80,12 @@
                         <li class="nav-item">
                             <a href="javascript:void();" data-target="#appointments" data-toggle="pill" class="nav-link" id="appointmentsClick"><i class="icon-envelope-open"></i> <span class="hidden-xs">Appointments</span></a>
                         </li>
-                        <li class="nav-item">
-                            <a href="javascript:void();" data-target="#edit" data-toggle="pill" class="nav-link"><i class="icon-note"></i> <span class="hidden-xs">Edit</span></a>
-                        </li>
+                        @if (!(this.User.IsInRole("Doctor") && this.User.Identity.Name != Model.UserName))
+                        {
+                            <li class="nav-item">
+                                <a href="javascript:void();" data-target="#edit" data-toggle="pill" class="nav-link"><i class="icon-note"></i> <span class="hidden-xs">Edit</span></a>
+                            </li>
+                        }
                     </ul>
                     <div class="tab-content p-3">
                         <div class="tab-pane active show" id="profile">

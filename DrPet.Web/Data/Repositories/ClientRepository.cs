@@ -20,35 +20,37 @@ namespace DrPet.Web.Data.Repositories
             _userHelper = userHelper;
         }
 
-        public Client GetClientByUser(User user) //TODO VER SE TEM MAL NAO SER ASYNC
+        public async Task<Client> GetClientByUserAsync(User user) //TODO VER SE TEM MAL NAO SER ASYNC
         {
-            return _context.Clients.FirstOrDefault(c => c.User == user);
+            return await _context.Clients.Include(c => c.User).FirstOrDefaultAsync(c => c.User == user);
         }
 
-        public Client GetClientWithUser(string username) //TODO VER SE TEM MAL NAO SER ASYNC
+        public async Task<Client> GetClientWithUserAsync(string username) //TODO VER SE TEM MAL NAO SER ASYNC
         {
-            return _context.Clients.Include(c=> c.User).FirstOrDefault(c => c.User.UserName == username);
+            return await _context.Clients.Include(c=> c.User).FirstOrDefaultAsync(c => c.User.UserName == username);
         }
 
-        public async Task<IQueryable<Client>> GetClientsAsync(string userName)
+        public IQueryable<Client> GetClients()
         {
-            var user = await _userHelper.GetUserByEmailAsync(userName);
-            if (user == null)
-            {
-                return null;
-            }
-
-            if (await _userHelper.IsUserInRoleAsync(user, RoleNames.Administrator))
-            {
-                return _context.Clients
-                    .Include(c => c.User)
-                    .OrderBy(c => c.User.FirstName);
-            }
-
             return _context.Clients
-                .Include(c => c.User)
-                .Where(c => c.User == user)
-                .OrderBy(c => c.User.FirstName);
+                     .Include(c => c.User).Where(d => d.User.EmailConfirmed && !d.IsDeleted)
+                     .OrderBy(c => c.User.FirstName);
+        }
+
+        public async Task DeleteClientWithUser(Client client)
+        {
+            var appointments = _context.Appointments.Where(a => a.Client == client && a.Status != "Completed");
+
+            var animals = _context.Animals.Where(a => a.User == client.User);
+
+            _context.Appointments.RemoveRange(appointments);
+
+            _context.Animals.RemoveRange(animals);
+
+            _context.Clients.Remove(client);
+            _context.Users.Remove(client.User);
+
+            await _context.SaveChangesAsync();
         }
     }
 }

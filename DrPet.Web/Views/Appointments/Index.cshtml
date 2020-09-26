@@ -4,7 +4,7 @@
     ViewData["Title"] = "Appointments";
 }
 
-<div id="appointmentTable">
+<div id="appointmentTable" class="mt-5">
     <partial name="_TablePartial" />
 </div>
 
@@ -199,6 +199,14 @@
     $(document).ready(function () {
         $('#AreYouSure').hide();
 
+        @*var email = "@(Context.Request.Query["username"])";
+
+        console.log("email");
+        console.log(email);
+        if (!!email) {
+            alert('empty');
+        }*@
+
         //var lastFilter;
 
         //var appointments = @(Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model)));
@@ -242,7 +250,9 @@
 
         lastFilter = status;
 
-        var ajax = new ej.base.Ajax('/Appointments/TableData' + '?status=' + status, 'GET', true);
+        var email = "@(Context.Request.Query["username"])";
+
+        var ajax = new ej.base.Ajax('/Appointments/TableData' + '?status=' + status+'&username=' + email, 'GET', true);
 
         ajax.send().then(function (result) {
 

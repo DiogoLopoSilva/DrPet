@@ -13,14 +13,21 @@ using DrPet.Web.Data.Repositories;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using DrPet.Web.Data.Enums;
+using Microsoft.Extensions.Configuration;
+using System.Security.Claims;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 
 namespace DrPet.Web.Controllers
 {
     public class AccountController : Controller
     {
         private readonly IUserHelper _userHelper;
-        private readonly IClientRepository _clientRepository;
         private readonly IConverterHelper _converterHelper;
+        private readonly IMailHelpter _mailHelper;
+        private readonly IConfiguration _configuration;
+        private readonly IClientRepository _clientRepository;        
         private readonly IAdminRepository _adminRepository;
         private readonly IDoctorRepository _doctorRepository;
         private readonly IAppointmentRepository _appointmentRepository;
@@ -28,8 +35,10 @@ namespace DrPet.Web.Controllers
         private readonly ISpecializationRepository _specializationRepository;
 
         public AccountController(IUserHelper userHelper,
-            IClientRepository clientRepository,
             IConverterHelper converterHelper,
+            IMailHelpter mailHelper,
+            IConfiguration configuration,
+            IClientRepository clientRepository,         
             IAdminRepository adminRepository,
             IDoctorRepository doctorRepository,
             IAppointmentRepository appointmentRepository,
@@ -37,8 +46,10 @@ namespace DrPet.Web.Controllers
             ISpecializationRepository specializationRepository)
         {
             _userHelper = userHelper;
+            _configuration = configuration;
             _clientRepository = clientRepository;
             _converterHelper = converterHelper;
+            _mailHelper = mailHelper;
             _adminRepository = adminRepository;
             _doctorRepository = doctorRepository;
             _appointmentRepository = appointmentRepository;
@@ -51,16 +62,90 @@ namespace DrPet.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await _userHelper.LoginAsync(model);
-                if (result.Succeeded)
+                var user = await _userHelper.GetUserByEmailAsync(model.Username);
+
+                if (user != null && !user.IsDeleted)
                 {
-                    return Json(new { result = "Success" });
-                }
+                    var result = await _userHelper.LoginAsync(model);
+                    if (result.Succeeded)
+                    {
+                        return Json(new { result = "Success" });
+                    }
+                }           
             }
 
             return Json(new { result = "Failed" });
         }
 
+        public async Task<IActionResult> Logout()
+        {
+            await _userHelper.LogOutAsync();
+
+            return this.RedirectToAction("Index", "Home");
+        }
+
+        public IActionResult RecoverPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> RecoverPassword(RecoverPasswordViewModel model)
+        {
+            if (this.ModelState.IsValid)
+            {
+                var user = await _userHelper.GetUserByEmailAsync(model.Email);
+                if (user == null)
+                {
+                    ModelState.AddModelError(string.Empty, "The email doesn't correspond to a registered user.");
+                    return this.View(model);
+                }
+
+                var myToken = await _userHelper.GeneratePasswordResetTokenAsync(user);
+
+                var link = this.Url.Action(
+                    "ResetPassword",
+                    "Account",
+                    new { token = myToken }, protocol: HttpContext.Request.Scheme);
+
+                _mailHelper.SendMail(model.Email, "Shop Password Reset", $"<h1>Shop Password Reset</h1>" +
+                $"To reset the password click in this link:</br></br>" +
+                $"<a href = \"{link}\">Reset Password</a>");
+                this.ViewBag.Message = "The instructions to recover your password has been sent to email.";
+                return this.View();
+
+            }
+
+            return this.View(model);
+        }
+
+        public IActionResult ResetPassword(string token)
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            var user = await _userHelper.GetUserByEmailAsync(model.UserName);
+            if (user != null)
+            {
+                var result = await _userHelper.ResetPasswordAsync(user, model.Token, model.Password);
+                if (result.Succeeded)
+                {
+                    this.ViewBag.Message = "Password reset successful.";
+                    return this.View();
+                }
+
+                this.ViewBag.Message = "Error while resetting the password.";
+                return View(model);
+            }
+
+            this.ViewBag.Message = "User not found.";
+            return View(model);
+        }
+
+        [Authorize]
         public async Task<JsonResult> UploadImage(IFormCollection form)
         {
             string username = Request.Form["username"]; //TODO VERIFICAR SE ESTE USER É IGUAL AO LOGADO
@@ -83,11 +168,12 @@ namespace DrPet.Web.Controllers
             return Json(new { result = "Failed" });
         }
 
+        [Authorize]
         public async Task<IActionResult> Profile(string username) //TODO POR AUTHORIZE NO PROFILE
         {
             var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
 
-            if (username != null && await _userHelper.IsUserInRoleAsync(user, RoleNames.Administrator))
+            if (username != null && !await _userHelper.IsUserInRoleAsync(user, RoleNames.Client))
             {
                 user = await _userHelper.GetUserByEmailAsync(username);
             }
@@ -98,10 +184,10 @@ namespace DrPet.Web.Controllers
 
                 if (await _userHelper.IsUserInRoleAsync(user, RoleNames.Doctor))
                 {
-                    var doctor = _doctorRepository.GetDoctorByUser(user);
+                    var doctor = await _doctorRepository.GetDoctorByUserAsync(user);
 
                     model.Doctor = doctor;
-                    model.Role = RoleNames.Doctor;
+                    //model.Role = RoleNames.Doctor;
                     model.Appointments = await _appointmentRepository.GetDoctorsAppointmentsAsync(user.UserName);
                     model.SpecializationId = doctor.SpecializationId;
                     model.Specializations = _specializationRepository.GetComboSpecializations();
@@ -159,14 +245,7 @@ namespace DrPet.Web.Controllers
 
             return RedirectToAction("Profile", new { username = model.UserName });
         }
-
-        public async Task<IActionResult> Logout()
-        {
-            await _userHelper.LogOutAsync();
-
-            return this.RedirectToAction("Index", "Home");
-        }
-
+    
         public IActionResult Register()
         {
             if (this.User.Identity.IsAuthenticated && !this.User.IsInRole("Admin"))
@@ -174,7 +253,11 @@ namespace DrPet.Web.Controllers
                 return this.RedirectToAction("Profile", "Account");
             }
 
-            return View();
+            var model = new RegisterNewUserViewModel
+            {
+                Specializations = _specializationRepository.GetComboSpecializations()
+            };
+            return View(model);
         }
 
         [HttpPost]
@@ -188,10 +271,11 @@ namespace DrPet.Web.Controllers
                     if (model.RoleId >= 1 && !this.User.IsInRole("Admin"))
                     {
                         this.ModelState.AddModelError(string.Empty, "Stop trying to hack.");
+                        model.Specializations = _specializationRepository.GetComboSpecializations();
                         return this.View(model);
                     }
 
-                    user = new User
+                    user = new User //TODO POR ISTO NO CONVERTERHELPER
                     {
                         Email = model.Username,
                         UserName = model.Username,
@@ -204,7 +288,8 @@ namespace DrPet.Web.Controllers
                     var result = await _userHelper.AddUserAsync(user, model.Password);
                     if (result != IdentityResult.Success)
                     {
-                        this.ModelState.AddModelError(string.Empty, "The user coudln't be created.");
+                        this.ModelState.AddModelError(string.Empty, "The user couldn't be created.");
+                        model.Specializations = _specializationRepository.GetComboSpecializations();
                         return this.View(model);
                     }
 
@@ -221,11 +306,11 @@ namespace DrPet.Web.Controllers
                     }
                     else
                     {
-                        RolesEnum role = (RolesEnum)model.RoleId;
+                        Roles role = (Roles)model.RoleId;
 
-                        switch (role)
+                        switch (role) //TODO VER SE PONHO ESTE SWITCH NO USERHELPER
                         {
-                            case RolesEnum.Admin:
+                            case Roles.Admin:
                                 await _userHelper.AddUserToRoleAsync(user, RoleNames.Administrator);
 
                                 var admin = new Admin
@@ -235,7 +320,7 @@ namespace DrPet.Web.Controllers
 
                                 await _adminRepository.CreateAsync(admin);
                                 break;
-                            case RolesEnum.Client:
+                            case Roles.Client:
                                 await _userHelper.AddUserToRoleAsync(user, RoleNames.Client);
 
                                 var client = new Client
@@ -245,46 +330,71 @@ namespace DrPet.Web.Controllers
 
                                 await _clientRepository.CreateAsync(client);
                                 break;
-                            case RolesEnum.Doctor:
+                            case Roles.Doctor:
                                 await _userHelper.AddUserToRoleAsync(user, RoleNames.Doctor);
 
                                 var doctor = new Doctor
                                 {
-                                    User = user
+                                    User = user,
+                                    SpecializationId = model.SpecializationId,
+                                    Specialization = await _specializationRepository.GetByIdAsync(model.SpecializationId)
                                 };
 
                                 await _doctorRepository.CreateAsync(doctor);
                                 break;
                             default:
                                 this.ModelState.AddModelError(string.Empty, "The user couldn't be created.");
+                                model.Specializations = _specializationRepository.GetComboSpecializations();
                                 return this.View(model);
                         }
                     }
 
-                    var loginViewModel = new LoginViewModel
+                    var myToken = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
+                    var tokenLink = this.Url.Action("ConfirmEmail","Account",new
                     {
-                        Password = model.Password,
-                        RememberMe = false,
-                        Username = model.Username
-                    };
+                        userid = user.Id,
+                        token = myToken,
 
-                    var result2 = await _userHelper.LoginAsync(loginViewModel);
+                    },protocol:HttpContext.Request.Scheme);
 
-                    if (result2.Succeeded)
-                    {
-                        return this.RedirectToAction("Index", "Home");
-                    }
+                    _mailHelper.SendMail(model.Username, "Email confirmation", $"<h1>Email Confirmation</h1>" +
+                      $"To allow the user, " +
+                      $"plase click in this link:</br></br><a href = \"{tokenLink}\">Confirm Email</a>");
 
-                    this.ModelState.AddModelError(string.Empty, "The user couldn't login.");
+                    this.ViewBag.Message = "The instructions to allow your user has been sent to email.";
+
                     return this.View(model);
                 }
 
-                this.ModelState.AddModelError(string.Empty, "The user already exists.");
-                return this.View(model);
+                this.ModelState.AddModelError(string.Empty, "The user already exists."); //TODO TESTAR COM USER QUE EXISTE PARA VER SE DÁ
             }
 
+            model.Specializations = _specializationRepository.GetComboSpecializations();
             return View(model);
-        }       
+        }
+
+        public async Task<IActionResult> ConfirmEmail(string userid,string token)
+        {
+            if (string.IsNullOrEmpty(userid) || string.IsNullOrEmpty(token))
+            {
+                return NotFound();
+            }
+
+            var user = await _userHelper.GetUserByIdAsync(userid);
+            if (user ==null)
+            {
+                return NotFound();
+            }
+
+            var result = await _userHelper.ConfirmEmailAsync(user, token);
+
+            if (!result.Succeeded)
+            {
+                return NotFound();
+            }
+
+            return View();
+        }
 
         [Authorize]
         public async Task<IActionResult> ChangeUser(string username) //TODO FAZER TESTES COM ESTE CHANGE USER PARA TER A CERTEZA QUE ESTOU A PASSAR O USER CORRECTO
@@ -307,7 +417,7 @@ namespace DrPet.Web.Controllers
 
                 if (await _userHelper.IsUserInRoleAsync(user, RoleNames.Doctor))
                 {
-                    model.Doctor = _doctorRepository.GetDoctorByUser(user);
+                    model.Doctor =await  _doctorRepository.GetDoctorByUserAsync(user);
                 }
             };
 
@@ -365,7 +475,7 @@ namespace DrPet.Web.Controllers
                     var result = await _userHelper.ChangePasswordAsync(user, model.OldPassword, model.NewPassword);
                     if (result.Succeeded)
                     {
-                        return this.RedirectToAction("ChangeUser");
+                        return this.RedirectToAction("ChangeUser"); //TODO REDERICIONAR PARA OUTRA PAGINA
                     }
                     else
                     {
@@ -380,6 +490,48 @@ namespace DrPet.Web.Controllers
 
             return View(model);
         }
+
+        //[HttpPost]
+        //public async Task<IActionResult> CreateToken([FromBody] LoginViewModel model)
+        //{
+        //    if (this.ModelState.IsValid)
+        //    {
+        //        var user = await _userHelper.GetUserByEmailAsync(model.Username);
+        //        if (user != null)
+        //        {
+        //            var result = await _userHelper.ValidatePasswordAsync(
+        //                user,
+        //                model.Password);
+
+        //            if (result.Succeeded)
+        //            {
+        //                var claims = new[]
+        //                {
+        //                     new Claim(JwtRegisteredClaimNames.Sub, user.Email),
+        //                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+        //                 };
+
+        //                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Tokens:Key"]));
+        //                var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        //                var token = new JwtSecurityToken(
+        //                    _configuration["Tokens:Issuer"],
+        //                    _configuration["Tokens:Audience"],
+        //                    claims,
+        //                    expires: DateTime.UtcNow.AddDays(15),
+        //                    signingCredentials: credentials);
+        //                var results = new
+        //                {
+        //                    token = new JwtSecurityTokenHandler().WriteToken(token),
+        //                    expiration = token.ValidTo
+        //                };
+
+        //                return this.Created(string.Empty, results);
+        //            }
+        //        }
+        //    }
+
+        //    return this.BadRequest();
+        //}
 
         public IActionResult NotAuthorized()
         {

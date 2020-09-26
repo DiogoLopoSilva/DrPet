@@ -7,22 +7,25 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DrPet.Web.Data;
 using DrPet.Web.Data.Entities;
+using DrPet.Web.Data.Repositories;
 
 namespace DrPet.Web.Controllers
 {
     public class SpecializationsController : Controller
     {
         private readonly DataContext _context;
+        private readonly ISpecializationRepository _specializationRepository;
 
-        public SpecializationsController(DataContext context)
+        public SpecializationsController(DataContext context, ISpecializationRepository specializationRepository)
         {
             _context = context;
+            _specializationRepository = specializationRepository;
         }
 
         // GET: Specializations
-        public async Task<IActionResult> Index()
+        public ActionResult Index()
         {
-            return View(await _context.Specializations.ToListAsync());
+            return View(_specializationRepository.GetSpecializations());
         }
 
         // GET: Specializations/Details/5
@@ -54,12 +57,11 @@ namespace DrPet.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name")] Specialization specialization)
+        public async Task<IActionResult> Create(Specialization specialization)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(specialization);
-                await _context.SaveChangesAsync();
+                await _specializationRepository.CreateUniqueAsync(specialization);
                 return RedirectToAction(nameof(Index));
             }
             return View(specialization);
@@ -73,7 +75,7 @@ namespace DrPet.Web.Controllers
                 return NotFound();
             }
 
-            var specialization = await _context.Specializations.FindAsync(id);
+            var specialization = await _specializationRepository.GetByIdAsync(id.Value);
             if (specialization == null)
             {
                 return NotFound();
@@ -86,68 +88,26 @@ namespace DrPet.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Specialization specialization)
+        public async Task<IActionResult> Edit(Specialization specialization)
         {
-            if (id != specialization.Id)
-            {
-                return NotFound();
-            }
-
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(specialization);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!SpecializationExists(specialization.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                await _specializationRepository.UpdateAsync(specialization);
+
                 return RedirectToAction(nameof(Index));
             }
             return View(specialization);
         }
 
-        // GET: Specializations/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> DeleteSpecialization(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var specialization = await _context.Specializations
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (specialization == null)
-            {
-                return NotFound();
-            }
-
-            return View(specialization);
-        }
-
-        // POST: Specializations/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var specialization = await _context.Specializations.FindAsync(id);
-            _context.Specializations.Remove(specialization);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool SpecializationExists(int id)
-        {
-            return _context.Specializations.Any(e => e.Id == id);
+            await _specializationRepository.DeleteByIdAsync(id.Value);
+            return this.RedirectToAction("Index");
         }
     }
 }

@@ -13,6 +13,8 @@ namespace DrPet.Web.Data.Repositories
 
         IEnumerable<SelectListItem> GetComboAnimals(string userName);
 
-        Animal GetAnimalWithUser(int id);
+        Task<Animal> GetAnimalWithUserAsync(int id);
+
+        Task DeleteAnimalAsync(Animal animal);
     }
 }

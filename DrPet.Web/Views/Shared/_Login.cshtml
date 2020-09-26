@@ -38,7 +38,7 @@
                         <span asp-validation-for="RememberMe" class="text-warning"></span>
                     </div>
                     <span class="float-right"><a asp-controller="Account" asp-action="Register">Register</a></span>
-                    <span><a href="#">Forgot your password?</a></span>
+                    <span> <a asp-controller="Account" asp-action="RecoverPassword" class="btn btn-link">Forgot your password ?</a></span>
                 </form>
             </div>
             <div class="modal-footer">
@@ -76,9 +76,6 @@
                 }
                 });
             }
-            else {
-                alert('NOT VALID');
-            };
         });
     });
 </script>

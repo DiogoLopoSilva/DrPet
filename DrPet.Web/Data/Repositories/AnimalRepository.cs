@@ -33,23 +33,24 @@ namespace DrPet.Web.Data.Repositories
             {
                 return _context.Animals
                     .Include(c => c.User)
+                    .Where(a => !a.IsDeleted)
                     .OrderBy(c => c.User.FirstName);
             }
 
             return _context.Animals
-                .Include(c => c.User)
-                .Where(c => c.User == user)
-                .OrderBy(c => c.User.FirstName);
+                .Include(a => a.User)
+                .Where(a => a.User == user && !a.IsDeleted)
+                .OrderBy(a => a.User.FirstName);
         }
 
-        public Animal GetAnimalWithUser(int id)
+        public async Task<Animal> GetAnimalWithUserAsync(int id)
         {
-            return _context.Animals.Include(a => a.User).FirstOrDefault(a => a.Id == id);
+            return await _context.Animals.Include(a => a.User).FirstOrDefaultAsync(a => a.Id == id);
         }
 
         public IEnumerable<SelectListItem> GetComboAnimals(string userName)
         {
-            var list = _context.Animals.Where(a => a.User.UserName == userName).Select(a => new SelectListItem
+            var list = _context.Animals.Where(a => a.User.UserName == userName && !a.IsDeleted).Select(a => new SelectListItem
             {
                 Text = a.Name,
                 Value = a.Id.ToString()
@@ -62,6 +63,16 @@ namespace DrPet.Web.Data.Repositories
             //});
 
             return list;
+        }
+        public async Task DeleteAnimalAsync(Animal animal)
+        {
+            var appointments = _context.Appointments.Where(a => a.Animal == animal && a.Status != "Completed");
+
+            _context.Appointments.RemoveRange(appointments);
+
+            _context.Animals.Remove(animal);
+
+            await _context.SaveChangesAsync();
         }
     }
 }

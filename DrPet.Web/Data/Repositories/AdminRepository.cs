@@ -20,16 +20,24 @@ namespace DrPet.Web.Data.Repositories
             _userHelper = userHelper;
         }
 
-        public Admin GetAdminByUser(User user) //TODO VER SE TEM MAL NAO SER ASYNC
+        public async Task<Admin> GetAdminByUserAsync(User user) //TODO VER SE TEM MAL NAO SER ASYNC
         {
-            return _context.Admins.FirstOrDefault(c => c.User == user);
+            return await _context.Admins.Include(a => a.User).FirstOrDefaultAsync(c => c.User == user);
         }
 
         public IQueryable<Admin> GetAdmins()
         {
             return  _context.Admins
-                .Include(d => d.User)
+                .Include(u => u.User).Where(a => a.User.EmailConfirmed && !a.IsDeleted)
                 .OrderBy(u => u.User.FirstName);
+        }
+
+        public async Task DeleteAdminWithUser(Admin admin)
+        {
+            _context.Admins.Remove(admin);
+            _context.Users.Remove(admin.User);
+
+            await _context.SaveChangesAsync();
         }
     }
 }

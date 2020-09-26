@@ -9,14 +9,15 @@ namespace DrPet.Web.Data.Repositories
 {
     public interface IDoctorRepository : IGenericRepository<Doctor>
     {
-        Doctor GetDoctorByUser(User user);
+        Task<Doctor> GetDoctorByUserAsync(User user);
 
-        Task<IQueryable<Doctor>> GetDoctorsAsync(string userName);
+        IQueryable<Doctor> GetDoctors();
 
         IEnumerable<SelectListItem> GetComboDoctors();
 
-        Doctor GetDoctorWithUser(int id);
+        Task<Doctor> GetDoctorWithUserAsync(int id);
 
         IEnumerable<SelectListItem> AvailableDoctors(DateTime date, int doctorId);
+        Task DeleteDoctorWithUserAsync(Doctor doctor);
     }
 }

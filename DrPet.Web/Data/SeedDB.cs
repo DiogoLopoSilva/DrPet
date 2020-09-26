@@ -75,6 +75,9 @@ namespace DrPet.Web.Data
                 await _adminRepository.CreateAsync(admin);
 
                 var isInRole = await _userHelper.IsUserInRoleAsync(user1, RoleNames.Administrator);
+                var token = await _userHelper.GenerateEmailConfirmationTokenAsync(user1);
+                await _userHelper.ConfirmEmailAsync(user1, token);
+
                 if (!isInRole)
                 {
                     await _userHelper.AddUserToRoleAsync(user1, RoleNames.Administrator);
@@ -115,6 +118,8 @@ namespace DrPet.Web.Data
                 await _doctorRepository.CreateAsync(doctor);
 
                 var isInRole = await _userHelper.IsUserInRoleAsync(user3, RoleNames.Doctor);
+                var token = await _userHelper.GenerateEmailConfirmationTokenAsync(user3);
+                await _userHelper.ConfirmEmailAsync(user3, token);
                 if (!isInRole)
                 {
                     await _userHelper.AddUserToRoleAsync(user3, RoleNames.Doctor);
@@ -155,6 +160,8 @@ namespace DrPet.Web.Data
                 await _doctorRepository.CreateAsync(doctor);
 
                 var isInRole = await _userHelper.IsUserInRoleAsync(user4, RoleNames.Doctor);
+                var token = await _userHelper.GenerateEmailConfirmationTokenAsync(user4);
+                await _userHelper.ConfirmEmailAsync(user4, token);
                 if (!isInRole)
                 {
                     await _userHelper.AddUserToRoleAsync(user4, RoleNames.Doctor);
@@ -196,6 +203,8 @@ namespace DrPet.Web.Data
                 await _clientRepository.CreateAsync(client);
 
                 var isInRole = await _userHelper.IsUserInRoleAsync(user2, RoleNames.Client);
+                var token = await _userHelper.GenerateEmailConfirmationTokenAsync(user2);
+                await _userHelper.ConfirmEmailAsync(user2, token);
                 if (!isInRole)
                 {
                     await _userHelper.AddUserToRoleAsync(user2, RoleNames.Client);
@@ -216,7 +225,7 @@ namespace DrPet.Web.Data
                 {
                     Client = client,
                     Animal = animal,
-                    Doctor = _doctorRepository.GetDoctorByUser(await _userHelper.GetUserByEmailAsync("abc@abc.com")),
+                    Doctor = await _doctorRepository.GetDoctorByUserAsync(await _userHelper.GetUserByEmailAsync("abc@abc.com")),
                     Subject="General",
                     StartTime = DateTime.Now,
                     DoctorNotes = "Teste 1",
@@ -229,7 +238,7 @@ namespace DrPet.Web.Data
                 {
                     Client = client,
                     Animal = animal,
-                    Doctor = _doctorRepository.GetDoctorByUser(await _userHelper.GetUserByEmailAsync("abc@abc.com")),
+                    Doctor = await _doctorRepository.GetDoctorByUserAsync(await _userHelper.GetUserByEmailAsync("abc@abc.com")),
                     Subject = "General",
                     StartTime = DateTime.Now,
                     DoctorNotes = "Teste 2",
@@ -242,7 +251,7 @@ namespace DrPet.Web.Data
                 {
                     Client = client,
                     Animal = animal,
-                    Doctor = _doctorRepository.GetDoctorByUser(await _userHelper.GetUserByEmailAsync("abc2@abc.com")),
+                    Doctor = await _doctorRepository.GetDoctorByUserAsync(await _userHelper.GetUserByEmailAsync("abc2@abc.com")),
                     Subject = "General",
                     StartTime = DateTime.Now,
                     DoctorNotes = "Teste 3",

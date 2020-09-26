@@ -10,6 +10,10 @@ namespace DrPet.Web.Models
     public class RegisterNewUserViewModel
     {
         [Required]
+        [DataType(DataType.EmailAddress)]
+        public string Username { get; set; }
+
+        [Required]
         [Display(Name = "First Name")]
         public string FirstName { get; set; }
 
@@ -24,16 +28,11 @@ namespace DrPet.Web.Models
         [Required]
         [Display(Name = "Date of Birth")]
         [DataType(DataType.Date)]
-        public DateTime? DateOfBirth { get; set; }
+        public DateTime? DateOfBirth { get; set; } 
 
         [Required]
-        [DataType(DataType.EmailAddress)]
-        public string Username { get; set; }
-
-
-        [Required]
+        [MinLength(6)]
         public string Password { get; set; }
-
 
         [Required]
         [Compare("Password")]
@@ -43,11 +42,11 @@ namespace DrPet.Web.Models
         public int RoleId { get; set; }
 
         public IEnumerable<SelectListItem> Roles { get; set; }
-    }
-    public enum RolesEnum //TODO ORDERNAR POR CLIENT,DOCTOR,ADMIN
-    {
-        Client = 1,
-        Doctor = 2,
-        Admin = 3,
+
+        [Display(Name = "Specialization")]
+        [Range(1, int.MaxValue, ErrorMessage = "You must select a Specialization")]
+        public int SpecializationId { get; set; }
+
+        public IEnumerable<SelectListItem> Specializations { get; set; }
     }
 }

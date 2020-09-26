@@ -8,9 +8,10 @@ namespace DrPet.Web.Data.Repositories
 {
     public interface IClientRepository : IGenericRepository<Client>
     {
-        Client GetClientByUser(User user);
+        Task DeleteClientWithUser(Client client);
+        Task<Client> GetClientByUserAsync(User user);
 
-        Task<IQueryable<Client>> GetClientsAsync(string userName);
-        Client GetClientWithUser(string username);
+        IQueryable<Client> GetClients();
+        Task<Client> GetClientWithUserAsync(string username);
     }
 }

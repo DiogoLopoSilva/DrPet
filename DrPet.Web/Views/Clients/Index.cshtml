@@ -50,7 +50,7 @@
                                         <td>
                                             @Html.DisplayFor(modelItem => item.User.PhoneNumber)
                                         </td>
-                                        <td class="w-25 text-center">
+                                        <td class="w-25 text-center" id="@item.User.UserName">
                                             <a asp-controller="Account" asp-action="Profile" asp-route-username="@item.User.UserName" class="table-link">
                                                 <span class="fa-stack">
                                                     <i class="fa fa-square fa-stack-2x"></i>
@@ -60,16 +60,22 @@
                                             <a asp-controller="Animals" asp-action="Create" asp-route-username="@item.User.UserName" class="table-link">
                                                 <span class="fa-stack">
                                                     <i class="fa fa-square fa-stack-2x"></i>
-                                                    <i class="fas fa-dog fa-stack-1x fa-inverse"></i>
+                                                    <i class="fas fa-paw fa-stack-1x fa-inverse"></i>
                                                 </span>
                                             </a>
-                                            <a asp-controller="Appointments" asp-action="Create" asp-route-username="@item.User.UserName" class="table-link">
+                                            <a asp-controller="Appointments" asp-action="Index" asp-route-username="@item.User.UserName" class="table-link">
                                                 <span class="fa-stack">
                                                     <i class="fa fa-square fa-stack-2x"></i>
                                                     <i class="fa fa-calendar-alt fa-stack-1x fa-inverse"></i>
                                                 </span>
                                             </a>
-                                            <a href="#" class="table-link danger">
+                                            <a asp-controller="Appointments" asp-action="Create" asp-route-username="@item.User.UserName" class="table-link">
+                                                <span class="fa-stack">
+                                                    <i class="fa fa-square fa-stack-2x"></i>
+                                                    <i class="fa fa-calendar-plus fa-stack-1x fa-inverse"></i>
+                                                </span>
+                                            </a>
+                                            <a asp-controller="Clients" asp-action="DeleteClient" asp-route-username="@item.User.UserName" class="table-link danger" id="btnDeleteItem">
                                                 <span class="fa-stack">
                                                     <i class="fa fa-square fa-stack-2x"></i>
                                                     <i class="fa fa-trash-alt fa-stack-1x fa-inverse"></i>
@@ -87,7 +93,46 @@
     </div>
 </div>
 
+<div id="deleteDialog" class="modal fade">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Delete</h4>
+            </div>
+            <div class="modal-body">
+                <p>Do you want to delete this Client?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="btnYesDelete">Delete</button>
+                <button type="button" class="btn btn-success" id="btnNoDelete">No</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
+    $(document).ready(function () {
+
+        var username = "";
+
+        /*Evento click em todos os <a> com o id = btnDeleteItem*/
+        $('a[id*=btnDeleteItem]').click(function () {
+            username = $(this).parent()[0].id;
+            console.log(username);
+            $("#deleteDialog").modal('show');
+            return false;
+        });
+
+        $("#btnNoDelete").click(function () {
+            $("#deleteDialog").modal('hide');
+            return false;
+        });
+
+        $("#btnYesDelete").click(function () {
+            window.location.href = '/Clients/DeleteClient?username=' + username;
+        });
+    });
+
     $("#searchbox").keyup(function () {
         var searchtext = $(this).val();
         $("table tr").each(function (results) {

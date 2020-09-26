@@ -28,11 +28,11 @@ namespace DrPet.Web.Controllers
         }
 
         // GET: Clients
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             //return View(await _context.Clients.ToListAsync());
 
-            return View(await _clientRepository.GetClientsAsync(this.User.Identity.Name));
+            return View(_clientRepository.GetClients());
         }
 
         // GET: Clients/Details/5
@@ -50,7 +50,7 @@ namespace DrPet.Web.Controllers
                 return NotFound();
             }
 
-            var client = _clientRepository.GetClientByUser(user);
+            var client = await _clientRepository.GetClientByUserAsync(user);
 
             if (client == null)
             {
@@ -165,6 +165,31 @@ namespace DrPet.Web.Controllers
         private bool ClientExists(int id)
         {
             return _context.Clients.Any(e => e.Id == id);
+        }
+
+        public async Task<IActionResult> DeleteClient(string username)
+        {
+            if (username == null)
+            {
+                return NotFound();
+            }
+
+            var user = await _userHelper.GetUserByEmailAsync(username);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var doctor = await _clientRepository.GetClientByUserAsync(user);
+            if (doctor == null)
+            {
+                return NotFound();
+            }
+
+            await _clientRepository.DeleteClientWithUser(doctor);
+
+            return this.RedirectToAction(nameof(Index));
         }
     }
 }

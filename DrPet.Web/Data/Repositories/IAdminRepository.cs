@@ -8,7 +8,8 @@ namespace DrPet.Web.Data.Repositories
 {
     public interface IAdminRepository : IGenericRepository<Admin>
     {
-        Admin GetAdminByUser(User user);
+        Task DeleteAdminWithUser(Admin admin);
+        Task<Admin> GetAdminByUserAsync(User user);
         IQueryable<Admin> GetAdmins();
     }
 }

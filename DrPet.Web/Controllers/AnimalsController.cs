@@ -213,5 +213,31 @@ namespace DrPet.Web.Controllers
         {
             return View();
         }
+
+        public async Task<IActionResult> DeleteAnimal(int? id)
+        {    
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var animal = await _animalRepository.GetByIdAsync(id.Value);
+
+            if (animal==null)
+            {
+                return NotFound();
+            }
+
+            var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
+
+            if (!this.User.IsInRole("Admin") && animal.User != user)
+            {
+                return NotFound();
+            }
+
+            await _animalRepository.DeleteAnimalAsync(animal);
+
+            return this.RedirectToAction(nameof(Index));
+        }
     }
 }

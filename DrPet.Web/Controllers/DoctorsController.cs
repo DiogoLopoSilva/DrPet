@@ -9,9 +9,11 @@ using DrPet.Web.Data;
 using DrPet.Web.Data.Entities;
 using DrPet.Web.Helpers;
 using DrPet.Web.Data.Repositories;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DrPet.Web.Controllers
 {
+    [Authorize(Roles = RoleNames.Administrator)]
     public class DoctorsController : Controller
     {
         private readonly DataContext _context;
@@ -28,9 +30,9 @@ namespace DrPet.Web.Controllers
         }
 
         // GET: Doctors
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
-            return View(await _doctorRepository.GetDoctorsAsync(this.User.Identity.Name));
+            return View(_doctorRepository.GetDoctors());
         }
 
         // GET: Doctors/Details/5
@@ -95,7 +97,7 @@ namespace DrPet.Web.Controllers
                 return NotFound();
             }
 
-            var doctor = _doctorRepository.GetDoctorByUser(user);
+            var doctor = await _doctorRepository.GetDoctorByUserAsync(user);
 
             if (doctor == null)
             {
@@ -172,6 +174,31 @@ namespace DrPet.Web.Controllers
         private bool DoctorExists(int id)
         {
             return _context.Doctors.Any(e => e.Id == id);
+        }
+
+        public async Task<IActionResult> DeleteDoctor(string username)
+        {
+            if (username == null)
+            {
+                return NotFound();
+            }
+
+            var user = await _userHelper.GetUserByEmailAsync(username);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var doctor = await _doctorRepository.GetDoctorByUserAsync(user);
+            if (doctor == null)
+            {
+                return NotFound();
+            }
+
+            await _doctorRepository.DeleteDoctorWithUserAsync(doctor);
+
+            return this.RedirectToAction(nameof(Index));
         }
     }
 }

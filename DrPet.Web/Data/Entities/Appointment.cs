@@ -42,6 +42,8 @@ namespace DrPet.Web.Data.Entities
         public bool IsBlock { get; set; }
 
         [NotMapped]
-        public bool IsReadonly { get; set; }           
+        public bool IsReadonly { get; set; }
+
+        public bool IsDeleted { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using DrPet.Web.Data.Entities;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,9 +18,37 @@ namespace DrPet.Web.Data.Repositories
             _context = context;
         }
 
+        public IQueryable GetSpecializations()
+        {
+            return _context.Specializations.Where(s => !s.IsDeleted);
+        }
+
+        public async Task CreateUniqueAsync(Specialization addSpecialization) //Se ja existe 
+        {
+            var specialization = await _context.Specializations.FirstOrDefaultAsync(s => s.Name.ToLower() == addSpecialization.Name.ToLower() && s.IsDeleted);
+
+            if (specialization != null)
+            {
+                specialization.IsDeleted = false;
+
+                _context.Specializations.Update(specialization);
+            }
+            else
+            {
+                _context.Specializations.Add(addSpecialization);
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        public Specialization GetById(int Id)
+        {
+            return _context.Specializations.FirstOrDefault(s => s.Id == Id);
+        }
+
         public IEnumerable<SelectListItem> GetComboSpecializations()
         {
-            var list = _context.Specializations.Select(c => new SelectListItem
+            var list = _context.Specializations.Where(s => !s.IsDeleted).Select(c => new SelectListItem
             {
                 Text = c.Name,
                 Value = c.Id.ToString()
@@ -41,6 +70,18 @@ namespace DrPet.Web.Data.Repositories
             });
 
             return list;
+        }
+
+        public async Task DeleteByIdAsync(int id)
+        {
+            var specialization = await _context.Specializations.FindAsync(id);
+            if (specialization == null)
+            {
+                return;
+            }
+
+            _context.Specializations.Remove(specialization);
+            await _context.SaveChangesAsync();
         }
     }
 }

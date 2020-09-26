@@ -9,6 +9,7 @@ using DrPet.Web.Data;
 using DrPet.Web.Data.Entities;
 using Microsoft.AspNetCore.Authorization;
 using DrPet.Web.Data.Repositories;
+using DrPet.Web.Helpers;
 
 namespace DrPet.Web.Controllers
 {
@@ -17,11 +18,14 @@ namespace DrPet.Web.Controllers
     {
         private readonly DataContext _context;
         private readonly IAdminRepository _adminRepository;
+        private readonly IUserHelper _userHelper;
 
-        public AdminsController(DataContext context, IAdminRepository adminRepository)
+        public AdminsController(DataContext context, IAdminRepository adminRepository,
+            IUserHelper userHelper)
         {
             _context = context;
             _adminRepository = adminRepository;
+            _userHelper = userHelper;
         }
 
         // GET: Admins
@@ -153,6 +157,31 @@ namespace DrPet.Web.Controllers
         private bool AdminExists(int id)
         {
             return _context.Admins.Any(e => e.Id == id);
+        }
+
+        public async Task<IActionResult> DeleteAdmin(string username)
+        {
+            if (username == null)
+            {
+                return NotFound();
+            }
+
+            var user = await _userHelper.GetUserByEmailAsync(username);
+
+            if (user== null || user.UserName==this.User.Identity.Name)
+            {
+                return NotFound();
+            }
+
+            var admin = await _adminRepository.GetAdminByUserAsync(user);
+            if (admin == null)
+            {
+                return NotFound();
+            }
+
+            await _adminRepository.DeleteAdminWithUser(admin);
+
+            return this.RedirectToAction(nameof(Index));
         }
     }
 }

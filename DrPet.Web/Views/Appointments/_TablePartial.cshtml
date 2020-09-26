@@ -1,12 +1,12 @@
 ﻿@model IEnumerable<DrPet.Web.Data.Entities.Appointment>
 
-<div class="View">
+<div>
     <div class="row justify-content-center">
         <div class="col-6">
             <p>
-                @if (!User.IsInRole("Admin"))
+                @if (!String.IsNullOrEmpty(Context.Request.Query["username"]) || this.User.IsInRole("Client"))
                 {
-                    <a asp-action="Create">Schedule an Appointment</a>
+                    <a asp-action="Create" asp-route-username="@Context.Request.Query["username"]">Schedule an Appointment</a>
                     <br>
                 }
             </p>
@@ -177,8 +177,13 @@
             //console.log(moment().format('LLL'));
 
             var date = moment(args.event.StartTime).format('LLL');
+            var current = moment().format('LLL')
 
-            if (moment().format('LLL') <= date) {
+            console.log(date);
+            console.log(current);
+            console.log(moment(date).isAfter(current));
+
+            if (moment(date).isAfter(current)) {
                 args.cancel = true;
                 //$('#labeldata').text("TESTE MUDAR");
                 appointment = args.event;

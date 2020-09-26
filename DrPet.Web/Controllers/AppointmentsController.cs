@@ -66,14 +66,14 @@ namespace DrPet.Web.Controllers
             return View(await _appointmentRepository.GetAppointmentsAsync(user.UserName));
         }
 
-        public async Task<ActionResult> TableData(string status) //TODO FAZER UM GET APPOINTMENTS BY STATUS
+        public async Task<ActionResult> TableData(string status, string username) //TODO FAZER UM GET APPOINTMENTS BY STATUS
         {
             var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
 
-            //if (username != null && await _userHelper.IsUserInRoleAsync(user, RoleNames.Administrator))
-            //{
-            //    user = await _userHelper.GetUserByEmailAsync(username);
-            //}
+            if (username != null && await _userHelper.IsUserInRoleAsync(user, RoleNames.Administrator))
+            {
+                user = await _userHelper.GetUserByEmailAsync(username);
+            }
 
             if (string.IsNullOrEmpty(status) || status == "All") // TENTAR AMANHA FAZER UM METODO JSON QUE DEVOLVE A LISTA DE DATA E UM PartialView("_TablePartial", allitems);
             {
@@ -128,12 +128,6 @@ namespace DrPet.Web.Controllers
             var listAppointment = Newtonsoft.Json.JsonConvert.DeserializeObject<IEnumerable<Appointment>>(JsonList);
 
             return PartialView("_TablePartial",listAppointment);
-        }
-
-        // GET: AppointmentsNotConfirmed
-        public async Task<IActionResult> IndexNotConfirmed()
-        {
-            return View(await _appointmentRepository.GetUnconfirmedAppointmentsAsync(this.User.Identity.Name));
         }
 
         // GET: Appointments/Details/5
@@ -246,11 +240,11 @@ namespace DrPet.Web.Controllers
             {
                 var value = (param.action == "insert") ? param.value : param.added[0];
 
-                var client = _clientRepository.GetClientWithUser(value.ClientUsername);
+                var client = await _clientRepository.GetClientWithUserAsync(value.ClientUsername);
 
-                var doctor = _doctorRepository.GetDoctorWithUser(value.DoctorId);
+                var doctor = await _doctorRepository.GetDoctorWithUserAsync(value.DoctorId);
 
-                var animal = _animalRepository.GetAnimalWithUser(value.AnimalId);
+                var animal = await _animalRepository.GetAnimalWithUserAsync(value.AnimalId); //TODO POR ASYNC
 
                 Appointment appointment = new Appointment()
                 {
@@ -314,11 +308,11 @@ namespace DrPet.Web.Controllers
                     return NotFound();
                 }
 
-                var client = _clientRepository.GetClientByUser(user);
+                var client = await _clientRepository.GetClientByUserAsync(user);
 
-                var animal = _animalRepository.GetAnimalWithUser(model.AnimalId);
+                var animal = await _animalRepository.GetAnimalWithUserAsync(model.AnimalId);
 
-                var doctor = _doctorRepository.GetDoctorWithUser(model.DoctorId);
+                var doctor = await _doctorRepository.GetDoctorWithUserAsync(model.DoctorId);
                 //TODO VERIFICAÇAOES SE USER EXISTE ETC ETC
 
                 //var appointmentTemp = new AppointmentTemp
@@ -398,24 +392,6 @@ namespace DrPet.Web.Controllers
             //await _appointmentRepository.DeleteAppointmentTempAsync(id.Value);
             return this.RedirectToAction("IndexTemp");
         }
-
-        //[Authorize(Roles = RoleNames.Administrator)]
-        //public async Task<IActionResult> ConfirmAppointmentTemp(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound(); //TODO REDIRECIONAR
-        //    }
-
-        //    var success = await _appointmentRepository.ConfirmAppointmentAsync(id.Value);
-
-        //    if (success)
-        //    {
-        //        return this.RedirectToAction(nameof(Index));
-        //    }
-
-        //    return this.RedirectToAction("IndexTemp");
-        //}
 
         private bool AppointmentExists(int id)
         {

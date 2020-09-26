@@ -40,5 +40,7 @@ namespace DrPet.Web.Data.Entities
         [Display(Name = "Image")]
         public string ImageUrl { get; set; }
 
+        public bool IsDeleted { get; set; }
+
     }
 }

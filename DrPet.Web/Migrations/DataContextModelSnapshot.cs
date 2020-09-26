@@ -25,6 +25,8 @@ namespace DrPet.Web.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<bool>("IsDeleted");
+
                     b.Property<string>("UserId");
 
                     b.HasKey("Id");
@@ -51,6 +53,8 @@ namespace DrPet.Web.Migrations
                         .HasColumnType("date");
 
                     b.Property<string>("ImageUrl");
+
+                    b.Property<bool>("IsDeleted");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -89,6 +93,8 @@ namespace DrPet.Web.Migrations
 
                     b.Property<string>("DoctorNotes");
 
+                    b.Property<bool>("IsDeleted");
+
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime");
 
@@ -115,6 +121,8 @@ namespace DrPet.Web.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<bool>("IsDeleted");
+
                     b.Property<string>("UserId");
 
                     b.HasKey("Id");
@@ -129,6 +137,8 @@ namespace DrPet.Web.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<bool>("IsDeleted");
 
                     b.Property<int>("SpecializationId");
 
@@ -149,7 +159,11 @@ namespace DrPet.Web.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Name");
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50);
 
                     b.HasKey("Id");
 
@@ -183,6 +197,8 @@ namespace DrPet.Web.Migrations
                     b.Property<string>("Gender");
 
                     b.Property<string>("ImageUrl");
+
+                    b.Property<bool>("IsDeleted");
 
                     b.Property<string>("LastName");
 

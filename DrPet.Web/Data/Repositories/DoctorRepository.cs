@@ -2,6 +2,7 @@
 using DrPet.Web.Helpers;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Syncfusion.EJ2.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,7 @@ namespace DrPet.Web.Data.Repositories
 
         public IEnumerable<SelectListItem> GetComboDoctors()
         {
-            var list = _context.Doctors.Include(d => d.User).Include(d=> d.Specialization).Select(d => new SelectListItem
+            var list = _context.Doctors.Include(d => d.User).Include(d=> d.Specialization).Where(d=> !d.IsDeleted).Select(d => new SelectListItem
             {
                 Text = d.User.FullName,
                 Value = d.Id.ToString()
@@ -38,61 +39,30 @@ namespace DrPet.Web.Data.Repositories
             return list;
         }
 
-        public Doctor GetDoctorByUser(User user) //TODO VER SE TEM MAL NAO SER ASYNC
+        public async Task<Doctor> GetDoctorByUserAsync(User user)
         {
-            return _context.Doctors.FirstOrDefault(c => c.User == user);
+            return await _context.Doctors.Include(d => d.User).FirstOrDefaultAsync(c => c.User == user);
         }
 
-        public async Task<IQueryable<Doctor>> GetDoctorsAsync(string userName)
+        public IQueryable<Doctor> GetDoctors()
         {
-            var user = await _userHelper.GetUserByEmailAsync(userName);
-            if (user == null)
-            {
-                return null;
-            }
-
-            if (await _userHelper.IsUserInRoleAsync(user, RoleNames.Administrator))
-            {
-                return _context.Doctors
-                    .Include(d => d.User)
-                    .Include(d => d.Specialization)
-                    .OrderBy(u => u.User.FirstName);
-            }
-
             return _context.Doctors
-                .Include(d => d.User)
-                .Include(d => d.Specialization)
-                .Where(c => c.User == user)
-                .OrderBy(d => d.User.FirstName);
+                     .Include(d => d.User)
+                     .Include(d => d.Specialization)
+                     .Where(d => d.User.EmailConfirmed && !d.IsDeleted)
+                     .OrderBy(u => u.User.FirstName);
         }
 
-        public Doctor GetDoctorWithUser(int id)
+        public async Task<Doctor> GetDoctorWithUserAsync(int id)
         {
-            return _context.Doctors.Include(a => a.User).Include(d => d.Specialization).FirstOrDefault(a => a.Id == id);            
+            return await _context.Doctors.Include(a => a.User).Include(d => d.Specialization).FirstOrDefaultAsync(a => a.Id == id);            
         }
 
-        public IEnumerable<SelectListItem> AvailableDoctors(DateTime date, int doctorId)
+        public IEnumerable<SelectListItem> AvailableDoctors(DateTime date, int doctorId) //TESTAR COM UMA CONSULTA QUE TENHA O ID APAGADO
         {
-            //var list = _context.Appointments.Include(d => d.Doctor).ThenInclude(u => u.User).Where(d => d.StartTime == date);
+            var list = _context.Appointments.Include(d => d.Doctor).ThenInclude(u => u.User).Where(a => a.StartTime == date && !a.IsDeleted);
 
-            //var doctors = _context.Doctors.Include(d => d.User).ToList();
-
-            //foreach (var item in list)
-            //{
-            //    doctors.Remove(item.Doctor);
-            //}
-
-            //doctors.Select(d => new SelectListItem
-            //{
-            //    Text = d.User.FullName,
-            //    Value = d.Id.ToString()
-            //}).ToList();
-
-            //return doctors;
-
-            var list = _context.Appointments.Include(d => d.Doctor).ThenInclude(u => u.User).Where(d => d.StartTime == date);
-
-            var doctors = _context.Doctors.Include(d => d.User).Include(d => d.Specialization).Select(d => new SelectListItem
+            var doctors = _context.Doctors.Include(d => d.User).Include(d => d.Specialization).Where(d=> !d.IsDeleted).Select(d => new SelectListItem
             {
                 Text = $"Dr. {d.User.FullName}",
                 Value = d.Id.ToString()
@@ -109,6 +79,19 @@ namespace DrPet.Web.Data.Repositories
             }
 
             return doctors;
+        }
+
+        public async Task DeleteDoctorWithUserAsync(Doctor doctor)
+        {
+            var appointments = _context.Appointments.Where(a => a.Doctor == doctor && a.Status != "Completed");
+
+            _context.Appointments.RemoveRange(appointments);
+
+            _context.Doctors.Remove(doctor);
+
+            _context.Users.Remove(doctor.User);
+
+            await _context.SaveChangesAsync();
         }
     }
 }
