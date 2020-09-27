@@ -13,6 +13,7 @@ namespace DrPet.Web.Data.Repositories
         Task DeleteByIdAsync(int id);
         Specialization GetById(int Id);
         IEnumerable<SelectListItem> GetComboSpecializations();
+        IEnumerable<SelectListItem> GetComboSpecializationsAppointments();
         IQueryable GetSpecializations();
     }
 }

@@ -106,6 +106,11 @@ namespace DrPet.Web.Controllers
                 return NotFound();
             }
 
+            if (id.Value==1) //TODO POR MENSAGEM A DIZER QUE NAO PODE APAGAR O GENERAL
+            {
+                return this.RedirectToAction("Index");
+            }
+
             await _specializationRepository.DeleteByIdAsync(id.Value);
             return this.RedirectToAction("Index");
         }

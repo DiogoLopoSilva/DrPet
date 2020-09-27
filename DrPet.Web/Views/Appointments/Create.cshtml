@@ -20,7 +20,7 @@
             <h2 class="mb-5 text-center">Double-Click on a Cell to schedule an appointment</h2>
             <div class="mb-5">
                 <ejs-schedule id="schedule" height="550" startHour="09:00" endHour="18:00" allowDragAndDrop="false" minDate="@DateTime.Today.AddDays(1)" maxDate="@DateTime.Today.AddMonths(1)" allowResizing="false"
-                              allowMultiCellSelection="false" timezone="UTC" eventRendered="onEventRendered" actionBegin="onActionBegin" popupOpen="onPopupOpen" actionComplete="onActionComplete" showQuickInfo="false" eventClick="onClick" editorTemplate="#EventEditorTemplate">
+                              allowMultiCellSelection="false" timezone="UTC" eventRendered="onEventRendered" actionBegin="onActionBegin" popupOpen="onPopupOpen" actionComplete="onActionComplete" showQuickInfo="false" editorTemplate="#EventEditorTemplate">
                     <e-schedule-views>
                         <e-schedule-view option="WorkWeek"></e-schedule-view>
                     </e-schedule-views>
@@ -36,14 +36,15 @@
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
 <script type="text/javascript">
+    var date;
+    var doctorId;
 
-        function onClick(args) {
-        }
-
-    function GetListsEdit(args) {
+    function EditLists(args) {
         var date = args.data.StartTime.toISOString();
         var doctor = JSON.parse(JSON.stringify(args.data.Doctor.Id));
         var client = JSON.parse(JSON.stringify(args.data.Client.User.UserName));
+        var spec = JSON.parse(JSON.stringify(args.data.Specialization.Id));
+        doctorId = doctor;
         console.log('DATA');
         console.log(args.data);
              $.ajax({
@@ -52,14 +53,33 @@
                     data: {
                         StartTime: date,
                         DoctorId: doctor,
-                        ClientUsername: client
+                        ClientUsername: client,
+                        specializationId: spec
                     },
                     dataType: "json",
                     success: function (data) {
                         if (data.result == "Success") {
                             //console.log(data.list);
 
-                            console.log(args.data.Doctor.Id);
+                            console.log("DATA");
+                            console.log(args.data);
+
+                            var statusElement = args.element.querySelector('#SpecializationsList');
+                            //console.log(statusElement);
+                            if (!statusElement.classList.contains('e-dropdownlist')) {
+                                var dropDownListObject = new ej.dropdowns.DropDownList({
+                                    placeholder: 'Choose Specialization', value: statusElement.value,
+                                    dataSource: data.listSpecializations,
+                                    fields: { text: 'Text', value: 'Value' },
+                                    floatLabelType: 'Always', placeholder: 'Choose a Specialization',
+                                    Id: 'ddlspecialization',
+                                    value: String(args.data.Specialization.Id),
+                                    change: onChangeEdit
+                                });
+
+                                dropDownListObject.appendTo(statusElement);
+                                statusElement.setAttribute('name', 'SpecializationId');
+                            }
 
                             var statusElement = args.element.querySelector('#DoctorList');
                             //console.log(statusElement);
@@ -85,7 +105,7 @@
                                     placeholder: 'Choose status', value: statusElement.value,
                                     dataSource: data.listAnimals,
                                     fields: { text: 'Text', value: 'Value' },
-                                    value: String(args.data.Animal.Id),
+                                    value: String(args.data.Animal.Id), //FAZER ISTO PARA A SPECIALIZATION
                                     floatLabelType: 'Always', placeholder: 'Choose an Animal'
                                 });
 
@@ -103,8 +123,7 @@
                 });
         }
 
-        function GetListsCreate(args) {
-            var date = args.data.StartTime.toISOString();
+        function GetDoctorsCreate(date,specialization) {
             var username = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.ClientUsername));
              $.ajax({
                     type: "GET",
@@ -112,6 +131,7 @@
                     data: {
                         StartTime: date,
                         ClientUsername: username,
+                        SpecializationId: specialization
                     },
                     dataType: "json",
                     success: function (data) {
@@ -121,12 +141,84 @@
 
                             }
 
-                            var statusElement = args.element.querySelector('#DoctorList');
+                            var doctorDDL = document.getElementById('DoctorList').ej2_instances[0];
+                            doctorDDL.dataSource = data.list;
+                        }
+                        else {
+                            alert("NÃO DEU");
+                        }
+
+                        //Exiba as mensagens de erro neste espaço.
+                    }
+             });
+
+        }
+
+     function GetDoctorsEdit(date,specialization) {
+         var username = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.ClientUsername));
+             $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("GetLists", "Appointments")',
+                    data: {
+                        StartTime: date,
+                        ClientUsername: username,
+                        SpecializationId: specialization,
+                        DoctorId: doctorId
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.result == "Success") {
+
+                            if (data.list.length<=1) {
+
+                            }
+
+                            var doctorDDL = document.getElementById('DoctorList').ej2_instances[0];
+                            doctorDDL.dataSource = data.list;
+                        }
+                        else {
+                            alert("NÃO DEU");
+                        }
+
+                        //Exiba as mensagens de erro neste espaço.
+                    }
+             });
+
+        }
+
+     function CreateLists(args) {
+            var username = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.ClientUsername));
+             $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("GeSpecializationstList", "Appointments")',
+                    data: {
+                        ClientUsername: username,
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.result == "Success") {
+
+                            var statusElement = args.element.querySelector('#SpecializationsList');
+                            //console.log(statusElement);
+                            if (!statusElement.classList.contains('e-dropdownlist')) {
+                                var dropDownListObject = new ej.dropdowns.DropDownList({
+                                    placeholder: 'Choose Specialization', value: statusElement.value,
+                                    dataSource: data.listSpecializations,
+                                    fields: { text: 'Text', value: 'Value' },
+                                    floatLabelType: 'Always', placeholder: 'Choose a Specialization',
+                                    Id: 'ddlspecialization',
+                                    change: onChangeCreate
+                                });
+
+                                dropDownListObject.appendTo(statusElement);
+                                statusElement.setAttribute('name', 'SpecializationId');
+                            }
+
+                             var statusElement = args.element.querySelector('#DoctorList');
                             //console.log(statusElement);
                             if (!statusElement.classList.contains('e-dropdownlist')) {
                                 var dropDownListObject = new ej.dropdowns.DropDownList({
                                     placeholder: 'Choose status', value: statusElement.value,
-                                    dataSource: data.list,
                                     fields: { text: 'Text', value: 'Value' },
                                     floatLabelType: 'Always', placeholder: 'Choose a Doctor',
                                     Id: 'ddldoctor'
@@ -158,12 +250,27 @@
                         //Exiba as mensagens de erro neste espaço.
                     }
              });
+     }
 
+    function onChangeCreate(args) {
+        if (args.itemData != null) {
+            console.log(args);
+            var specialization = args.itemData.Value;
+            GetDoctorsCreate(date, specialization);
+        }
     }
 
-    function onActionComplete(args) {        
+    function onChangeEdit(args) {
+        if (args.itemData != null) {
+            console.log(args);
+            var specialization = args.itemData.Value;
+            GetDoctorsEdit(date, specialization,doctorId);
+        }
+    }
+
+    function onActionComplete(args) {
         if (args.requestType === 'eventCreated') {
-            
+
             //window.location.href = '/Home/Index';
             console.log("CREATED");
             console.log(args);
@@ -210,8 +317,11 @@
                 case 'Confirmed':
                     categoryColor = '#7fa900';
                     break;
-                case 'New':
+                case 'OnGoing':
                     categoryColor = '#8e24aa';
+                    break;
+                case 'Completed':
+                    categoryColor = '#00ff00';
                     break;
             }
             if (!args.element || !categoryColor) {
@@ -237,23 +347,22 @@
                     new ej.calendars.DateTimePicker({ value: new Date(endElement.value) || new Date() }, endElement);
                 }
                 //console.log(args);
-                //console.log(args.data);
                 //console.log(args.data.StartTime);
 
                 //console.log(JSON.stringify(args.data.StartTime));
 
                 //var date = JSON.parse(JSON.stringify(args.data.StartTime));
-                var date = args.data.StartTime.toISOString();
+                date = moment(args.data.StartTime).format();
                 //console.log(date);
 
-                console.log("TARGET");
-                console.log(args.target);
+                console.log("DATE");
+                console.log(date);
 
                 if (args.target.textContent === "") {
-                    GetListsCreate(args);
+                    CreateLists(args);
                 }
                 else {
-                    GetListsEdit(args);
+                    EditLists(args);
                 }
             }
         }
@@ -263,6 +372,12 @@
     <script id="EventEditorTemplate" type="text/x-template">
         <table class="custom-event-editor" width="100%" cellpadding="5">
             <tbody>
+                <tr>
+                    <td class="e-textlabel">Specializations</td>
+                    <td colspan="4">
+                        <input type="text" id="SpecializationsList" name="SpecializationId" class="e-field" style="width: 100%" />
+                    </td>
+                </tr>
                 <tr>
                     <td class="e-textlabel">Doctors</td>
                     <td colspan="4">

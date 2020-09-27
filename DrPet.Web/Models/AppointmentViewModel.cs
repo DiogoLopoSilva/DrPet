@@ -19,6 +19,9 @@ namespace DrPet.Web.Models
         [Display(Name = "Doctor")]
         public int DoctorId { get; set; }
 
+        [Display(Name = "Specialization")]
+        public int SpecializationId { get; set; }
+
         [DataType(DataType.DateTime)]
         public DateTime StartTime { get; set; } //TODO MUDAR PARA LOCAL TIME
 

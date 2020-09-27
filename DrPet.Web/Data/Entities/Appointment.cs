@@ -21,10 +21,10 @@ namespace DrPet.Web.Data.Entities
         public Doctor Doctor { get; set; }
 
         [Required]
-        public string Subject { get; set; }
+        public Specialization Specialization { get; set; }
 
         [Required]
-        public string Status { get; set; }     
+        public string Status { get; set; }
 
         [Required]
         [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy HH:mm}", ApplyFormatInEditMode = false)]
@@ -45,5 +45,17 @@ namespace DrPet.Web.Data.Entities
         public bool IsReadonly { get; set; }
 
         public bool IsDeleted { get; set; }
+
+        public string Subject
+        {
+            get
+            {
+                if (this.Specialization != null)
+                {
+                    return this.Specialization.Name;
+                }
+                return "Not Available";
+            }
+        }
     }
 }

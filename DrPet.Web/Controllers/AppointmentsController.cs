@@ -23,13 +23,15 @@ namespace DrPet.Web.Controllers
         private readonly IAnimalRepository _animalRepository;
         private readonly IDoctorRepository _doctorRepository;
         private readonly IClientRepository _clientRepository;
+        private readonly ISpecializationRepository _specializationRepository;
 
         public AppointmentsController(DataContext context,
             IUserHelper userHelper,
             IAppointmentRepository appointmentRepository,
             IAnimalRepository animalRepository,
             IDoctorRepository doctorRepository,
-            IClientRepository clientRepository)
+            IClientRepository clientRepository,
+            ISpecializationRepository specializationRepository)
         {
             _context = context;
             _userHelper = userHelper;
@@ -37,6 +39,7 @@ namespace DrPet.Web.Controllers
             _animalRepository = animalRepository;
             _doctorRepository = doctorRepository;
             _clientRepository = clientRepository;
+            _specializationRepository = specializationRepository;
         }
 
         // GET: Appointments
@@ -196,27 +199,27 @@ namespace DrPet.Web.Controllers
                 return Json(clientdata);
             }
 
-            var data = _appointmentRepository.GetAllWithModels().ToList();
+            var data = _appointmentRepository.GetAllWithModels();
 
             foreach (var item in data) //TODO NAO DEIXAR ABRIR O EDITOR PARA CONSULTAS MARCADAS
             {
                 if (item.Client.User.UserName != username)
                 {
                     item.IsReadonly = true;
-                    item.Subject = "Date not available";
+                    //item.Subject = "Date not available";
                 }
                 else
                 {
-                    item.Subject = "Your appointment";
+                    //item.Subject = "Your appointment";
                 }
             }
 
             return Json(data);
         }
         
-        public JsonResult GetLists(AppointmentViewModel Consulta)  // Here we get the Start and End Date and based on that can filter the data and return to Scheduler --VER Passing additional parameters to the server
+        public async Task<JsonResult> GetLists(AppointmentViewModel Consulta)  // Here we get the Start and End Date and based on that can filter the data and return to Scheduler --VER Passing additional parameters to the server
         {
-            var doctors = _doctorRepository.AvailableDoctors(Consulta.StartTime, Consulta.DoctorId);
+            var doctors = await _doctorRepository.AvailableDoctors(Consulta.StartTime, Consulta.DoctorId, Consulta.SpecializationId);
 
             if (Consulta.ClientUsername == null)
             {
@@ -225,7 +228,24 @@ namespace DrPet.Web.Controllers
 
             var Animals = _animalRepository.GetComboAnimals(Consulta.ClientUsername);
 
-            return Json(new { result = "Success", list = doctors, listAnimals = Animals });
+            var Specializations = _specializationRepository.GetComboSpecializationsAppointments();
+
+            return Json(new { result = "Success", list = doctors, listAnimals = Animals, listSpecializations = Specializations });
+        }
+
+        public JsonResult GeSpecializationstList(AppointmentViewModel Consulta)  // Here we get the Start and End Date and based on that can filter the data and return to Scheduler --VER Passing additional parameters to the server
+        {
+            //TODO MUDAR ISTO PARA ID
+            if (Consulta.ClientUsername == null)
+            {
+                return Json(new { result = "Error" });
+            }
+
+            var Animals = _animalRepository.GetComboAnimals(Consulta.ClientUsername);
+
+            var Specializations = _specializationRepository.GetComboSpecializationsAppointments();
+
+            return Json(new { result = "Success", listSpecializations = Specializations, listAnimals = Animals });
         }
 
         [HttpPost]
@@ -244,14 +264,16 @@ namespace DrPet.Web.Controllers
 
                 var doctor = await _doctorRepository.GetDoctorWithUserAsync(value.DoctorId);
 
-                var animal = await _animalRepository.GetAnimalWithUserAsync(value.AnimalId); //TODO POR ASYNC
+                var animal = await _animalRepository.GetAnimalWithUserAsync(value.AnimalId);
+
+                var specialization = await _specializationRepository.GetByIdAsync(value.SpecializationId);
 
                 Appointment appointment = new Appointment()
                 {
                     Client = client,
                     Animal = animal,
                     Doctor = doctor,
-                    Subject = "POR ALGO AQUI",
+                    Specialization = specialization,
                     Status = "Waiting",
                     StartTime = value.StartTime,
                     ClientDescription = value.ClientDescription
@@ -264,7 +286,7 @@ namespace DrPet.Web.Controllers
                 foreach (var item in data)
                 {
                     //item.IsReadonly = true;
-                    item.Subject = "Not available";
+                    //item.Subject = "Not available";
                 }
 
                 return Json(data, new Newtonsoft.Json.JsonSerializerSettings());

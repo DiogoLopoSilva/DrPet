@@ -58,11 +58,15 @@ namespace DrPet.Web.Data.Repositories
             return await _context.Doctors.Include(a => a.User).Include(d => d.Specialization).FirstOrDefaultAsync(a => a.Id == id);            
         }
 
-        public IEnumerable<SelectListItem> AvailableDoctors(DateTime date, int doctorId) //TESTAR COM UMA CONSULTA QUE TENHA O ID APAGADO
+        public async Task<IEnumerable<SelectListItem>> AvailableDoctors(DateTime date, int doctorId,int specId) //TESTAR COM UMA CONSULTA QUE TENHA O ID APAGADO
         {
+
+            //NO AZURE EZXITE UM BUG COM A DATA, ADICIONEI O date.ToUniversalTime()
+            var specialization = await _context.Specializations.FindAsync(specId);
+
             var list = _context.Appointments.Include(d => d.Doctor).ThenInclude(u => u.User).Where(a => a.StartTime == date && !a.IsDeleted);
 
-            var doctors = _context.Doctors.Include(d => d.User).Include(d => d.Specialization).Where(d=> !d.IsDeleted).Select(d => new SelectListItem
+            var doctors = _context.Doctors.Include(d => d.User).Include(d => d.Specialization).Where(d=> !d.IsDeleted && d.Specialization == specialization).Select(d => new SelectListItem
             {
                 Text = $"Dr. {d.User.FullName}",
                 Value = d.Id.ToString()

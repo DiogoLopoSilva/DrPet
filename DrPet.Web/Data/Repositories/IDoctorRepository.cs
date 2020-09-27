@@ -17,7 +17,7 @@ namespace DrPet.Web.Data.Repositories
 
         Task<Doctor> GetDoctorWithUserAsync(int id);
 
-        IEnumerable<SelectListItem> AvailableDoctors(DateTime date, int doctorId);
+        Task<IEnumerable<SelectListItem>> AvailableDoctors(DateTime date, int doctorId,int specialization);
         Task DeleteDoctorWithUserAsync(Doctor doctor);
     }
 }

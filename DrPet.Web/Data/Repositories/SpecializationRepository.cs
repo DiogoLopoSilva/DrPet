@@ -72,6 +72,26 @@ namespace DrPet.Web.Data.Repositories
             return list;
         }
 
+        public IEnumerable<SelectListItem> GetComboSpecializationsAppointments()
+        {
+            var list = _context.Specializations.Where(s => !s.IsDeleted).Select(c => new SelectListItem
+            {
+                Text = c.Name,
+                Value = c.Id.ToString()
+
+            }).OrderBy(l => l.Text).ToList();
+
+            var others = list.FirstOrDefault(s => s.Text == "Others");
+
+            if (others != null)
+            {
+                list.Remove(others);
+                list.Add(others);
+            };
+
+            return list;
+        }
+
         public async Task DeleteByIdAsync(int id)
         {
             var specialization = await _context.Specializations.FindAsync(id);

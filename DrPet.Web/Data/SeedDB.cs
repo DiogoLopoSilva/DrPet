@@ -16,14 +16,16 @@ namespace DrPet.Web.Data
         private readonly IClientRepository _clientRepository;
         private readonly IAdminRepository _adminRepository;
         private readonly IDoctorRepository _doctorRepository;
+        private readonly ISpecializationRepository _specializationRepository;
 
-        public SeedDB(DataContext context, IUserHelper userHelper, IClientRepository clientRepository, IAdminRepository adminRepository, IDoctorRepository doctorRepository)
+        public SeedDB(DataContext context, IUserHelper userHelper, IClientRepository clientRepository, IAdminRepository adminRepository, IDoctorRepository doctorRepository, ISpecializationRepository specializationRepository)
         {
             _context = context;
             _userHelper = userHelper;
             _clientRepository = clientRepository;
             _adminRepository = adminRepository;
             _doctorRepository = doctorRepository;
+            _specializationRepository = specializationRepository;
         }
 
         public async Task SeedAsync()
@@ -226,7 +228,7 @@ namespace DrPet.Web.Data
                     Client = client,
                     Animal = animal,
                     Doctor = await _doctorRepository.GetDoctorByUserAsync(await _userHelper.GetUserByEmailAsync("abc@abc.com")),
-                    Subject="General",
+                    Specialization = await _specializationRepository.GetByIdAsync(1),
                     StartTime = DateTime.Now,
                     DoctorNotes = "Teste 1",
                     Status = "Confirmed"
@@ -239,7 +241,7 @@ namespace DrPet.Web.Data
                     Client = client,
                     Animal = animal,
                     Doctor = await _doctorRepository.GetDoctorByUserAsync(await _userHelper.GetUserByEmailAsync("abc@abc.com")),
-                    Subject = "General",
+                    Specialization = await _specializationRepository.GetByIdAsync(1),
                     StartTime = DateTime.Now,
                     DoctorNotes = "Teste 2",
                     Status = "Waiting"
@@ -252,7 +254,7 @@ namespace DrPet.Web.Data
                     Client = client,
                     Animal = animal,
                     Doctor = await _doctorRepository.GetDoctorByUserAsync(await _userHelper.GetUserByEmailAsync("abc2@abc.com")),
-                    Subject = "General",
+                    Specialization = await _specializationRepository.GetByIdAsync(1),
                     StartTime = DateTime.Now,
                     DoctorNotes = "Teste 3",
                     Status = "Confirmed"
