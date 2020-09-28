@@ -22,10 +22,6 @@ namespace DrPet.Web.Data.Entities
         [MaxLength(50, ErrorMessage = "The field {0} can only contain {1} characters.")]
         public string Breed { get; set; }
 
-        [MaxLength(50, ErrorMessage = "The field {0} can only contain {1} characters.")]
-        [Required]
-        public string Color { get; set; }
-
         [Display(Name = "Date of Birth")]
         [DataType(DataType.Date)]
         public DateTime? DateOfBirth { get; set; }

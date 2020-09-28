@@ -1,63 +1,242 @@
-﻿@model DrPet.Web.Data.Entities.Animal
+﻿@model DrPet.Web.Models.AnimalDetailsViewModel
 
 @{
     ViewData["Title"] = "Details";
 }
 
-<h2>Details</h2>
+@{
+    var asyncSettings = new Syncfusion.EJ2.Inputs.UploaderAsyncSettings { SaveUrl = "/Animals/UploadImage" };
+}
 
-<div>
-    <h4>Animal</h4>
-    <hr />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.ImageUrl)
-        </dt>
-        <dd>
-            @if (!string.IsNullOrEmpty(Model.ImageUrl))
-            {
-                <img src="@Url.Content(Model.ImageUrl)" alt="Image" style="width:100px;height:150px;max-width:100%;height:auto;" />
-            }
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Sex)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Sex)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Species)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Species)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Breed)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Breed)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Color)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Color)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.DateOfBirth)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.DateOfBirth)
-        </dd>
-    </dl>
+<div class="container my-5 pt-50 userprofilefont">
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="profile-card-4 z-depth-3">
+                <div class="card">
+                    <div class="card-body text-center bg-primary rounded-top">
+                        <div class="user-box">
+                            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                            {
+                                <img src="@Url.Content(Model.ImageUrl)" onerror="this.src='../images/Default/nopicture.png'" alt="user avatar" id="test" style="width:100px;height:100px;" />
+                            }
+                            else
+                            {
+                                <img src="~/images/Default/nopicture.png" alt="user avatar" id="test" style="width:100px;height:100px;">
+                            }
+                        </div>
+                        <h5 class="mb-1 text-white">@Html.DisplayFor(model => model.Name)</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group shadow-none">
+                            <li class="list-group-item text-break">
+                                <div class="list-icon">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="list-details">
+                                    <a asp-controller="Account" asp-action="Profile" asp-route-username="@Model.User.UserName"><span>@Html.DisplayFor(model => model.User.FullName)</span></a> <!--TODO ARRANJAR: SE O MAIL FOR MUITO GRANDE SAI PARA FORA-->
+                                    <small>Owner</small>
+                                </div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="list-icon">
+                                    <i class="fas fa-paw"></i>
+                                </div>
+                                <div class="list-details">
+                                    <span>@Html.DisplayFor(model => model.Species) @Html.DisplayFor(model => model.Breed)</span> <!--TODO ARRANJAR: SE O MAIL FOR MUITO GRANDE SAI PARA FORA-->
+                                    <small>Species and Breed</small>
+
+                                </div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="list-icon">
+                                    @if (Model.Sex == "Male")
+                                    {
+                                        <i class="fas fa-mars"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="fas fa-venus"></i>
+                                    }
+                                </div>
+                                <div class="list-details">
+                                    <span> @Html.DisplayFor(model => model.Sex)</span>
+                                    <small>Gender</small>
+                                </div>
+                            </li>
+                        </ul>
+                        <div class="row text-center mt-4">
+                            <div class="col p-2">
+                                <h4 class="mb-1 line-height-5">@Html.DisplayFor(model => model.Appointments.ToList().Count)</h4>
+                                <small class="mb-0 font-weight-bold">Appointments</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <div class="card z-depth-3">
+                <div class="card-body">
+                    <ul class="nav nav-pills nav-pills-primary nav-justified">
+                        <li class="nav-item">
+                            <a href="javascript:void();" data-target="#profile" data-toggle="pill" class="nav-link active show"><i class="icon-user"></i> <span class="hidden-xs">Profile</span></a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="javascript:void();" data-target="#appointments" data-toggle="pill" class="nav-link" id="appointmentsClick"><i class="icon-envelope-open"></i> <span class="hidden-xs">Appointments</span></a>
+                        </li>
+                        @if (!(this.User.IsInRole("Doctor") && this.User.Identity.Name != Model.User.UserName))
+                        {
+                            <li class="nav-item">
+                                <a href="javascript:void();" data-target="#edit" data-toggle="pill" class="nav-link"><i class="icon-note"></i> <span class="hidden-xs">Edit</span></a>
+                            </li>
+                        }
+                    </ul>
+                    <div class="tab-content p-3">
+                        <div class="tab-pane active show" id="profile">
+                            <h5 class="mb-3">Profile</h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>  @Html.DisplayNameFor(model => model.DateOfBirth)</h6>
+                                    <p>
+                                        @Html.DisplayFor(model => model.DateOfBirth)
+                                    </p>
+                                    <h6></h6>
+                                    <p>
+
+                                    </p>
+                                </div>
+                                <div class="col-md-12">
+                                    <h5 class="mt-2 mb-3"><span class="fa fa-clock-o ion-clock float-right"></span> Upcoming Appointments</h5>
+                                    <table class="table table-hover table-striped">
+                                        <tbody>
+                                            @if (Model.Appointments.Count() > 0)
+                                            {
+                                                @foreach (var item in Model.Appointments)
+                                                {
+                                                    <tr>
+                                                        <td>
+                                                            <strong> @Html.DisplayFor(modelItem => item.StartTime)</strong> Appointment with<strong> Dr. @Html.DisplayFor(modelItem => item.Doctor.User.FullName)</strong>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <tr>
+                                                    <td>
+                                                        No upcoming appointments...
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <!--/row-->
+                        </div>
+                        <div class="tab-pane" id="appointments">
+                            <ejs-schedule id="schedule" startHour="09:00" endHour="18:00" allowMultiCellSelection="false" readonly="true" eventRendered="onEventRendered">
+                                <e-schedule-views>
+                                    <e-schedule-view option="WorkWeek"></e-schedule-view>
+                                </e-schedule-views>
+                            </ejs-schedule>
+                        </div>
+                        <div class="tab-pane" id="edit">
+                            <form method="post">
+
+                                <div asp-validation-summary="ModelOnly"></div>
+
+                                <input type="hidden" asp-for="Id" />
+                                <input type="hidden" asp-for="User.UserName" />
+
+                                <div class="form-group row">
+                                    <label asp-for="Name" class="control-label"></label>
+                                    <input asp-for="Name" class="form-control" />
+                                    <span asp-validation-for="Name" class="text-danger"></span>
+                                </div>
+                                <div class="form-group row">
+                                    <label asp-for="Species" class="control-label"></label>
+                                    <input asp-for="Species" class="form-control" />
+                                    <span asp-validation-for="Species" class="text-danger"></span>
+                                </div>
+                                <div class="form-group row">
+                                    <label asp-for="Breed" class="control-label"></label>
+                                    <input asp-for="Breed" class="form-control" />
+                                    <span asp-validation-for="Breed" class="text-danger"></span>
+                                </div>
+                                <div class="form-group row">
+                                    <label asp-for="Breed" class="control-label"></label>
+                                    <input asp-for="DateOfBirth" class="form-control" />
+                                    <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                                </div>
+                                <input type="hidden" asp-for="User.UserName" class="form-control" />
+                                <div class="form-group row">
+                                    <label class="col-lg-3 col-form-label form-control-label"></label>
+                                    <div class="col-lg-9">
+                                        <input type="reset" class="btn btn-secondary" value="Cancel">
+                                        <input type="submit" asp-action="EditAnimal" class="btn btn-primary" value="Save Changes">
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a> 
-    <a asp-action="Index" class="btn btn-success">Back to List</a>
-</div>
+<ejs-uploader id="ImageFile" uploading="onFileUpload" multiple="false" autoUpload="true" asyncSettings="@asyncSettings" success="onSuccess" cssClass="FileUploadProfile" allowedExtensions=".jpg, .jpeg, .bmp, .png"></ejs-uploader>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+<script>
+    $("#test").click(function () {
+        $("#ImageFile").click();
+    });
+
+    function onFileUpload(args) {
+
+        args.customFormData = [{ 'id': '@Model.Id' }];
+        console.log(args);
+    }
+
+      function onSuccess(args) {
+        console.log('SUCCESS');
+          console.log(args);
+          location.reload();
+    }
+
+    function onEventRendered(args) {
+        var categoryColor;
+        switch (args.data.Status) {
+            case 'Waiting':
+                categoryColor = '#F57F17';
+                break;
+            case 'Confirmed':
+                categoryColor = '#7fa900';
+                break;
+            case 'New':
+                categoryColor = '#8e24aa';
+                break;
+        }
+        if (!args.element || !categoryColor) {
+            return;
+        }
+        var scheduleObj = document.getElementById('schedule').ej2_instances[0];
+        if (scheduleObj.currentView === 'Agenda') {
+            (args.element.firstChild).style.borderLeftColor = categoryColor;
+        } else {
+            args.element.style.backgroundColor = categoryColor;
+        }
+    }
+
+    $("#appointmentsClick").click(function () {
+        var data = @(Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Appointments)));
+        var scheduleObj = document.getElementById('schedule').ej2_instances[0];
+        scheduleObj.eventSettings.dataSource = data;
+        scheduleObj.dataBind();
+    });
+</script>

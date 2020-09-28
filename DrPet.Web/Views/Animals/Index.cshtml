@@ -9,72 +9,75 @@
         <h2 class="justify-content-start">Animals</h2>
         <input type="text" class="form-control w-auto ml-auto justify-content-end" id="searchbox" placeholder="search..." maxlength="50" />
         <div class="col-lg-12 p-0">
-            <a asp-action="Create" asp-route-username="@Context.Request.Query["username"]">Add an Animal</a>
-            <br>
-            <div class="main-box clearfix">
-                <div class="table-responsive">
-                    <table class="table user-list">
-                        <thead>
-                            <tr>
-                                <th><span>Animal</span></th>
-                                <th><span>Species</span></th>
-                                <th><span>Breed</span></th>
-                                <th class="text-center"><span>Status</span></th>
-                                <th><span>Owner</span></th>
-                                <th>&nbsp;</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model)
-                            {
+            @if (!String.IsNullOrEmpty(Context.Request.Query["username"]) || this.User.IsInRole("Client"))
+            {
+                <a asp-action="Create" asp-route-username="@Context.Request.Query["username"]">Add an Animal</a>
+            }
+                <br>
+                <div class="main-box clearfix">
+                    <div class="table-responsive">
+                        <table class="table user-list">
+                            <thead>
                                 <tr>
-                                    <td>
-                                        @if (!string.IsNullOrEmpty(item.ImageUrl)) //TODO VER SE DEIXO IMAGEM AQUI
-                                        {
-                                            <img src="@Url.Content(item.ImageUrl)" onerror="this.src='../images/Default/nopicture.png'" alt="user avatar" id="test" style="width:auto;height:50px;" />
-                                        }
-                                        else
-                                        {
-                                            <img src="~/images/Default/nopicture.png" alt="user avatar" id="test" style="width:auto;height:50px;">
-                                        }
-                                        <a href="#" class="user-link">@Html.DisplayFor(modelItem => item.Name)</a>
-                                        <span class="user-subhead">
-                                            @Html.DisplayFor(modelItem => item.User.UserName)
-                                        </span>
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.Species)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.Breed)
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="badge badge-success">Active</span>
-                                    </td>
-                                    <td>
-                                        <a asp-action="Profile" asp-controller="Account" asp-route-username="@item.User.UserName" class="user-link">@Html.DisplayFor(modelItem => item.User.FullName)</a>
-                                    </td>
-                                    <td class="text-center" id="@item.Id">
-                                        <a asp-controller="Account" asp-action="Profile" asp-route-username="@item.User.UserName" class="table-link">
-                                            <span class="fa-stack">
-                                                <i class="fa fa-square fa-stack-2x"></i>
-                                                <i class="fa fa-search-plus fa-stack-1x fa-inverse"></i>
-                                            </span>
-                                        </a>
-                                        <a asp-action="DeleteAnimal" asp-route-id="@item.Id" class="table-link danger" id="btnDeleteItem">
-                                            <span class="fa-stack">
-                                                <i class="fa fa-square fa-stack-2x"></i>
-                                                <i class="fa fa-trash-alt fa-stack-1x fa-inverse"></i>
-                                            </span>
-                                        </a>
-                                    </td>
+                                    <th><span>Animal</span></th>
+                                    <th><span>Species</span></th>
+                                    <th><span>Breed</span></th>
+                                    <th class="text-center"><span>Status</span></th>
+                                    <th><span>Owner</span></th>
+                                    <th>&nbsp;</th>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(item.ImageUrl)) //TODO VER SE DEIXO IMAGEM AQUI
+                                            {
+                                                <img src="@Url.Content(item.ImageUrl)" onerror="this.src='../images/Default/nopicture.png'" alt="user avatar" id="test" style="width:auto;height:50px;" />
+                                            }
+                                            else
+                                            {
+                                                <img src="~/images/Default/nopicture.png" alt="user avatar" id="test" style="width:auto;height:50px;">
+                                            }
+                                            <a href="#" class="user-link">@Html.DisplayFor(modelItem => item.Name)</a>
+                                            <span class="user-subhead">
+                                                @Html.DisplayFor(modelItem => item.User.UserName)
+                                            </span>
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Species)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Breed)
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge badge-success">Active</span>
+                                        </td>
+                                        <td>
+                                            <a asp-action="Profile" asp-controller="Account" asp-route-username="@item.User.UserName" class="user-link">@Html.DisplayFor(modelItem => item.User.FullName)</a>
+                                        </td>
+                                        <td class="text-center" id="@item.Id">
+                                            <a asp-controller="Animals" asp-action="Details" asp-route-id="@item.Id" class="table-link">
+                                                <span class="fa-stack">
+                                                    <i class="fa fa-square fa-stack-2x"></i>
+                                                    <i class="fa fa-search-plus fa-stack-1x fa-inverse"></i>
+                                                </span>
+                                            </a>
+                                            <a asp-action="DeleteAnimal" asp-route-id="@item.Id" class="table-link danger" id="btnDeleteItem">
+                                                <span class="fa-stack">
+                                                    <i class="fa fa-square fa-stack-2x"></i>
+                                                    <i class="fa fa-trash-alt fa-stack-1x fa-inverse"></i>
+                                                </span>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
     </div>
 </div>
 

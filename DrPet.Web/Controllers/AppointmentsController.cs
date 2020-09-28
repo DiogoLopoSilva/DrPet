@@ -404,6 +404,7 @@ namespace DrPet.Web.Controllers
             return View(appointment);
         }
 
+        [Authorize(Roles ="Admin")]
         public IActionResult DeleteAppointmentTemp(int? id)
         {
             if (id == null)

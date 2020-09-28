@@ -3,65 +3,60 @@
 @{
     ViewData["Title"] = "Create";
 }
-<div class="section-padding">
-    <div class="container">
-        <div class="row justify-content-sm-center">
-            <div class="cl-xl-7 col-lg-8 col-md-10">
-                <!-- Section Tittle -->
-                <div class="section-tittle text-center mb-70">
-                    <h2>Animals</h2>
-                    <hr />
-                </div>
-            </div>
-        </div>
 
-        <div class="row justify-content-sm-center mt-30">
-            <form asp-action="Create" enctype="multipart/form-data">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <div class="form-group">
-                    <label asp-for="Name" class="control-label"></label>
-                    <input asp-for="Name" class="form-control" />
-                    <span asp-validation-for="Name" class="text-danger"></span>
+<div class="container h-100 mb-5 View">
+    <div class="row h-100">
+        <div class="col-sm-10 col-md-8 col-lg-6 mx-auto d-table h-100">
+            <div class="d-table-cell align-middle">
+
+                <div class="text-center mt-4">
+                    <h1 class="h2">Add Animal</h1>
                 </div>
-                <div class="form-group">
-                    <label asp-for="ImageFile" class="control-label"></label>
-                    <ejs-uploader id="ImageFile" multiple="false" autoUpload="false"></ejs-uploader>
-                    <span asp-validation-for="ImageFile" class="text-danger"></span>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="m-sm-4">
+                            <form method="post">
+                                <div asp-validation-summary="ModelOnly"></div>
+
+                                <div class="form-group">
+                                    <label asp-for="Name" class="control-label"></label>
+                                    <input asp-for="Name" class="form-control form-control">
+                                    <span asp-validation-for="Name" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Sex" class="control-label"></label>
+                                    <br>
+                                    <ejs-radiobutton id="Sex1" label="Male" value="Male" name="Sex" checked="true"></ejs-radiobutton>
+                                    <ejs-radiobutton id="Sex2" label="Female" value="Female" name="Sex"></ejs-radiobutton>
+                                    <span asp-validation-for="Sex" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Species" class="control-label"></label>
+                                    <input asp-for="Species" class="form-control" />
+                                    <span asp-validation-for="Species" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="Breed" class="control-label"></label>
+                                    <input asp-for="Breed" class="form-control" />
+                                    <span asp-validation-for="Breed" class="text-danger"></span>
+                                </div>
+                                <div class="form-group">
+                                    <label asp-for="DateOfBirth" class="control-label"></label>
+                                    <input asp-for="DateOfBirth" class="form-control" />
+                                    <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                                </div>
+                                <div class="text-center mt-3">
+                                    <input type="submit" value="Create" class="btn btn-primary" />
+                                    <a asp-action="Index" class="btn btn-success">Back to List</a>
+                                </div>
+                                <input type="hidden" asp-for="User.UserName" class="form-control" />
+                            </form>
+                        </div>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label asp-for="Sex" class="control-label"></label>
-                    <br>
-                    <ejs-radiobutton id="Sex1" label="Male" value="Male" name="Sex" checked="true"></ejs-radiobutton>
-                    <ejs-radiobutton id="Sex2" label="Female" value="Female" name="Sex"></ejs-radiobutton>
-                    <span asp-validation-for="Sex" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="Species" class="control-label"></label>
-                    <input asp-for="Species" class="form-control" />
-                    <span asp-validation-for="Species" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="Breed" class="control-label"></label>
-                    <input asp-for="Breed" class="form-control" />
-                    <span asp-validation-for="Breed" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="Color" class="control-label"></label>
-                    <input asp-for="Color" class="form-control" />
-                    <span asp-validation-for="Color" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <label asp-for="DateOfBirth" class="control-label"></label>
-                    <input asp-for="DateOfBirth" class="form-control" />
-                    <span asp-validation-for="DateOfBirth" class="text-danger"></span>
-                </div>
-                <div class="form-group">
-                    <input type="submit" value="Create" class="btn btn-primary" />
-                    <a asp-action="Index" class="btn btn-success">Back to List</a>
-                    <input type="button" value="TEST" class="btn btn-primary" id="test" />
-                </div>
-                <input type="hidden" asp-for="User.UserName" class="form-control" />
-            </form>
+
+            </div>
         </div>
     </div>
 </div>
@@ -69,11 +64,4 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
-<script>
-    $("#test").click(function () {
-        $("#ImageFile").click();
-    });
-
-    //TODO VER SE TER ADICIONADO O UPLOAD DO SYNCFUSION NAO CRIOU PROBLEMAS
-</script>
 

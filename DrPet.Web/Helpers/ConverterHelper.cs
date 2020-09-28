@@ -19,7 +19,6 @@ namespace DrPet.Web.Helpers
                 Sex = model.Sex,
                 Species = model.Species,
                 Breed = model.Breed,
-                Color = model.Color,
                 DateOfBirth = model.DateOfBirth,
                 User = model.User
             };
@@ -35,7 +34,6 @@ namespace DrPet.Web.Helpers
                 Sex = animal.Sex,
                 Species = animal.Species,
                 Breed = animal.Breed,
-                Color = animal.Color,
                 DateOfBirth = animal.DateOfBirth,
                 User = animal.User
             };

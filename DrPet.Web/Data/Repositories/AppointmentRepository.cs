@@ -148,5 +148,16 @@ namespace DrPet.Web.Data.Repositories
                   .ThenInclude(d => d.User)
                   .FirstOrDefault(d => d.Id == id);
         }
+
+        public IEnumerable<Appointment> GetAnimalAppointments(int id) //TODO POR ASYNC
+        {
+            return _context.Appointments.Include(a => a.Client)
+                       .ThenInclude(c => c.User)
+                       .Include(a => a.Animal)
+                       .Include(a => a.Specialization)
+                       .Include(a => a.Doctor)
+                       .ThenInclude(d => d.User)
+                       .Where(a => a.Animal.Id == id && !a.IsDeleted);
+        }
     }
 }

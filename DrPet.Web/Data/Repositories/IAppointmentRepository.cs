@@ -9,7 +9,7 @@ namespace DrPet.Web.Data.Repositories
     public interface IAppointmentRepository : IGenericRepository<Appointment>
     {
         IQueryable<Appointment> GetAllWithModels();
-
+        IEnumerable<Appointment> GetAnimalAppointments(int id);
         Task<IQueryable<Appointment>> GetAppointmentsAsync(string userName);
 
         Task<IQueryable<Appointment>> GetAppointmentsByStatusAsync(string userName, string status);

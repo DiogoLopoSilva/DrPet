@@ -37,7 +37,6 @@ namespace DrPet.Web.Data
             var a = new Animal
             {
                 Name = "TEST",
-                Color="TEST",
                 Breed="TEST",
                 Species="TEST",
                 Sex="TEST",

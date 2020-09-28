@@ -217,7 +217,6 @@ namespace DrPet.Web.Data
                     Name = "TesteConsulta",
                     Sex = "M",
                     Species = "CAO",
-                    Color = "Preto",
                     User = user2
                 };
 
@@ -265,9 +264,9 @@ namespace DrPet.Web.Data
 
             if (!_context.Animals.Any())
             {
-                this.AddAnimal("Pipas", "Male", "Bird", "Black", user1);
-                this.AddAnimal("Whity", "Male", "Dog", "Black", user2);
-                this.AddAnimal("Xaninha", "Female", "Cat", "Black", user1);
+                this.AddAnimal("Pipas", "Male", "Bird", user1);
+                this.AddAnimal("Whity", "Male", "Dog", user2);
+                this.AddAnimal("Xaninha", "Female", "Cat", user1);
                 await _context.SaveChangesAsync();
             }
 
@@ -309,14 +308,13 @@ namespace DrPet.Web.Data
             //}
         }
 
-        private void AddAnimal(string name, string sex, string species, string color, User user)
+        private void AddAnimal(string name, string sex, string species, User user)
         {
             _context.Animals.Add(new Animal
             {
                 Name = name,
                 Sex = sex,
                 Species = species,
-                Color = color,
                 User = user
             });
         }

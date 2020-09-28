@@ -12,6 +12,7 @@ using DrPet.Web.Models;
 using System.IO;
 using Microsoft.AspNetCore.Authorization;
 using DrPet.Web.Data.Repositories;
+using Microsoft.AspNetCore.Http;
 
 namespace DrPet.Web.Controllers
 {
@@ -22,22 +23,32 @@ namespace DrPet.Web.Controllers
         private readonly IUserHelper _userHelper;
         private readonly IConverterHelper _converterHelper;
         private readonly IImageHelper _imageHelper;
+        private readonly IAppointmentRepository _appointmentRepository;
 
         public AnimalsController(IAnimalRepository animalRepository,
             IUserHelper userHelper,
             IConverterHelper converterHelper,
-            IImageHelper imageHelper)
+            IImageHelper imageHelper,
+            IAppointmentRepository appointmentRepository)
         {
             _animalRepository = animalRepository;
             _userHelper = userHelper;
             _converterHelper = converterHelper;
             _imageHelper = imageHelper;
+            _appointmentRepository = appointmentRepository;
         }
 
         //GET: Animals
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string username)
         {
-            return View(await _animalRepository.GetAnimalsAsync(this.User.Identity.Name));
+            var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
+
+            if (username != null && await _userHelper.IsUserInRoleAsync(user, RoleNames.Administrator))
+            {
+                user = await _userHelper.GetUserByEmailAsync(username);
+            }
+
+            return View(await _animalRepository.GetAnimalsAsync(user.UserName));
         }
 
         //// GET: Animals
@@ -51,16 +62,39 @@ namespace DrPet.Web.Controllers
         {
             if (id == null)
             {
-                return new NotFoundViewResult("AnimalNotFound");
+                return NotFound();
             }
 
-            var animal = await _animalRepository.GetByIdAsync(id.Value);
+            var animal = await _animalRepository.GetAnimalWithUserAsync(id.Value);
+
             if (animal == null)
             {
-                return new NotFoundViewResult("AnimalNotFound");
+                return NotFound();
             }
 
-            return View(animal);
+            var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
+
+            if (!this.User.IsInRole("Admin") && animal.User != user)
+            {
+                return NotFound();
+            }
+
+            var appointments = _appointmentRepository.GetAnimalAppointments(animal.Id);
+
+            var model = new AnimalDetailsViewModel
+            {
+                Id = animal.Id,
+                Name = animal.Name,
+                Sex= animal.Sex,
+                Species = animal.Species,
+                Breed = animal.Breed,
+                DateOfBirth = animal.DateOfBirth,
+                ImageUrl = animal.ImageUrl,
+                User = animal.User,
+                Appointments=  appointments
+            };
+
+            return View(model);
         }
 
         // GET: Animals/Create
@@ -148,38 +182,28 @@ namespace DrPet.Web.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(AnimalViewModel model)
+        public async Task<IActionResult> EditAnimal(AnimalDetailsViewModel model)
         {
             if (ModelState.IsValid)
             {
-                try
+                var animal = await _animalRepository.GetByIdAsync(model.Id);
+
+                if (animal==null)
                 {
-                    var path = model.ImageUrl;
-
-                    if (model.ImageFile != null && model.ImageFile.Length > 0)
-                    {
-                        path = await _imageHelper.UploadImageAsync(model.ImageFile,"Animals");
-                    }
-
-                    var animal = _converterHelper.ToAnimal(model, path, false);
-
-                    animal.User = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
-                    await _animalRepository.UpdateAsync(animal);
+                    return NotFound();
                 }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!await _animalRepository.ExistsAsync(model.Id))
-                    {
-                        return new NotFoundViewResult("AnimalNotFound");
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+
+                animal.Breed = model.Breed;
+                animal.DateOfBirth = model.DateOfBirth;
+                animal.Species = model.Species;
+                animal.Name = model.Name;
+
+                await _animalRepository.UpdateAsync(animal); //TODO POR DENTRO DE UM CONVERTERHELPER E MANDAR MENSAGEM A DIZER QUE FOI ATUALIZADO
             }
-            return View(model);
+
+            model.User = await _userHelper.GetUserByEmailAsync(model.User.UserName);
+            model.Appointments = _appointmentRepository.GetAnimalAppointments(model.Id);
+            return View("Details",model);
         }
 
         // GET: Animals/Delete/5
@@ -238,6 +262,30 @@ namespace DrPet.Web.Controllers
             await _animalRepository.DeleteAnimalAsync(animal);
 
             return this.RedirectToAction(nameof(Index));
+        }
+
+        public async Task<JsonResult> UploadImage(IFormCollection form)
+        {
+            string value = Request.Form["id"]; //TODO VERIFICAR SE ESTE USER É IGUAL AO LOGADO
+
+            int id = Convert.ToInt32(value);
+
+            var animal = await _animalRepository.GetByIdAsync(id);
+
+            if (animal != null)
+            {
+                IFormFile image = form.Files[0];
+
+                string path = await _imageHelper.UploadImageAsync(image, "Animals");
+
+                animal.ImageUrl = path;
+
+                await _animalRepository.UpdateAsync(animal);
+
+                return Json(new { result = "Success" });
+            }
+
+            return Json(new { result = "Failed" });
         }
     }
 }
