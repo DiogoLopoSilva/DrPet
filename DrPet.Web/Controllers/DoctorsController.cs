@@ -35,22 +35,6 @@ namespace DrPet.Web.Controllers
             return View(_doctorRepository.GetDoctors());
         }
 
-        // POST: Doctors/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Specialization,Id")] Doctor doctor)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(doctor);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(doctor);
-        }
-
         public async Task<IActionResult> DeleteDoctor(string username)
         {
             if (username == null)

@@ -8,9 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using DrPet.Web.Data;
 using DrPet.Web.Data.Entities;
 using DrPet.Web.Data.Repositories;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DrPet.Web.Controllers
-{
+{  
+    [Authorize(Roles =RoleNames.Administrator)]
     public class SpecializationsController : Controller
     {
         private readonly DataContext _context;
@@ -60,9 +62,24 @@ namespace DrPet.Web.Controllers
         public async Task<IActionResult> Create(Specialization specialization)
         {
             if (ModelState.IsValid)
-            {
-                await _specializationRepository.CreateUniqueAsync(specialization);
-                return RedirectToAction(nameof(Index));
+            {   
+                try
+                {
+                    await _specializationRepository.CreateUniqueAsync(specialization);
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception e)
+                {
+                    if (e.InnerException.Message.Contains("duplicate"))
+                    {
+                        ModelState.AddModelError(string.Empty, "A Specialization with that name already exists!");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError(string.Empty, e.InnerException.Message);
+                    }
+                }
+
             }
             return View(specialization);
         }

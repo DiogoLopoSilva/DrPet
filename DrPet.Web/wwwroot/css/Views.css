@@ -888,6 +888,70 @@ span.Completed:after {
     font-weight: 800;
 }
 
+input.Confirmed {
+    background-color: #0059ff;
+    color: white;
+    padding: 5px 5px;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 8px;
+    font-size: 0.8em;
+    font-weight: 800;
+}
+
+input.Waiting {
+    background-color: #ffc107;
+    color: #212529;
+    padding: 5px 5px;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 8px;
+    font-size: 0.8em;
+    font-weight: 800;
+}
+
+input.InProgress {
+    background-color: #17a2b8;
+    color: white;
+    padding: 5px 5px;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 8px;
+    font-size: 0.8em;
+    font-weight: 800;
+}
+
+input.Completed {
+    background-color: #129600;
+    color: white;
+    padding: 5px 5px;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 8px;
+    font-size: 0.8em;
+    font-weight: 800;
+}
+
+input.All {
+    padding: 5px 5px;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 8px;
+    font-size: 0.8em;
+    font-weight: 800;
+    border:solid 1px;
+}
+
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {

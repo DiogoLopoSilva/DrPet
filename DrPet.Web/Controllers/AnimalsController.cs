@@ -198,21 +198,21 @@ namespace DrPet.Web.Controllers
         {
             if (id == null)
             {
-                return AnimalNotFound();
+                return NotFound();
             }
 
             var animal = await _animalRepository.GetByIdAsync(id.Value);
 
             if (animal == null)
             {
-                return AnimalNotFound();
+                return NotFound();
             }
 
             var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
 
             if (!this.User.IsInRole("Admin") && animal.User != user)
             {
-                return AnimalNotFound();
+                return NotFound();
             }
 
             await _animalRepository.DeleteAnimalAsync(animal);
@@ -225,6 +225,19 @@ namespace DrPet.Web.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var animal = await _animalRepository.GetByIdAsync(id);
+
+            if (animal == null)
+            {
+                return NotFound();
+            }
+
+            var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
+
+            if (!this.User.IsInRole("Admin") && animal.User != user)
+            {
+                return NotFound();
+            }
+
             await _animalRepository.DeleteAsync(animal);
             return RedirectToAction(nameof(Index));
         }

@@ -28,6 +28,10 @@ namespace DrPet.Web.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Specialization>()
+                .HasIndex(c => c.Name)
+                .IsUnique();
+
             modelBuilder.Entity<Animal>()
                 .Property(a => a.DateOfBirth)
                 .HasColumnType("date");

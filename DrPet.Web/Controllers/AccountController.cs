@@ -368,10 +368,10 @@ namespace DrPet.Web.Controllers
                     }, protocol: HttpContext.Request.Scheme);
 
                     _mailHelper.SendMail(model.Username, "Email confirmation", $"<h1>Email Confirmation</h1>" +
-                      $"To allow the user, " +
-                      $"plase click in this link:</br></br><a href = \"{tokenLink}\">Confirm Email</a>");
+                      $"Click this link to " +
+                      $"confirm your account:</br></br><a href = \"{tokenLink}\">Confirm Email</a>");
 
-                    this.ViewBag.Message = "The instructions to allow your user has been sent to your email.";
+                    this.ViewBag.Message = "A confirmation Email has been sent to your account.";
                     model.Specializations = _specializationRepository.GetComboSpecializations();
                     return this.View(model);
                 }
