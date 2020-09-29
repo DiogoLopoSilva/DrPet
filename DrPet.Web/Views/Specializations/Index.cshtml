@@ -72,9 +72,7 @@
 
             var id = 0;
 
-            /*Evento click em todos os <a> com o id = btnDeleteItem*/
             $('a[id*=btnDeleteItem]').click(function () {
-                debugger;
                 id = $(this).parent()[0].id;
                 $("#deleteDialog").modal('show');
                 return false;

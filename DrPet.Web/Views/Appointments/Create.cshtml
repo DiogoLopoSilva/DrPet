@@ -62,8 +62,6 @@
         var client = JSON.parse(JSON.stringify(args.data.Client.User.UserName));
         var spec = JSON.parse(JSON.stringify(args.data.Specialization.Id));
         doctorId = doctor;
-        console.log('DATA');
-        console.log(args.data);
              $.ajax({
                     type: "GET",
                     url: '@Url.Action("GetLists", "Appointments")',
@@ -76,13 +74,9 @@
                     dataType: "json",
                     success: function (data) {
                         if (data.result == "Success") {
-                            //console.log(data.list);
-
-                            console.log("DATA");
-                            console.log(args.data);
 
                             var statusElement = args.element.querySelector('#SpecializationsList');
-                            //console.log(statusElement);
+
                             if (!statusElement.classList.contains('e-dropdownlist')) {
                                 var dropDownListObject = new ej.dropdowns.DropDownList({
                                     placeholder: 'Choose Specialization', value: statusElement.value,
@@ -99,7 +93,7 @@
                             }
 
                             var statusElement = args.element.querySelector('#DoctorList');
-                            //console.log(statusElement);
+
                             if (!statusElement.classList.contains('e-dropdownlist')) {
                                 var dropDownListObject = new ej.dropdowns.DropDownList({
                                     placeholder: 'Choose status', value: statusElement.value,
@@ -113,16 +107,15 @@
                                 statusElement.setAttribute('name', 'DoctorId');
                             }
 
-                            console.log(args.data.Animal.Id);
 
                             var statusElement = args.element.querySelector('#AnimalList');
-                            //console.log(statusElement);
+
                             if (!statusElement.classList.contains('e-dropdownlist')) {
                                 var dropDownListObject = new ej.dropdowns.DropDownList({
                                     placeholder: 'Choose status', value: statusElement.value,
                                     dataSource: data.listAnimals,
                                     fields: { text: 'Text', value: 'Value' },
-                                    value: String(args.data.Animal.Id), //FAZER ISTO PARA A SPECIALIZATION
+                                    value: String(args.data.Animal.Id), 
                                     floatLabelType: 'Always', placeholder: 'Choose an Animal'
                                 });
 
@@ -132,10 +125,9 @@
 
                         }
                         else {
-                            alert("NÃO DEU");
+
                         }
 
-                        //Exiba as mensagens de erro neste espaço.
                     }
                 });
         }
@@ -162,10 +154,10 @@
                             doctorDDL.dataSource = data.list;
                         }
                         else {
-                            alert("NÃO DEU");
+                           
                         }
 
-                        //Exiba as mensagens de erro neste espaço.
+                        
                     }
              });
 
@@ -194,10 +186,9 @@
                             doctorDDL.dataSource = data.list;
                         }
                         else {
-                            alert("NÃO DEU");
+                           
                         }
-
-                        //Exiba as mensagens de erro neste espaço.
+                      
                     }
              });
 
@@ -216,7 +207,7 @@
                         if (data.result == "Success") {
 
                             var statusElement = args.element.querySelector('#SpecializationsList');
-                            //console.log(statusElement);
+
                             if (!statusElement.classList.contains('e-dropdownlist')) {
                                 var dropDownListObject = new ej.dropdowns.DropDownList({
                                     placeholder: 'Choose Specialization', value: statusElement.value,
@@ -231,8 +222,8 @@
                                 statusElement.setAttribute('name', 'SpecializationId');
                             }
 
-                             var statusElement = args.element.querySelector('#DoctorList');
-                            //console.log(statusElement);
+                            var statusElement = args.element.querySelector('#DoctorList');
+
                             if (!statusElement.classList.contains('e-dropdownlist')) {
                                 var dropDownListObject = new ej.dropdowns.DropDownList({
                                     placeholder: 'Choose status', value: statusElement.value,
@@ -246,7 +237,7 @@
                             }
 
                             var statusElement = args.element.querySelector('#AnimalList');
-                            //console.log(statusElement);
+
                             if (!statusElement.classList.contains('e-dropdownlist')) {
                                 var dropDownListObject = new ej.dropdowns.DropDownList({
                                     placeholder: 'Choose status', value: statusElement.value,
@@ -261,10 +252,8 @@
 
                         }
                         else {
-                            alert("NÃO DEU");
+                           
                         }
-
-                        //Exiba as mensagens de erro neste espaço.
                     }
              });
      }
@@ -296,10 +285,6 @@
         } else if (args.requestType === 'eventRemoved') {
             toastObj.show(toasts[2]);
         }
-
-
-        console.log("OUTRO");
-        console.log(args);
     }
 
             function onActionBegin(args) {
@@ -307,8 +292,6 @@
                 var data;
                 if (args.requestType === 'eventCreate') {
                     data = args.data[0];
-                    console.log('TEST');
-                    console.log(args);
 
                     if (args.data[0].DoctorId === "" || args.data[0].DoctorId === null || args.data[0].AnimalId === "" || args.data[0].SpecializationId === "") {
                         args.cancel = true;
@@ -316,9 +299,6 @@
                     }
 
                     args.data[0].ClientUsername = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.ClientUsername));
-
-                    console.log('ID');
-                    console.log(args.data[0].ClientUsername);
 
                 } else if (args.requestType === 'eventChange') {
                     data = args.data;
@@ -328,9 +308,7 @@
                     //args.cancel = true;
                 }
             }
-            console.log('FORA');
-            console.log(args);
-             }
+            }
 
         function onEventRendered(args) {
             var categoryColor;
@@ -363,9 +341,6 @@
 
             if (args.type === 'Editor') {
 
-                console.log("TYPE");
-                console.log(args);
-
                 var status = args.data.Status;
 
                 var startElement = args.element.querySelector('#StartTime');
@@ -376,17 +351,8 @@
                 if (!endElement.classList.contains('e-datetimepicker')) {
                     new ej.calendars.DateTimePicker({ value: new Date(endElement.value) || new Date() }, endElement);
                 }
-                //console.log(args);
-                //console.log(args.data.StartTime);
 
-                //console.log(JSON.stringify(args.data.StartTime));
-
-                //var date = JSON.parse(JSON.stringify(args.data.StartTime));
                 date = moment(args.data.StartTime).format();
-                //console.log(date);
-
-                console.log("DATE");
-                console.log(date);
 
                 if (args.target.textContent === "") {
                     CreateLists(args);
@@ -447,5 +413,4 @@
             </tbody>
         </table>
     </script>
-
 }

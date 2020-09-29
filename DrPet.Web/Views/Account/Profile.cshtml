@@ -273,16 +273,12 @@
     });
 
     function onFileUpload(args) {
-
         args.customFormData = [{ 'username': '@Model.UserName' }];
-        console.log(args);
     }
 
       function onSuccess(args) {
-        console.log('SUCCESS');
-          console.log(args);
           location.reload();
-    }
+      }
 
     function onEventRendered(args) {
         var categoryColor;

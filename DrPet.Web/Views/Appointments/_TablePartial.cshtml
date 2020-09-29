@@ -1,5 +1,6 @@
 ﻿@model IEnumerable<DrPet.Web.Data.Entities.Appointment>
 
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" />
 <div>
     <div class="row justify-content-center">
         <div class="col-lg-6 col-md-8 col-sm-10">
@@ -28,7 +29,6 @@
     <div class="col-lg-8 col-md-12 col-sm-12">
         <div class="row">
             <h2 class="justify-content-start">Appointments</h2>
-            <input type="text" class="form-control w-auto ml-auto justify-content-end" id="searchbox" placeholder="search..." maxlength="50" />
             <div class="col-lg-12 p-0">
                 <div>
                     <input type="button" class="btn listFilter" value="All" data-status="All" /> |
@@ -39,7 +39,7 @@
                 </div>
                 <div class="main-box clearfix">
                     <div class="table-responsive">
-                        <table class="table user-list">
+                        <table class="table user-list" id="MyTable">
                             <thead>
                                 <tr>
                                     <th><span>Client</span></th>
@@ -129,17 +129,19 @@
     </div>
 </div>
 
-<script>
-    //$(document).ready(function () {
+<script src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#MyTable').DataTable();
+    });
+</script>
 
-    //            $("#appointmentTable").load("/Appointments/TableData");
-    //});
+<script>
 
     $(document).ready(function () {
 
         var id = "";
 
-        /*Evento click em todos os <a> com o id = btnDeleteItem*/
         $('a[id*=btnDeleteAppointment]').click(function () {
             id = $(this).parent()[0].id;
             $("#deleteDialog").modal('show');
@@ -185,29 +187,19 @@
 
 
     function onEventClick(args) {
-        console.log(args);
 
         var isAdmin = '@User.IsInRole("Admin")'.toLowerCase();
-        console.log(isAdmin);
 
         if (args.event.Status === "Waiting" && isAdmin == 'true') {
-
-            //console.log('DATE');
-            //console.log(moment(args.event.StartTime).format('LLL'));
-            //console.log(moment().format('LLL'));
 
             var date = moment(args.event.StartTime).format('LLL');
             var current = moment().format('LLL')
 
-            console.log(date);
-            console.log(current);
-            console.log(moment(date).isAfter(current));
-
             if (moment(date).isAfter(current)) {
                 args.cancel = true;
-                //$('#labeldata').text("TESTE MUDAR");
+
                 appointment = args.event;
-                console.log(args.event);
+
                 $('#modalDoctor').text(args.event.Doctor.User.FullName);
                 $('#modalClient').text(args.event.Client.User.FullName);
                 $('#modalAnimal').text(args.event.Animal.Name);

@@ -246,12 +246,9 @@
     function onFileUpload(args) {
 
         args.customFormData = [{ 'id': '@Model.Id' }];
-        console.log(args);
     }
 
       function onSuccess(args) {
-        console.log('SUCCESS');
-          console.log(args);
           location.reload();
     }
 

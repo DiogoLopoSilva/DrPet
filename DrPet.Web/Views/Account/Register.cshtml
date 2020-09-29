@@ -91,19 +91,20 @@
         $("#specialization").hide();
 
         if ($("#RoleId option:selected").text() === 'Doctor') {
-            console.log('MUDEI O ROLE');
+
             $("#SpecializationId").val(0);
             $("#specialization").show();
         }      
     });
 
     $("#RoleId").change(function () {
-        console.log($("#RoleId option:selected").text());
         if ($("#RoleId option:selected").text() === 'Doctor') {
+
             $("#SpecializationId").val(0);
             $("#specialization").show();
         }
         else {
+
             $("#SpecializationId").val(1);
             $("#specialization").hide();
         }
