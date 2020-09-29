@@ -29,10 +29,10 @@ namespace DrPet.Web.Data.Entities
         [Required]
         [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy HH:mm}", ApplyFormatInEditMode = false)]
         [DataType(DataType.DateTime)]
-        public DateTime StartTime { get; set; } //TODO MUDAR PARA LOCAL TIME        
+        public DateTime StartTime { get; set; } 
 
         [DataType(DataType.DateTime)]
-        public DateTime EndTime { get { return this.StartTime.AddMinutes(30); } } //TODO MUDAR PARA LOCAL TIME
+        public DateTime EndTime { get { return this.StartTime.AddMinutes(30); } }
 
         public string DoctorNotes { get; set; }
 

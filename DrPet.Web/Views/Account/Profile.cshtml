@@ -13,18 +13,18 @@
             <div class="profile-card-4 z-depth-3">
                 <div class="card">
                     <div class="card-body text-center bg-primary rounded-top">
-                        <div class="user-box">
+                        <div class="user-box" id="test">
                             @if (!string.IsNullOrEmpty(Model.ImageUrl))
                             {
-                                <img src="@Url.Content(Model.ImageUrl)" onerror="this.src='../images/Default/nopicture.png'" alt="user avatar" id="test" style="width:100px;height:100px;" />
+                                <img src="@Url.Content(Model.ImageUrl)" onerror="this.src='../images/Default/nopicture.png'" alt="user avatar" style="width:100px;height:100px;" />
                             }
                             else
                             {
                                 <img src="~/images/Default/nopicture.png" alt="user avatar" id="test" style="width:100px;height:100px;">
                             }
+                            <i class="fas fa-camera" style="color:white"></i>
                         </div>
                         <h5 class="mb-1 text-white">@Html.DisplayFor(model => model.FullName)</h5>
-                        <!--<h6 class="text-light">@Html.DisplayFor(model => model.Role)</h6>-->
                     </div>
                     <div class="card-body">
                         <ul class="list-group shadow-none">
@@ -33,7 +33,7 @@
                                     <i class="fa fa-envelope"></i>
                                 </div>
                                 <div class="list-details">
-                                    <span>@Html.DisplayFor(model => model.UserName)</span> <!--TODO ARRANJAR: SE O MAIL FOR MUITO GRANDE SAI PARA FORA-->
+                                    <span>@Html.DisplayFor(model => model.UserName)</span>
                                     <small>Email Address</small>
                                 </div>
                             </li>
@@ -57,12 +57,15 @@
                             </li>
                         </ul>
                         <div class="row text-center mt-4">
+                            @if (Model.Animals != null)
+                            {
+                                <div class="col p-2">
+                                    <h4 class="mb-1 line-height-5"><a asp-controller="Animals" asp-action="Index" asp-route-username="@Model.UserName">@Html.DisplayFor(model => model.Animals.ToList().Count)</a></h4>
+                                    <small class="mb-0 font-weight-bold">Animals</small>
+                                </div>
+                            }
                             <div class="col p-2">
-                                <h4 class="mb-1 line-height-5">POR ANIMAIS</h4>
-                                <small class="mb-0 font-weight-bold">Animals</small>
-                            </div>
-                            <div class="col p-2">
-                                <h4 class="mb-1 line-height-5">@Html.DisplayFor(model => model.Appointments.ToList().Count)</h4>
+                                <h4 class="mb-1 line-height-5"><a asp-controller="Appointments" asp-action="Index" asp-route-username="@Model.UserName">@Html.DisplayFor(model => model.Appointments.ToList().Count)</a></h4>
                                 <small class="mb-0 font-weight-bold">Appointments</small>
                             </div>
                         </div>
@@ -91,7 +94,7 @@
                         <div class="tab-pane active show" id="profile">
                             <h5 class="mb-3">Profile</h5>
                             <div class="row">
-                                <div class="col-md-12">
+                                <div class="col-md-6">
                                     <h6>@Html.DisplayNameFor(model => model.DateOfBirth)</h6>
                                     <p>
                                         @Html.DisplayFor(model => model.DateOfBirth)
@@ -101,13 +104,19 @@
                                         @Html.DisplayFor(model => model.StreetName) @Html.DisplayFor(model => model.PostalCode) @Html.DisplayFor(model => model.Location)
                                     </p>
                                 </div>
+                                <div class="col-md-6">
+                                    <h6>@Html.DisplayNameFor(model => model.DocumentNumber)</h6>
+                                    <p>
+                                        @Html.DisplayFor(model => model.DocumentNumber)
+                                    </p>
+                                </div>
                                 <div class="col-md-12">
-                                    <h5 class="mt-2 mb-3"><span class="fa fa-clock-o ion-clock float-right"></span> Upcoming Appointments</h5>
+                                    <h5 class="mt-2 mb-3"><span class="fa fa-clock-o ion-clock float-right"></span>Upcoming Appointments</h5>
                                     <table class="table table-hover table-striped">
                                         <tbody>
                                             @if (Model.Appointments.Count() > 0)
                                             {
-                                                @foreach (var item in Model.Appointments.Take(5))
+                                                @foreach (var item in Model.Appointments.Where(a => a.Status=="Confirmed").Take(5))
                                                 {
                                                     <tr>
                                                         <td>
@@ -135,6 +144,8 @@
                                 <e-schedule-views>
                                     <e-schedule-view option="WorkWeek"></e-schedule-view>
                                 </e-schedule-views>
+                                <e-schedule-quickinfotemplates content="#content-template">
+                                </e-schedule-quickinfotemplates>
                             </ejs-schedule>
                         </div>
                         <div class="tab-pane" id="edit">
@@ -159,7 +170,7 @@
                                 </div>
                                 <div class="form-group row">
                                     <label asp-for="DocumentNumber" class="control-label"></label>
-                                    <input asp-for="DocumentNumber" class="form-control" />
+                                    <input asp-for="DocumentNumber" type="number" class="form-control" />
                                     <span asp-validation-for="DocumentNumber" class="text-danger"></span>
                                 </div>
                                 <div class="form-group row">
@@ -199,12 +210,16 @@
                                     <input type="hidden" asp-for="SpecializationId" />
                                 }
                                 <input type="hidden" asp-for="UserName" class="form-control" />
-                                <div class="form-group row">
-                                    <label class="col-lg-3 col-form-label form-control-label"></label>
+                                <div class="form-group row justify-content-center">
+                                    <label class="col-lg-3 col-form-label form-control-label justify-content-center"></label>
                                     <div class="col-lg-9">
                                         <input type="reset" class="btn btn-secondary" value="Cancel">
                                         <input type="submit" asp-action="UpdateUser" class="btn btn-primary" value="Save Changes">
-                                    </div>
+                                        @if (this.User.Identity.Name == Model.UserName)
+                                        {
+                                            <a asp-action="ChangePassword" class="btn btn-success">Change Password</a>
+                                        }
+                                    </div>                                 
                                 </div>
                             </form>
                         </div>
@@ -216,6 +231,33 @@
 </div>
 <ejs-uploader id="ImageFile" uploading="onFileUpload" multiple="false" autoUpload="true" asyncSettings="@asyncSettings" success="onSuccess" cssClass="FileUploadProfile" allowedExtensions=".jpg, .jpeg, .bmp, .png"></ejs-uploader>
 
+<script id="content-template" type="text/x-template">
+    <div class="quick-info-content">
+        <div class="event-content">
+            <div class="meeting-type-wrap">
+                <label>Client</label>:
+                <span> ${Client.User.FullName}</span>
+            </div>
+            <div class="meeting-type-wrap">
+                <label>Animal</label>:
+                <span> ${Animal.Name}</span>
+            </div>
+            <div class="meeting-type-wrap">
+                <label>Doctor</label>:
+                <span> ${Doctor.User.FullName}</span>
+            </div>
+            <div class="meeting-type-wrap">
+                <label>Description</label>:
+                <span> ${ClientDescription}</span>
+            </div>
+            <div class="meeting-type-wrap">
+                <label>Time</label>:
+                <span>${StartTime}</span>
+            </div>
+        </div>
+    </div>
+</script>
+
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
@@ -223,7 +265,11 @@
 
 <script>
     $("#test").click(function () {
-        $("#ImageFile").click();
+         var admin = '@this.User.IsInRole("Admin")';
+
+        if (admin === 'True' || '@this.User.Identity.Name' == '@Model.UserName') {
+            $("#ImageFile").click();
+        }
     });
 
     function onFileUpload(args) {
@@ -241,14 +287,17 @@
     function onEventRendered(args) {
         var categoryColor;
         switch (args.data.Status) {
-            case 'Waiting':
-                categoryColor = '#F57F17';
-                break;
             case 'Confirmed':
-                categoryColor = '#7fa900';
+                categoryColor = '#0059ff';
                 break;
-            case 'New':
-                categoryColor = '#8e24aa';
+            case 'Waiting':
+                categoryColor = '#ffc107';
+                break;
+            case 'InProgress':
+                categoryColor = '#17a2b8';
+                break;
+            case 'Completed':
+                categoryColor = '#129600';
                 break;
         }
         if (!args.element || !categoryColor) {

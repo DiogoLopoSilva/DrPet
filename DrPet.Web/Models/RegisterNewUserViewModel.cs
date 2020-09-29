@@ -15,11 +15,12 @@ namespace DrPet.Web.Models
 
         [Required]
         [Display(Name = "First Name")]
+        [MaxLength(50, ErrorMessage = "The field {0} only can contain {1} characters.")]
         public string FirstName { get; set; }
-
 
         [Required]
         [Display(Name = "Last Name")]
+        [MaxLength(50, ErrorMessage = "The field {0} only can contain {1} characters.")]
         public string LastName { get; set; }
 
         [Required]

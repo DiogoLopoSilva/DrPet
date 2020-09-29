@@ -16,6 +16,8 @@
                         <e-schedule-view option="WorkWeek"></e-schedule-view>
                     </e-schedule-views>
                     <e-schedule-eventsettings dataSource="@Model"></e-schedule-eventsettings>
+                    <e-schedule-quickinfotemplates content="#content-template">
+                    </e-schedule-quickinfotemplates>
                 </ejs-schedule>
             </div>
         </div>
@@ -23,18 +25,18 @@
 </div>
 
 <div class="row justify-content-center">
-    <!--TODO MUDAR AS OUTRAS LIST VIEWS PARA ESTE ASPETO-->
-    <div class="col-8">
+    <div class="col-lg-8 col-md-12 col-sm-12">
         <div class="row">
             <h2 class="justify-content-start">Appointments</h2>
             <input type="text" class="form-control w-auto ml-auto justify-content-end" id="searchbox" placeholder="search..." maxlength="50" />
             <div class="col-lg-12 p-0">
                 <div>
                     <input type="button" class="btn listFilter" value="All" data-status="All" /> |
+                    <input type="button" class="btn listFilter" value="Waiting Aproval" data-status="Waiting" /> |
                     <input type="button" class="btn listFilter" value="Confirmed" data-status="Confirmed" /> |
-                    <input type="button" class="btn listFilter" value="Waiting Aproval" data-status="Waiting" />
+                    <input type="button" class="btn listFilter" value="In Progress" data-status="InProgress" /> |
+                    <input type="button" class="btn listFilter" value="Completed" data-status="Completed" />
                 </div>
-                <!--TODO VER SE ESTE PADDING TEM PROBLEMAS AQUI-->
                 <div class="main-box clearfix">
                     <div class="table-responsive">
                         <table class="table user-list">
@@ -54,13 +56,15 @@
                                     <tr>
                                         <td>
                                             <img src="~/images/Default/nopicture.png" alt=""> <!--MUDAR ISTO PARA UMA IMAGEM DEFAULT-->
-                                            <a href="#" class="user-link">@Html.DisplayFor(modelItem => item.Client.User.FullName)</a>
+                                            <a asp-controller="Account" asp-action="Profile" asp-route-username="@item.Client.User.UserName" class="user-link">@Html.DisplayFor(modelItem => item.Client.User.FullName)</a>
                                             <span class="user-subhead">
                                                 @Html.DisplayFor(modelItem => item.Client.User.UserName)
                                             </span>
                                         </td>
                                         <td>
-                                            @Html.DisplayFor(modelItem => item.Animal.Name)
+                                            <a asp-controller="Animals" asp-action="Details" asp-route-id="@item.Animal.Id" class="list-link">
+                                                @Html.DisplayFor(modelItem => item.Animal.Name)
+                                            </a>
                                         </td>
                                         <td>
                                             @Html.DisplayFor(modelItem => item.Doctor.User.FullName)
@@ -69,34 +73,13 @@
                                             @Html.DisplayFor(modelItem => item.StartTime)
                                         </td>
                                         <td class="text-center">
-                                            @if (item.Status == "Confirmed")
-                                            {
-                                                <span class="badge badge-primary">Confirmed</span>
-                                            }
-                                            else if (item.Status == "Waiting")
-                                            {
-                                                <span class="badge badge-warning">Waiting Aproval</span>
-                                            }
-                                            else if (item.Status == "InProgress")
-                                            {
-                                                <span class="badge badge-info">In Progress</span>
-                                            }
-                                            else if (item.Status == "Completed")
-                                            {
-                                                <span class="badge badge-success">Completed</span>
-                                            }
+                                            <span class="@item.Status" />
                                         </td>
-                                        <td class="w-25 text-center">
+                                        <td class="w-25 text-center" id="@item.Id">
                                             <a class="table-link changeScheduleDate" data-appointment-date="@Html.DisplayFor(modelItem => item.StartTime)">
                                                 <span class="fa-stack">
                                                     <i class="fa fa-square fa-stack-2x"></i>
-                                                    <i class="fa fa-search-plus fa-stack-1x fa-inverse"></i>
-                                                </span>
-                                            </a>
-                                            <a asp-controller="Account" asp-action="ChangeUser" class="table-link">
-                                                <span class="fa-stack">
-                                                    <i class="fa fa-square fa-stack-2x"></i>
-                                                    <i class="fa fa-pencil-alt fa-stack-1x fa-inverse"></i>
+                                                    <i class="fas fa-arrow-up fa-stack-1x fa-inverse"></i>
                                                 </span>
                                             </a>
                                             @if (!this.User.IsInRole("Client"))
@@ -104,15 +87,18 @@
                                                 <a asp-controller="Appointments" asp-action="Details" asp-route-id="@item.Id" class="table-link">
                                                     <span class="fa-stack">
                                                         <i class="fa fa-square fa-stack-2x"></i>
-                                                        <i class="fa fa-calendar-alt fa-stack-1x fa-inverse"></i>
+                                                        <i class="fa fa-search-plus fa-stack-1x fa-inverse"></i>
                                                     </span>
                                                 </a>
-                                                <a href="#" class="table-link danger">
-                                                    <span class="fa-stack">
-                                                        <i class="fa fa-square fa-stack-2x"></i>
-                                                        <i class="fa fa-trash-alt fa-stack-1x fa-inverse"></i>
-                                                    </span>
-                                                </a>
+                                                @if ((item.Status == "Confirmed") && this.User.IsInRole("Admin"))
+                                                {
+                                                    <a href="#" class="table-link danger" id="btnDeleteAppointment">
+                                                        <span class="fa-stack">
+                                                            <i class="fa fa-square fa-stack-2x"></i>
+                                                            <i class="fa fa-trash-alt fa-stack-1x fa-inverse"></i>
+                                                        </span>
+                                                    </a>
+                                                }
                                             }
                                         </td>
                                     </tr>
@@ -126,7 +112,22 @@
     </div>
 </div>
 
-
+<div id="deleteDialog" class="modal fade">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Delete</h4>
+            </div>
+            <div class="modal-body">
+                <p>Do you want to cancel this Appointment?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" id="btnYesDelete">Delete</button>
+                <button type="button" class="btn btn-success" id="btnNoDelete">No</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
     //$(document).ready(function () {
@@ -134,21 +135,41 @@
     //            $("#appointmentTable").load("/Appointments/TableData");
     //});
 
+    $(document).ready(function () {
+
+        var id = "";
+
+        /*Evento click em todos os <a> com o id = btnDeleteItem*/
+        $('a[id*=btnDeleteAppointment]').click(function () {
+            id = $(this).parent()[0].id;
+            $("#deleteDialog").modal('show');
+            return false;
+        });
+
+        $("#btnNoDelete").click(function () {
+            $("#deleteDialog").modal('hide');
+            return false;
+        });
+
+        $("#btnYesDelete").click(function () {
+            window.location.href = '/Appointments/DeleteAppointment/' + id;
+        });
+    });
 
     function onEventRendered(args) {
         var categoryColor;
         switch (args.data.Status) {
-            case 'Waiting':
-                categoryColor = '#F57F17';
-                break;
             case 'Confirmed':
-                categoryColor = '#7fa900';
+                categoryColor = '#0059ff';
+                break;
+            case 'Waiting':
+                categoryColor = '#ffc107';
                 break;
             case 'InProgress':
-                categoryColor = '#8e24aa';
+                categoryColor = '#17a2b8';
                 break;
             case 'Completed':
-                categoryColor = '#00ff00';
+                categoryColor = '#129600';
                 break;
         }
         if (!args.element || !categoryColor) {
@@ -200,6 +221,32 @@
 
 </script>
 
+<script id="content-template" type="text/x-template">
+    <div class="quick-info-content">
+        <div class="event-content">
+            <div class="meeting-type-wrap">
+                <label>Client</label>:
+                <span> ${Client.User.FullName}</span>
+            </div>
+            <div class="meeting-type-wrap">
+                <label>Animal</label>:
+                <span> ${Animal.Name}</span>
+            </div>
+            <div class="meeting-type-wrap">
+                <label>Doctor</label>:
+                <span> ${Doctor.User.FullName}</span>
+            </div>
+            <div class="meeting-type-wrap">
+                <label>Description</label>:
+                <span> ${ClientDescription}</span>
+            </div>
+            <div class="meeting-type-wrap">
+                <label>Time</label>:
+                <span>${StartTime}</span>
+            </div>
+        </div>
+    </div>
+</script>
 
 
 <ejs-scripts></ejs-scripts>

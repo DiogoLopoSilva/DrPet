@@ -105,7 +105,7 @@ namespace DrPet.Web.Data.Repositories
                  .Include(a => a.Specialization)
                  .Include(a => a.Doctor)
                  .ThenInclude(d => d.User)
-                 .Where(a => a.Doctor.User == user && a.Status == status && !a.IsDeleted) //TODO VER SE DEIXO O DOCTOR VER MAIS SEM SER CONFIRMED
+                 .Where(a => a.Doctor.User == user && a.Status == status && !a.IsDeleted)
                  .OrderBy(a => a.StartTime);
             }
 
@@ -138,18 +138,18 @@ namespace DrPet.Web.Data.Repositories
                   .OrderBy(a => a.StartTime);
         }
 
-        public Appointment GetByIdWithModels(int id) //TODO POR ASYNC
+        public async Task<Appointment> GetByIdWithModelsAsync(int id)
         {
-            return _context.Appointments.Include(a => a.Client)
+            return await _context.Appointments.Include(a => a.Client)
                   .ThenInclude(c => c.User)
                   .Include(a => a.Animal)
                   .Include(a => a.Specialization)
                   .Include(a => a.Doctor)
                   .ThenInclude(d => d.User)
-                  .FirstOrDefault(d => d.Id == id);
+                  .FirstOrDefaultAsync(d => d.Id == id);
         }
 
-        public IEnumerable<Appointment> GetAnimalAppointments(int id) //TODO POR ASYNC
+        public IEnumerable<Appointment> GetAnimalAppointments(int id)
         {
             return _context.Appointments.Include(a => a.Client)
                        .ThenInclude(c => c.User)
@@ -158,6 +158,10 @@ namespace DrPet.Web.Data.Repositories
                        .Include(a => a.Doctor)
                        .ThenInclude(d => d.User)
                        .Where(a => a.Animal.Id == id && !a.IsDeleted);
+        }
+        public async Task<int> GetAppointmentsTotal()
+        {
+            return await _context.Appointments.Where(a => a.Status == "Completed" && !a.IsDeleted).CountAsync();
         }
     }
 }

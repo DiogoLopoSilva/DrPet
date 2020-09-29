@@ -60,7 +60,7 @@ namespace DrPet.Web
             services.AddScoped<IUserHelper, UserHelper>();
             services.AddScoped<IConverterHelper, ConverterHelper>();
             services.AddScoped<IImageHelper, ImageHelper>();
-            services.AddScoped<IMailHelpter, MailHelper>();
+            services.AddScoped<IMailHelper, MailHelper>();
             services.AddScoped<IAdminRepository, AdminRepository>();
             services.AddScoped<IClientRepository, ClientRepository>();
             services.AddScoped<IDoctorRepository, DoctorRepository>();
@@ -100,7 +100,7 @@ namespace DrPet.Web
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error"); //TODO QUANDO NO AZURE, VERIFICAR QUE O ERROR 404.7 NAO APARECE
+                app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
 

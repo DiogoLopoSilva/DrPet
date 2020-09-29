@@ -5,12 +5,11 @@
 }
 
 <div class="row justify-content-center View">
-    <div class="col-8">
+    <div class="col-lg-8 col-md-12 col-sm-12">
         <div class="row">
             <h2 class="justify-content-start">Admins</h2>
             <input type="text" class="form-control w-auto ml-auto justify-content-end" id="searchbox" placeholder="search..." maxlength="50" />
             <div class="col-lg-12 p-0">
-                <!--TODO VER SE ESTE PADDING TEM PROBLEMAS AQUI-->
                 <div class="main-box clearfix">
                     <div class="table-responsive">
                         <table class="table user-list">
@@ -28,7 +27,7 @@
                                 {
                                     <tr>
                                         <td>
-                                            @if (!string.IsNullOrEmpty(item.User.ImageUrl)) //TODO VER SE DEIXO IMAGEM AQUI
+                                            @if (!string.IsNullOrEmpty(item.User.ImageUrl))
                                             {
                                                 <img src="@Url.Content(item.User.ImageUrl)" onerror="this.src='../images/Default/nopicture.png'" alt="user avatar" id="test" style="width:auto;height:50px;" />
                                             }
@@ -36,7 +35,7 @@
                                             {
                                                 <img src="~/images/Default/nopicture.png" alt="user avatar" id="test" style="width:auto;height:50px;">
                                             }
-                                            <a href="#" class="user-link">@Html.DisplayFor(modelItem => item.User.FullName)</a>
+                                            <a asp-controller="Account" asp-action="Profile" asp-route-username="@item.User.UserName" class="user-link">@Html.DisplayFor(modelItem => item.User.FullName)</a>
                                             <span class="user-subhead">
                                                 @Html.DisplayFor(modelItem => item.User.UserName)
                                             </span>

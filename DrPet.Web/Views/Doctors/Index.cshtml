@@ -4,146 +4,146 @@
     ViewData["Title"] = "Doctors";
 }
 
-<div class="container View">
-    <div class="row">
-        <h2 class="justify-content-start">Doctors</h2>
-        <input type="text" class="form-control w-auto ml-auto justify-content-end" id="searchbox" placeholder="search..." maxlength="50" />
-        <div class="col-lg-12 p-0">
-            <!--TODO VER SE ESTE PADDING TEM PROBLEMAS AQUI-->
-            <div class="main-box clearfix">
-                <div class="table-responsive">
-                    <table class="table user-list">
-                        <thead>
-                            <tr>
-                                <th><span>User</span></th>
-                                <th><span>Created</span></th>
-                                <th><span>Speciality</span></th>
-                                <th class="text-center"><span>Status</span></th>
-                                <th><span>Phone</span></th>
-                                <th>&nbsp;</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var item in Model)
-                            {
+<div class="row justify-content-center View">
+    <div class="col-lg-8 col-md-12 col-sm-12">
+        <div class="row">
+            <h2 class="justify-content-start">Doctors</h2>
+            <input type="text" class="form-control w-auto ml-auto justify-content-end" id="searchbox" placeholder="search..." maxlength="50" />
+            <div class="col-lg-12 p-0">
+                <div class="main-box clearfix">
+                    <div class="table-responsive">
+                        <table class="table user-list">
+                            <thead>
                                 <tr>
-                                    <td>
-                                        @if (!string.IsNullOrEmpty(item.User.ImageUrl)) //TODO VER SE DEIXO IMAGEM AQUI
-                                        {
-                                            <img src="@Url.Content(item.User.ImageUrl)" onerror="this.src='../images/Default/nopicture.png'" alt="user avatar" id="test" style="width:auto;height:50px;" />
-                                        }
-                                        else
-                                        {
-                                            <img src="~/images/Default/nopicture.png" alt="user avatar" id="test" style="width:auto;height:50px;">
-                                        }
-                                        <a href="#" class="user-link">@Html.DisplayFor(modelItem => item.User.FullName)</a>
-                                        <span class="user-subhead">
-                                            @Html.DisplayFor(modelItem => item.User.UserName)
-                                        </span>
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.User.DateCreated)
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.Specialization.Name)
-                                    </td>
-                                    <td class="text-center">
-                                        <span class="badge badge-success">Active</span>
-                                    </td>
-                                    <td>
-                                        @Html.DisplayFor(modelItem => item.User.PhoneNumber)
-                                    </td>
-                                    <td class="w-25 text-center" id="@item.User.UserName">
-                                        <a asp-controller="Account" asp-action="Profile" asp-route-username="@item.User.UserName" class="table-link">
-                                            <span class="fa-stack">
-                                                <i class="fa fa-square fa-stack-2x"></i>
-                                                <i class="fa fa-search-plus fa-stack-1x fa-inverse"></i>
-                                            </span>
-                                        </a>
-                                        <a asp-controller="Account" asp-action="ChangeUser" asp-route-username="@item.User.UserName" class="table-link">
-                                            <span class="fa-stack">
-                                                <i class="fa fa-square fa-stack-2x"></i>
-                                                <i class="fa fa-pencil-alt fa-stack-1x fa-inverse"></i>
-                                            </span>
-                                        </a>
-                                        <a asp-controller="Appointments" asp-action="Index" asp-route-username="@item.User.UserName" class="table-link">
-                                            <span class="fa-stack">
-                                                <i class="fa fa-square fa-stack-2x"></i>
-                                                <i class="fa fa-calendar-alt fa-stack-1x fa-inverse"></i>
-                                            </span>
-                                        </a>
-                                        <a asp-controller="Doctors" asp-action="DeleteDoctor" asp-route-username="@item.User.UserName" class="table-link danger" id="btnDeleteItem">
-                                            <span class="fa-stack">
-                                                <i class="fa fa-square fa-stack-2x"></i>
-                                                <i class="fa fa-trash-alt fa-stack-1x fa-inverse"></i>
-                                            </span>
-                                        </a>
-                                    </td>
+                                    <th><span>User</span></th>
+                                    <th><span>Created</span></th>
+                                    <th><span>Speciality</span></th>
+                                    <th class="text-center"><span>Status</span></th>
+                                    <th><span>Phone</span></th>
+                                    <th>&nbsp;</th>
                                 </tr>
-                            }
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            @if (!string.IsNullOrEmpty(item.User.ImageUrl))
+                                            {
+                                                <img src="@Url.Content(item.User.ImageUrl)" onerror="this.src='../images/Default/nopicture.png'" alt="user avatar" id="test" style="width:auto;height:50px;" />
+                                            }
+                                            else
+                                            {
+                                                <img src="~/images/Default/nopicture.png" alt="user avatar" id="test" style="width:auto;height:50px;">
+                                            }
+                                            <a asp-controller="Account" asp-action="Profile" asp-route-username="@item.User.UserName" class="user-link">@Html.DisplayFor(modelItem => item.User.FullName)</a>
+                                            <span class="user-subhead">
+                                                @Html.DisplayFor(modelItem => item.User.UserName)
+                                            </span>
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.User.DateCreated)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Specialization.Name)
+                                        </td>
+                                        <td class="text-center">
+                                            <span class="badge badge-success">Active</span>
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.User.PhoneNumber)
+                                        </td>
+                                        <td class="w-25 text-center" id="@item.User.UserName">
+                                            <a asp-controller="Account" asp-action="Profile" asp-route-username="@item.User.UserName" class="table-link">
+                                                <span class="fa-stack">
+                                                    <i class="fa fa-square fa-stack-2x"></i>
+                                                    <i class="fa fa-search-plus fa-stack-1x fa-inverse"></i>
+                                                </span>
+                                            </a>
+                                            <a asp-controller="Account" asp-action="ChangeUser" asp-route-username="@item.User.UserName" class="table-link">
+                                                <span class="fa-stack">
+                                                    <i class="fa fa-square fa-stack-2x"></i>
+                                                    <i class="fa fa-pencil-alt fa-stack-1x fa-inverse"></i>
+                                                </span>
+                                            </a>
+                                            <a asp-controller="Appointments" asp-action="Index" asp-route-username="@item.User.UserName" class="table-link">
+                                                <span class="fa-stack">
+                                                    <i class="fa fa-square fa-stack-2x"></i>
+                                                    <i class="fa fa-calendar-alt fa-stack-1x fa-inverse"></i>
+                                                </span>
+                                            </a>
+                                            <a asp-controller="Doctors" asp-action="DeleteDoctor" asp-route-username="@item.User.UserName" class="table-link danger" id="btnDeleteItem">
+                                                <span class="fa-stack">
+                                                    <i class="fa fa-square fa-stack-2x"></i>
+                                                    <i class="fa fa-trash-alt fa-stack-1x fa-inverse"></i>
+                                                </span>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-<div id="deleteDialog" class="modal fade">
-    <div class="modal-dialog modal-sm modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Delete</h4>
-            </div>
-            <div class="modal-body">
-                <p>Do you want to delete this Doctor?</p>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-danger" id="btnYesDelete">Delete</button>
-                <button type="button" class="btn btn-success" id="btnNoDelete">No</button>
+    <div id="deleteDialog" class="modal fade">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Delete</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Do you want to delete this Doctor?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" id="btnYesDelete">Delete</button>
+                    <button type="button" class="btn btn-success" id="btnNoDelete">No</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-<script>
-    $(document).ready(function () {
+    <script>
+        $(document).ready(function () {
 
-        var username = "";
+            var username = "";
 
-        /*Evento click em todos os <a> com o id = btnDeleteItem*/
-        $('a[id*=btnDeleteItem]').click(function () {
-            username = $(this).parent()[0].id;
-            console.log(username);
-            $("#deleteDialog").modal('show');
-            return false;
+            /*Evento click em todos os <a> com o id = btnDeleteItem*/
+            $('a[id*=btnDeleteItem]').click(function () {
+                username = $(this).parent()[0].id;
+                console.log(username);
+                $("#deleteDialog").modal('show');
+                return false;
+            });
+
+            $("#btnNoDelete").click(function () {
+                $("#deleteDialog").modal('hide');
+                return false;
+            });
+
+            $("#btnYesDelete").click(function () {
+                window.location.href = '/Doctors/DeleteDoctor?username=' + username;
+            });
         });
 
-        $("#btnNoDelete").click(function () {
-            $("#deleteDialog").modal('hide');
-            return false;
-        });
-
-        $("#btnYesDelete").click(function () {
-            window.location.href = '/Doctors/DeleteDoctor?username=' + username;
-        });
-    });
-
-    $("#searchbox").keyup(function () {
-        var searchtext = $(this).val();
-        $("table tr").each(function (results) {
-            if (results !== 0) {
-                var name = $(this).find("td:nth-child(1)").text();
-                var phone = $(this).find("td:nth-child(4)").text();
-                var searchName = name.indexOf(searchtext) !== 0 && name.toLowerCase().indexOf(searchtext.toLowerCase()) < 0;
-                var searchPhone = phone.indexOf(searchtext) !== 0 && phone.toLowerCase().indexOf(searchtext.toLowerCase()) < 0;
-                if (searchName && searchPhone) {
-                    $(this).hide();
+        $("#searchbox").keyup(function () {
+            var searchtext = $(this).val();
+            $("table tr").each(function (results) {
+                if (results !== 0) {
+                    var name = $(this).find("td:nth-child(1)").text();
+                    var phone = $(this).find("td:nth-child(4)").text();
+                    var searchName = name.indexOf(searchtext) !== 0 && name.toLowerCase().indexOf(searchtext.toLowerCase()) < 0;
+                    var searchPhone = phone.indexOf(searchtext) !== 0 && phone.toLowerCase().indexOf(searchtext.toLowerCase()) < 0;
+                    if (searchName && searchPhone) {
+                        $(this).hide();
+                    }
+                    else {
+                        $(this).show();
+                    }
                 }
-                else {
-                    $(this).show();
-                }
-            }
+            });
         });
-    });
-</script>
+    </script>

@@ -50,20 +50,19 @@
             @if (!String.IsNullOrEmpty(Model.ClientDescription))
             {
                 <div class="m-5">
-                    <h2> Description</h2>
+                    <h2>Client Description</h2>
                     <textarea class="form-control" readonly style="resize:none">@Html.DisplayFor(model => model.ClientDescription)</textarea>
                 </div>
             }
             <div class="m-5">
                 <h2> Notes</h2>
-                <textarea class="form-control" style="resize:none" id="notes" readonly></textarea>
+                <textarea class="form-control" style="resize:none" id="notes" readonly>@Html.DisplayFor(model => model.DoctorNotes)</textarea>
                 <br>
             </div>
             <div>
-                <input type="button" value="Start Appointment" id="start"/>
-                <input type="button" value="End Appointment" id="end"/>
+                <input type="button" value="Start Appointment" id="start" class="btn btn-primary" />
+                <input type="button" value="End Appointment" id="end" class="btn btn-danger" />
             </div>
-
         </div>
     </div>
 </div>
@@ -94,14 +93,44 @@
 
     //});
 
-    $('#start').click(function (e) {             
-        $('#start').hide();
-        $('#end').show();
-        $('#notes').removeAttr('readonly');
+    $('#start').click(function () {
+          $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("StartAppointment", "Appointments", new { id = Model.Id })',
+                    dataType: "json",
+                    success: function (data) {
+                        if (data.result == "Success") {
+
+                            $('#start').hide();
+                            $('#end').show();
+                            $('#notes').removeAttr('readonly');
+
+                        }
+                        else {
+                        }
+                    }
+             });
     });
 
     $('#end').click(function () {
-        $('#end').hide();
-        $('#notes').attr('readonly', true);
+           $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("EndAppointment", "Appointments", new { id = Model.Id })',
+                    dataType: "json",
+                    data: {
+                        notes :  $('#notes').val()
+                    },
+                    success: function (data) {
+                        if (data.result == "Success") {
+
+                            $('#end').hide();
+                            $('#notes').attr('readonly', true);
+
+                        }
+                        else {
+                        }
+                    }
+             });
+      
     });
 </script>

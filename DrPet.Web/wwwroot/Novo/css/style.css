@@ -65,7 +65,7 @@ body {
 /*-- Carousel Content --*/
 .carousel-caption {
   position:absolute;
-  top:50%; /*default é 54*/
+  top:48%; /*default é 54*/
   transform: translateY(-50%);
   text-transform: uppercase;
 }

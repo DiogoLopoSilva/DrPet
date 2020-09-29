@@ -20,12 +20,12 @@ namespace DrPet.Web.Data.Repositories
             _userHelper = userHelper;
         }
 
-        public async Task<Client> GetClientByUserAsync(User user) //TODO VER SE TEM MAL NAO SER ASYNC
+        public async Task<Client> GetClientByUserAsync(User user)
         {
             return await _context.Clients.Include(c => c.User).FirstOrDefaultAsync(c => c.User == user);
         }
 
-        public async Task<Client> GetClientWithUserAsync(string username) //TODO VER SE TEM MAL NAO SER ASYNC
+        public async Task<Client> GetClientWithUserAsync(string username)
         {
             return await _context.Clients.Include(c=> c.User).FirstOrDefaultAsync(c => c.User.UserName == username);
         }
@@ -51,6 +51,11 @@ namespace DrPet.Web.Data.Repositories
             _context.Users.Remove(client.User);
 
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<int> GetClientsTotal()
+        {
+            return await _context.Clients.Where(a => a.User.EmailConfirmed && !a.IsDeleted).CountAsync();
         }
     }
 }

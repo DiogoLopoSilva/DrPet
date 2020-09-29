@@ -10,6 +10,8 @@ namespace DrPet.Web.Models
 {
     public class AppointmentViewModel
     {
+        public int Id { get; set; }
+
         [Display(Name = "Client")]
         public string ClientUsername{ get; set; }
 
@@ -23,10 +25,10 @@ namespace DrPet.Web.Models
         public int SpecializationId { get; set; }
 
         [DataType(DataType.DateTime)]
-        public DateTime StartTime { get; set; } //TODO MUDAR PARA LOCAL TIME
+        public DateTime StartTime { get; set; }
 
         [DataType(DataType.DateTime)]
-        public DateTime EndTime { get { return this.StartTime.AddMinutes(30); } } //TODO MUDAR PARA LOCAL TIME
+        public DateTime EndTime { get { return this.StartTime.AddMinutes(30); } }
 
         public string ClientDescription { get; set; }
 

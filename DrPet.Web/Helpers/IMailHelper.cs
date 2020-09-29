@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace DrPet.Web.Helpers
 {
-    public interface IMailHelpter
+    public interface IMailHelper
     {
        void SendMail(string to, string subject, string body);
     }

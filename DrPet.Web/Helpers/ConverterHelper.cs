@@ -9,12 +9,11 @@ namespace DrPet.Web.Helpers
 {
     public class ConverterHelper : IConverterHelper
     {
-        public Animal ToAnimal(AnimalViewModel model, string path, bool isNew)
+        public Animal ToAnimal(AnimalViewModel model, bool isNew)
         {
             return new Animal
             {
                 Id = isNew ? 0 : model.Id,
-                ImageUrl = path,
                 Name = model.Name,
                 Sex = model.Sex,
                 Species = model.Species,
@@ -39,19 +38,31 @@ namespace DrPet.Web.Helpers
             };
         }
 
-        public ChangeUserViewModel UserToChangeUserViewModel(User user)
+        public AnimalDetailsViewModel ToAnimalDetailsViewModel(Animal animal, IEnumerable<Appointment> appointments)
         {
-            return new ChangeUserViewModel
+            return new AnimalDetailsViewModel
             {
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                DateOfBirth = user.DateOfBirth,
-                StreeName = user.StreeName,
-                PostalCode = user.PostalCode,
-                Location = user.Location,
-                DocumentNumber = user.DocumentNumber,
-                PhoneNumber = user.PhoneNumber
+                Id = animal.Id,
+                Name = animal.Name,
+                Sex = animal.Sex,
+                Species = animal.Species,
+                Breed = animal.Breed,
+                DateOfBirth = animal.DateOfBirth,
+                ImageUrl = animal.ImageUrl,
+                User = animal.User,
+                Appointments = appointments
             };
+        }
+
+        public Animal AnimalDetailsToAnimal(Animal animal,AnimalDetailsViewModel model)
+        {
+            animal.Name = model.Name;
+            animal.Sex = model.Sex;
+            animal.DateOfBirth = model.DateOfBirth;
+            animal.Species = model.Species;
+            animal.Breed = model.Breed;          
+
+            return animal;              
         }
 
         public UserProfileViewModel UserToUserProfileViewModel(User user)
@@ -70,20 +81,6 @@ namespace DrPet.Web.Helpers
                 DateCreated = user.DateCreated,
                 ImageUrl = user.ImageUrl
             };
-        }
-
-        public User ChangerUserViewModelToUser(ChangeUserViewModel model, User user)
-        {
-            user.FirstName = model.FirstName;
-            user.LastName = model.LastName;
-            user.DateOfBirth = model.DateOfBirth;
-            user.StreeName = model.StreeName;
-            user.PostalCode = model.PostalCode;
-            user.Location = model.Location;
-            user.DocumentNumber = model.DocumentNumber;
-            user.PhoneNumber = model.PhoneNumber;
-
-            return user;
         }
 
         public User ChangerUserProfileViewModelToUser(UserProfileViewModel model, User user)

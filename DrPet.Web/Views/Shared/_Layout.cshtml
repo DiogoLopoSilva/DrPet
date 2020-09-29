@@ -53,7 +53,7 @@
     <div class="top-bar">
         <div class="container">
             <div class="col-12 text-right">
-                <p><a href="tel:+916728644">Call us at 1 (800) HTML - CSS</a></p>
+                <p><a href="tel:+351214967700">Call us at 21 496 7700</a></p>
             </div>
         </div>
     </div>
@@ -75,9 +75,8 @@
 
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item"><a href="" class="nav-link">About</a></li>
-                    <li class="nav-item"><a href="" class="nav-link">Services</a></li>
-                    <li class="nav-item"><a href="" class="nav-link">Contacts</a></li>
+                    <li class="nav-item"><a asp-controller="Home" asp-action="About" class="nav-link">About</a></li>
+                    <li class="nav-item"><a asp-controller="Home" asp-action="Contact"class="nav-link">Contacts</a></li>
                     @if (this.User.Identity.IsAuthenticated)
                     {
                         if (this.User.IsInRole("Admin"))
@@ -142,7 +141,6 @@
     </environment>
 
     <partial name="_Login" model="new LoginViewModel()" />
-    <!--TODO VER SE ISTO NAO CAUSA PROBLEMAS -->
     <partial name="_CookieConsentPartial" />
 
     <div>
@@ -169,7 +167,7 @@
     <!-- End Footer -->
     <!-- Start Socket -->
     <div class="socket text-light text-center py-3">
-        <p>&copy; <a href="" target="_blank">Lorem ipsum dolor sit.</a></p>
+        <p>&copy; <a href="" target="_blank">Diogo Silva CET45.</a></p>
     </div>
     <!-- End Socket -->
 

@@ -4,7 +4,7 @@ using MimeKit;
 
 namespace DrPet.Web.Helpers
 {
-    public class MailHelper : IMailHelpter
+    public class MailHelper : IMailHelper
     {
         private readonly IConfiguration _configuration;
 

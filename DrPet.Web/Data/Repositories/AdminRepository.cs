@@ -20,7 +20,7 @@ namespace DrPet.Web.Data.Repositories
             _userHelper = userHelper;
         }
 
-        public async Task<Admin> GetAdminByUserAsync(User user) //TODO VER SE TEM MAL NAO SER ASYNC
+        public async Task<Admin> GetAdminByUserAsync(User user)
         {
             return await _context.Admins.Include(a => a.User).FirstOrDefaultAsync(c => c.User == user);
         }

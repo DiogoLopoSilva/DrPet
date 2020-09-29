@@ -2808,7 +2808,7 @@ hr {
 
 .our-services .single-services {
     border: 1px solid transparent;
-    background: #fff7fe;
+    background: #e9f1f7;
     border-radius: 6px;
     padding: 79px 33px;
     -webkit-transition: all 0.4s ease-out 0s;
@@ -2849,7 +2849,7 @@ hr {
 .our-services .single-services .services-ion span {
     font-size: 60px;
     margin-bottom: 13px;
-    color: #ff7474;
+    color: #74AEC4;
     -webkit-transition: all 0.4s ease-out 0s;
     -moz-transition: all 0.4s ease-out 0s;
     -ms-transition: all 0.4s ease-out 0s;
@@ -2861,7 +2861,7 @@ hr {
     margin-bottom: 50px;
     width: 100px;
     height: 100px;
-    background: #ffedf2;
+    background: #cfecfc;
     line-height: 100px;
     text-align: center;
     border-radius: 50px;
@@ -2893,12 +2893,12 @@ hr {
 }
 
 .our-services .single-services:hover {
-    border: 1px solid #f8c7b7;
+    border: 1px solid #74AEC4;
     background: #fff;
 }
 
     .our-services .single-services:hover .services-ion span {
-        color: #ff2121;
+        color: #74AEC4;
     }
 
     .our-services .single-services:hover h5 a {

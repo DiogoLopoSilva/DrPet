@@ -9,14 +9,16 @@ namespace DrPet.Web.Helpers
 {
     public interface IConverterHelper
     {
-        Animal ToAnimal(AnimalViewModel model, string path,bool isNew);
+        Animal ToAnimal(AnimalViewModel model,bool isNew);
 
         AnimalViewModel ToAnimalViewModel(Animal animal);
 
-        ChangeUserViewModel UserToChangeUserViewModel(User user);
-
-        User ChangerUserViewModelToUser(ChangeUserViewModel model, User user);
         UserProfileViewModel UserToUserProfileViewModel(User user);
+
         User ChangerUserProfileViewModelToUser(UserProfileViewModel model, User user);
+
+        AnimalDetailsViewModel ToAnimalDetailsViewModel(Animal animal, IEnumerable<Appointment> appointments);
+
+        Animal AnimalDetailsToAnimal(Animal animal,AnimalDetailsViewModel model);
     }
 }

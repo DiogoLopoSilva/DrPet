@@ -14,9 +14,13 @@
     };
 }
 
+<ejs-toast id="toast_type" created="createdToast">
+    <e-toast-position X="Right"></e-toast-position>
+</ejs-toast>
+
 <div class="View">
     <div class="row justify-content-center">
-        <div class="col-6">
+        <div class="col-lg-6 col-md-8 col-sm-10">
             <h2 class="mb-5 text-center">Double-Click on a Cell to schedule an appointment</h2>
             <div class="mb-5">
                 <ejs-schedule id="schedule" height="550" startHour="09:00" endHour="18:00" allowDragAndDrop="false" minDate="@DateTime.Today.AddDays(1)" maxDate="@DateTime.Today.AddMonths(1)" allowResizing="false"
@@ -38,6 +42,19 @@
 <script type="text/javascript">
     var date;
     var doctorId;
+
+    var toastObj;
+
+    function createdToast(args) {
+        toastObj = this;
+    }
+
+    var toasts = [
+        { title: 'Success!', content: 'Appointment Requested.', cssClass: 'e-toast-success', icon: 'e-success toast-icons' },
+        { title: 'Success!', content: 'Appointment Updated.', cssClass: 'e-toast-success', icon: 'e-success toast-icons' },
+        { title: 'Canceled!', content: 'Appointment Canceled.', cssClass: 'e-toast-danger', icon: 'e-error toast-icons' },
+        { title: 'Error!', content: 'Please fill all the fields.', cssClass: 'e-toast-danger', icon: 'e-error toast-icons' }
+    ];
 
     function EditLists(args) {
         var date = args.data.StartTime.toISOString();
@@ -271,10 +288,15 @@
     function onActionComplete(args) {
         if (args.requestType === 'eventCreated') {
 
-            //window.location.href = '/Home/Index';
-            console.log("CREATED");
-            console.log(args);
+            toastObj.show(toasts[0]);
+
+        } else if (args.requestType === 'eventChanged') {
+
+            toastObj.show(toasts[1]);
+        } else if (args.requestType === 'eventRemoved') {
+            toastObj.show(toasts[2]);
         }
+
 
         console.log("OUTRO");
         console.log(args);
@@ -288,7 +310,9 @@
                     console.log('TEST');
                     console.log(args);
 
-                    if (args.data[0].DoctorId === "" || args.data[0].AnimalId === "") {
+                    if (args.data[0].DoctorId === "" || args.data[0].DoctorId === null || args.data[0].AnimalId === "" || args.data[0].SpecializationId === "") {
+                        args.cancel = true;
+                        toastObj.show(toasts[3]);
                     }
 
                     args.data[0].ClientUsername = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.ClientUsername));
@@ -311,17 +335,17 @@
         function onEventRendered(args) {
             var categoryColor;
             switch (args.data.Status) {
-                case 'Waiting':
-                    categoryColor = '#F57F17';
-                    break;
                 case 'Confirmed':
-                    categoryColor = '#7fa900';
+                    categoryColor = '#0059ff';
+                    break;
+                case 'Waiting':
+                    categoryColor = '#ffc107';
                     break;
                 case 'InProgress':
-                    categoryColor = '#8e24aa';
+                    categoryColor = '#17a2b8';
                     break;
                 case 'Completed':
-                    categoryColor = '#00ff00';
+                    categoryColor = '#129600';
                     break;
             }
             if (!args.element || !categoryColor) {
@@ -338,6 +362,12 @@
         function onPopupOpen(args) {
 
             if (args.type === 'Editor') {
+
+                console.log("TYPE");
+                console.log(args);
+
+                var status = args.data.Status;
+
                 var startElement = args.element.querySelector('#StartTime');
                 if (!startElement.classList.contains('e-datetimepicker')) {
                     new ej.calendars.DateTimePicker({ value: new Date(startElement.value) || new Date() }, startElement);
@@ -362,7 +392,12 @@
                     CreateLists(args);
                 }
                 else {
-                    EditLists(args);
+                    if (status === 'Waiting') {
+                        EditLists(args);
+                    }
+                    else {
+                        args.cancel = true;
+                    }
                 }
             }
         }

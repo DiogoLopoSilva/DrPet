@@ -29,18 +29,18 @@ namespace DrPet.Web.Data.Repositories
                 return null;
             }
 
-            if (await _userHelper.IsUserInRoleAsync(user, RoleNames.Administrator))
+            if (await _userHelper.IsUserInRoleAsync(user, RoleNames.Client))
             {
                 return _context.Animals
-                    .Include(c => c.User)
-                    .Where(a => !a.IsDeleted)
-                    .OrderBy(c => c.User.FirstName);
+                       .Include(a => a.User)
+                       .Where(a => a.User == user && !a.IsDeleted)
+                       .OrderBy(a => a.User.FirstName);
             }
 
             return _context.Animals
-                .Include(a => a.User)
-                .Where(a => a.User == user && !a.IsDeleted)
-                .OrderBy(a => a.User.FirstName);
+                  .Include(c => c.User)
+                  .Where(a => !a.IsDeleted)
+                  .OrderBy(c => c.User.FirstName);
         }
 
         public async Task<Animal> GetAnimalWithUserAsync(int id)

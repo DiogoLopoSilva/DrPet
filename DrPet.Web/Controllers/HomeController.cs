@@ -5,20 +5,39 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using DrPet.Web.Models;
+using DrPet.Web.Data.Repositories;
 
 namespace DrPet.Web.Controllers
 {
     public class HomeController : Controller
     {
-        public IActionResult Index()
+        private readonly IClientRepository _clientRepository;
+        private readonly IAppointmentRepository _appointmentRepository;
+
+        public HomeController(IClientRepository clientRepository, IAppointmentRepository appointmentRepository)
         {
-            return View();
+            _clientRepository = clientRepository;
+            _appointmentRepository = appointmentRepository;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            var model = new HomeViewModel
+            {
+                AppointmentsTotal = await _appointmentRepository.GetAppointmentsTotal(),
+                ClientsTotal = await _clientRepository.GetClientsTotal()
+            };
+
+            return View(model);
         }
 
         public IActionResult About()
         {
-            ViewData["Message"] = "Your application description page.";
+            return View();
+        }
 
+        public IActionResult Services()
+        { 
             return View();
         }
 
@@ -44,12 +63,6 @@ namespace DrPet.Web.Controllers
         public IActionResult Error404()
         {
             return View();
-        }
-
-        public IActionResult ShowModal()
-        {
-            //specify the name or path of the partial view
-            return PartialView("_Login");
         }
     }
 }

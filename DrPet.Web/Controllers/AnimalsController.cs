@@ -49,53 +49,7 @@ namespace DrPet.Web.Controllers
             }
 
             return View(await _animalRepository.GetAnimalsAsync(user.UserName));
-        }
-
-        //// GET: Animals
-        //public async Task<IActionResult> Index()
-        //{
-        //    return View(await _animalRepository.GetAnimalsAsync(this.User.Identity.Name));
-        //}
-
-        // GET: Animals/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var animal = await _animalRepository.GetAnimalWithUserAsync(id.Value);
-
-            if (animal == null)
-            {
-                return NotFound();
-            }
-
-            var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
-
-            if (!this.User.IsInRole("Admin") && animal.User != user)
-            {
-                return NotFound();
-            }
-
-            var appointments = _appointmentRepository.GetAnimalAppointments(animal.Id);
-
-            var model = new AnimalDetailsViewModel
-            {
-                Id = animal.Id,
-                Name = animal.Name,
-                Sex= animal.Sex,
-                Species = animal.Species,
-                Breed = animal.Breed,
-                DateOfBirth = animal.DateOfBirth,
-                ImageUrl = animal.ImageUrl,
-                User = animal.User,
-                Appointments=  appointments
-            };
-
-            return View(model);
-        }
+        }       
 
         // GET: Animals/Create
         public async Task<IActionResult> Create(string username)
@@ -131,7 +85,7 @@ namespace DrPet.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                if ((this.User.Identity.Name != model.User.UserName) && !this.User.IsInRole("Admin")) //TODO VER SE NAO DEVO POR SO O USERNAME
+                if ((this.User.Identity.Name != model.User.UserName) && !this.User.IsInRole("Admin"))
                 {
                     return NotFound();
                 }
@@ -143,14 +97,7 @@ namespace DrPet.Web.Controllers
                     return NotFound();
                 }
 
-                var path = string.Empty;
-
-                if (model.ImageFile != null) //Verificar se preciso de ver se a Length é maior que 0
-                {
-                    path = await _imageHelper.UploadImageAsync(model.ImageFile,"Animals");
-                }
-
-                var animal = _converterHelper.ToAnimal(model, path, true);
+                var animal = _converterHelper.ToAnimal(model, true);
 
                 animal.User = user;
                 await _animalRepository.CreateAsync(animal);
@@ -159,46 +106,58 @@ namespace DrPet.Web.Controllers
             return View(model);
         }
 
-        // GET: Animals/Edit/5
-        public async Task<IActionResult> Edit(int? id) //TODO MUDAR PARA O CLIENTE SO CONSEGUIR ALTERAR ANIMAIS QUE SAO SEUS
+        // GET: Animals/Details/5
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
-                return new NotFoundViewResult("AnimalNotFound");
+                return NotFound();
             }
 
-            var animal = await _animalRepository.GetByIdAsync(id.Value);
+            var animal = await _animalRepository.GetAnimalWithUserAsync(id.Value);
+
             if (animal == null)
             {
-                return new NotFoundViewResult("AnimalNotFound");
+                return NotFound();
             }
-            var model = _converterHelper.ToAnimalViewModel(animal);
+
+            var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
+
+            if (this.User.IsInRole("Client") && animal.User != user)
+            {
+                return NotFound();
+            }
+
+            var appointments = _appointmentRepository.GetAnimalAppointments(animal.Id);
+
+            var model = _converterHelper.ToAnimalDetailsViewModel(animal, appointments);
 
             return View(model);
         }
 
-        // POST: Animals/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditAnimal(AnimalDetailsViewModel model)
+        public async Task<IActionResult> Edit(AnimalDetailsViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var animal = await _animalRepository.GetByIdAsync(model.Id);
+                var animal = await _animalRepository.GetAnimalWithUserAsync(model.Id);
 
                 if (animal==null)
                 {
                     return NotFound();
                 }
 
-                animal.Breed = model.Breed;
-                animal.DateOfBirth = model.DateOfBirth;
-                animal.Species = model.Species;
-                animal.Name = model.Name;
+                if ((this.User.Identity.Name != animal.User.UserName) && !this.User.IsInRole("Admin"))
+                {
+                    return NotFound();
+                }
 
-                await _animalRepository.UpdateAsync(animal); //TODO POR DENTRO DE UM CONVERTERHELPER E MANDAR MENSAGEM A DIZER QUE FOI ATUALIZADO
+                model.ImageUrl = animal.ImageUrl;
+
+                animal = _converterHelper.AnimalDetailsToAnimal(animal,model);
+
+                await _animalRepository.UpdateAsync(animal);
             }
 
             model.User = await _userHelper.GetUserByEmailAsync(model.User.UserName);
@@ -206,71 +165,18 @@ namespace DrPet.Web.Controllers
             return View("Details",model);
         }
 
-        // GET: Animals/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new NotFoundViewResult("AnimalNotFound");
-            }
-
-            var animal = await _animalRepository.GetByIdAsync(id.Value);
-            if (animal == null)
-            {
-                return new NotFoundViewResult("AnimalNotFound");
-            }
-
-            return View(animal);
-        }
-
-        // POST: Animals/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var animal = await _animalRepository.GetByIdAsync(id);
-            await _animalRepository.DeleteAsync(animal);
-            return RedirectToAction(nameof(Index));
-        }
-
-        public IActionResult AnimalNotFound()
-        {
-            return View();
-        }
-
-        public async Task<IActionResult> DeleteAnimal(int? id)
-        {    
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var animal = await _animalRepository.GetByIdAsync(id.Value);
-
-            if (animal==null)
-            {
-                return NotFound();
-            }
-
-            var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
-
-            if (!this.User.IsInRole("Admin") && animal.User != user)
-            {
-                return NotFound();
-            }
-
-            await _animalRepository.DeleteAnimalAsync(animal);
-
-            return this.RedirectToAction(nameof(Index));
-        }
-
         public async Task<JsonResult> UploadImage(IFormCollection form)
         {
-            string value = Request.Form["id"]; //TODO VERIFICAR SE ESTE USER É IGUAL AO LOGADO
+            string value = Request.Form["id"];
 
             int id = Convert.ToInt32(value);
 
-            var animal = await _animalRepository.GetByIdAsync(id);
+            var animal = await _animalRepository.GetAnimalWithUserAsync(id);
+
+            if (this.User.Identity.Name != animal.User.UserName && !this.User.IsInRole("Admin"))
+            {
+                return Json(new { result = "Failed" });
+            }
 
             if (animal != null)
             {
@@ -287,5 +193,45 @@ namespace DrPet.Web.Controllers
 
             return Json(new { result = "Failed" });
         }
+
+        public async Task<IActionResult> DeleteAnimal(int? id)
+        {
+            if (id == null)
+            {
+                return AnimalNotFound();
+            }
+
+            var animal = await _animalRepository.GetByIdAsync(id.Value);
+
+            if (animal == null)
+            {
+                return AnimalNotFound();
+            }
+
+            var user = await _userHelper.GetUserByEmailAsync(this.User.Identity.Name);
+
+            if (!this.User.IsInRole("Admin") && animal.User != user)
+            {
+                return AnimalNotFound();
+            }
+
+            await _animalRepository.DeleteAnimalAsync(animal);
+
+            return this.RedirectToAction(nameof(Index));
+        }
+       
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var animal = await _animalRepository.GetByIdAsync(id);
+            await _animalRepository.DeleteAsync(animal);
+            return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult AnimalNotFound()
+        {
+            return View();
+        }          
     }
 }

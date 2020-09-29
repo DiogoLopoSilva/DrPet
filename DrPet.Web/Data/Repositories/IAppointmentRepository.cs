@@ -13,8 +13,8 @@ namespace DrPet.Web.Data.Repositories
         Task<IQueryable<Appointment>> GetAppointmentsAsync(string userName);
 
         Task<IQueryable<Appointment>> GetAppointmentsByStatusAsync(string userName, string status);
-
-        Appointment GetByIdWithModels(int id);
+        Task<int> GetAppointmentsTotal();
+        Task<Appointment> GetByIdWithModelsAsync(int id);
 
         Task<IQueryable<Appointment>> GetDoctorsAppointmentsAsync(string userName);
 

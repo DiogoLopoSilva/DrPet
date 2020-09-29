@@ -21,7 +21,7 @@ namespace DrPet.Web.Data.Entities
         [DataType(DataType.Date)]
         public DateTime? DateOfBirth { get; set; }
 
-        [Display(Name = "Document No.")]
+        [Display(Name = "NIF")]
         public string DocumentNumber { get; set; }
 
         public string StreeName { get; set; }
@@ -35,7 +35,7 @@ namespace DrPet.Web.Data.Entities
 
         [Display(Name = "Date Created")]
         [DataType(DataType.Date)]
-        public DateTime DateCreated { get; set; } = DateTime.Today; //TODO VER SE ISTO NAO CAUSA CONFLITOS COM UPDATES DE USERS
+        public DateTime DateCreated { get; set; } = DateTime.Today;
 
         [Display(Name = "Image")]
         public string ImageUrl { get; set; }
