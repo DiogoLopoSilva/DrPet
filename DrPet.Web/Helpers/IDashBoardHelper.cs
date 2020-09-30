@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 
 namespace DrPet.Web.Helpers
 {
-    public interface IModelHelper
+    public interface IDashBoardHelper
     {
         //ChangeUserViewModel ToChangeUserViewModel(Human human);
+        DashBoardViewModel GetDashBoardInfo();
     }
 }

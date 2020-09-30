@@ -1,0 +1,185 @@
+﻿@model DrPet.Web.Models.DashBoardViewModel
+
+@using Syncfusion.EJ2
+
+<link href="~/css/sb-admin-2.min.css" rel="stylesheet">
+
+<div class="row justify-content-center View">
+    <div class="col-10">
+        <!-- Begin Page Content -->
+        <div class="container-fluid">
+
+            <!-- Page Heading -->
+            <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+            </div>
+
+            <!-- Content Row -->
+            <div class="row justify-content-center">
+
+                <!-- Earnings (Monthly) Card Example -->
+                <div class="col-xl-2 col-md-6 mb-4">
+                    <div class="card border-left-primary shadow h-100 py-2">
+                        <a asp-controller="Clients" asp-action="Index">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Clients</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Clients</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-user fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Earnings (Monthly) Card Example -->
+                <div class="col-xl-2 col-md-6 mb-4">
+                    <div class="card border-left-success shadow h-100 py-2">
+                        <a asp-controller="Animals" asp-action="Index">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Animals</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Animals</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-paw fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Earnings (Monthly) Card Example -->
+                <div class="col-xl-2 col-md-6 mb-4">
+                    <div class="card border-left-info shadow h-100 py-2">
+                        <a asp-controller="Doctors" asp-action="Index">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Doctors</div>
+                                        <div class="row no-gutters align-items-center">
+                                            <div class="col-auto">
+                                                <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">@Model.Doctors</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-user-md fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-xl-2 col-md-6 mb-4">
+                    <div class="card border-left-danger shadow h-100 py-2">
+                        <a asp-controller="Admins" asp-action="Index">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Admins</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Admins</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-user-shield fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <!-- Pending Requests Card Example -->
+                <div class="col-xl-3 col-md-6 mb-4">
+                    <div class="card border-left-warning shadow h-100 py-2">
+                        <a asp-controller="Appointments" asp-action="Index">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Upcoming Appointments</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800">@Model.Appointments</div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="fas fa-calendar-alt fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <!-- Content Row -->
+
+            <div class="row">
+
+                <!-- Area Chart -->
+                <div class="col-xl-8 col-lg-7">
+                    <div class="card shadow mb-4">
+                        <!-- Card Header - Dropdown -->
+                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                            <h6 class="m-0 font-weight-bold text-primary">New Users</h6>
+
+                        </div>
+                        <!-- Card Body -->
+                        <div class="card-body">
+                            <table class="table table-hover table-striped">
+                                <tbody>
+                                    @foreach (var item in Model.LatestClients)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <strong><a asp-controller="Account" asp-action="Profile" asp-route-username="@item.User.UserName">@Html.DisplayFor(modelItem => item.User.UserName)</a></strong> Date Created  @Html.DisplayFor(modelItem => item.User.DateCreated)<strong></strong>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pie Chart -->
+                <div class="col-xl-4 col-lg-5">
+                    <div class="card shadow mb-4">
+                        <!-- Card Header - Dropdown -->
+                        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                            <h6 class="m-0 font-weight-bold text-primary">Appointments for Today</h6>
+                        </div>
+                        <!-- Card Body -->
+                        <div class="card-body">
+                            @if (Model.ChartData.Count > 0)
+                            {
+                                <ejs-accumulationchart id="container" title="Appointments">
+                                    <e-accumulationchart-legendsettings visible="true" position="Top">
+                                    </e-accumulationchart-legendsettings>
+                                    <e-accumulationchart-tooltipsettings enable="false"></e-accumulationchart-tooltipsettings>
+                                    <e-accumulation-series-collection>
+                                        <e-accumulation-series dataSource="@Model.ChartData" xName="xValue" yName="yValue" radius="70%" innerRadius="40%" name="Project" explode=true explodeOffset="10%" explodeIndex=3>
+                                            <e-accumulationseries-datalabel visible="true" name="text">
+                                                <e-font fontWeight="600" color="white"></e-font>
+                                            </e-accumulationseries-datalabel>
+                                        </e-accumulation-series>
+                                    </e-accumulation-series-collection>
+                                </ejs-accumulationchart>
+                            }
+                            else
+                            {
+                                <div>
+                                    No Appointments for Today
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.container-fluid -->
+    </div>
+</div>
+
+<ejs-scripts></ejs-scripts>

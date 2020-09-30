@@ -32,7 +32,7 @@ namespace DrPet.Web.Controllers
         public IActionResult Index()
         {
             return View(_adminRepository.GetAdmins());
-        }
+        }      
 
         public async Task<IActionResult> DeleteAdmin(string username)
         {

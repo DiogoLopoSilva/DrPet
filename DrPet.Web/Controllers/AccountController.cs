@@ -27,25 +27,27 @@ namespace DrPet.Web.Controllers
         private readonly IConverterHelper _converterHelper;
         private readonly IMailHelper _mailHelper;
         private readonly IConfiguration _configuration;
-        private readonly IClientRepository _clientRepository;        
+        private readonly IClientRepository _clientRepository;
         private readonly IAdminRepository _adminRepository;
         private readonly IDoctorRepository _doctorRepository;
         private readonly IAppointmentRepository _appointmentRepository;
         private readonly IImageHelper _imageHelper;
         private readonly ISpecializationRepository _specializationRepository;
         private readonly IAnimalRepository _animalRepository;
+        private readonly IDashBoardHelper _dashBoardHelper;
 
         public AccountController(IUserHelper userHelper,
             IConverterHelper converterHelper,
             IMailHelper mailHelper,
             IConfiguration configuration,
-            IClientRepository clientRepository,         
+            IClientRepository clientRepository,
             IAdminRepository adminRepository,
             IDoctorRepository doctorRepository,
             IAppointmentRepository appointmentRepository,
             IImageHelper imageHelper,
             ISpecializationRepository specializationRepository,
-            IAnimalRepository animalRepository)
+            IAnimalRepository animalRepository,
+            IDashBoardHelper dashBoardHelper)
         {
             _userHelper = userHelper;
             _configuration = configuration;
@@ -58,6 +60,7 @@ namespace DrPet.Web.Controllers
             _imageHelper = imageHelper;
             _specializationRepository = specializationRepository;
             _animalRepository = animalRepository;
+            _dashBoardHelper = dashBoardHelper;
         }
 
         [HttpPost]
@@ -74,7 +77,7 @@ namespace DrPet.Web.Controllers
                     {
                         return Json(new { result = "Success" });
                     }
-                }           
+                }
             }
 
             return Json(new { result = "Failed" });
@@ -115,7 +118,7 @@ namespace DrPet.Web.Controllers
                 $"To reset the password click on this link:</br></br>" +
                 $"<a href = \"{link}\">Reset Password</a>");
                 this.ViewBag.Message = "The instructions to recover your password has been sent to email.";
-                return this.View(); 
+                return this.View();
 
             }
 
@@ -148,7 +151,7 @@ namespace DrPet.Web.Controllers
             return View(model);
         }
 
-     
+
 
         [Authorize]
         public async Task<IActionResult> Profile(string username)
@@ -383,7 +386,7 @@ namespace DrPet.Web.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> ConfirmEmail(string userid,string token)
+        public async Task<IActionResult> ConfirmEmail(string userid, string token)
         {
             if (string.IsNullOrEmpty(userid) || string.IsNullOrEmpty(token))
             {
@@ -391,7 +394,7 @@ namespace DrPet.Web.Controllers
             }
 
             var user = await _userHelper.GetUserByIdAsync(userid);
-            if (user ==null)
+            if (user == null)
             {
                 return NotFound();
             }
@@ -431,7 +434,7 @@ namespace DrPet.Web.Controllers
                 }
                 else
                 {
-                    this.ModelState.AddModelError(string.Empty, "User no found.");
+                    this.ModelState.AddModelError(string.Empty, "User not found.");
                 }
             }
 
@@ -441,6 +444,14 @@ namespace DrPet.Web.Controllers
         public IActionResult NotAuthorized()
         {
             return View();
+        }
+
+        [Authorize(Roles =RoleNames.Administrator)]
+        public IActionResult DashBoard()
+        {
+            var model = _dashBoardHelper.GetDashBoardInfo();
+
+            return View(model);
         }
     }
 }
