@@ -51,7 +51,7 @@ namespace DrPet.Web.Helpers
                 Clients = _context.Clients.Where(a => !a.IsDeleted).Count(),
                 Doctors = _context.Doctors.Where(a => !a.IsDeleted).Count(),
                 Animals = _context.Animals.Where(a => !a.IsDeleted).Count(),
-                Appointments = _context.Appointments.Where(a => !a.IsDeleted && a.Status == "Confirmed").Count(),
+                Appointments = _context.Appointments.Where(a => !a.IsDeleted && a.Status == "Completed").Count(),
                 ChartData = donutSorted,
                 LatestClients = _context.Clients.Include(c => c.User).Where(c => !c.IsDeleted && c.User.EmailConfirmed).OrderByDescending(c => c.User.DateCreated).Take(10).ToList()
             };
