@@ -114,10 +114,18 @@ namespace DrPet.Web.Controllers
                     "Account",
                     new { token = myToken }, protocol: HttpContext.Request.Scheme);
 
-                _mailHelper.SendMail(model.Email, "Dr.Pet Password Reset", $"<h1>Dr.Pet Password Reset</h1>" +
-                $"To reset the password click on this link:</br></br>" +
-                $"<a href = \"{link}\">Reset Password</a>");
-                this.ViewBag.Message = "The instructions to recover your password has been sent to email.";
+                try
+                {
+                    _mailHelper.SendMail(model.Email, "Dr.Pet Password Reset", $"<h1>Dr.Pet Password Reset</h1>" +
+                    $"To reset the password click on this link:</br></br>" +
+                    $"<a href = \"{link}\">Reset Password</a>");
+                    this.ViewBag.Message = "The instructions to recover your password has been sent to email.";
+                }
+                catch (Exception e)
+                {
+                    this.ViewBag.Message = e.Message;
+                }
+
                 return this.View();
 
             }
@@ -370,11 +378,19 @@ namespace DrPet.Web.Controllers
 
                     }, protocol: HttpContext.Request.Scheme);
 
-                    _mailHelper.SendMail(model.Username, "Email confirmation", $"<h1>Email Confirmation</h1>" +
-                      $"Click this link to " +
-                      $"confirm your account:</br></br><a href = \"{tokenLink}\">Confirm Email</a>");
+                    try
+                    {
+                        _mailHelper.SendMail(model.Username, "Email confirmation", $"<h1>Email Confirmation</h1>" +
+                                             $"Click this link to " +
+                                             $"confirm your account:</br></br><a href = \"{tokenLink}\">Confirm Email</a>");
 
-                    this.ViewBag.Message = "A confirmation Email has been sent to your account.";
+                        this.ViewBag.Message = "A confirmation Email has been sent to your account.";
+                    }
+                    catch (Exception e)
+                    {
+                        this.ViewBag.Message = e.Message;
+                    }
+                   
                     model.Specializations = _specializationRepository.GetComboSpecializations();
                     return this.View(model);
                 }
